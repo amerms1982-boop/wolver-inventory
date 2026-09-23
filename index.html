@@ -655,14 +655,35 @@ function metaBody(){
     nextNoteSerial: STATE.nextNoteSerial,
     users: STATE.users,
     itemsManuallyOrdered: STATE.itemsManuallyOrdered,
-    itemOrder: STATE.items.map(i=>i.id)
+    itemOrder: STATE.items.map(i=>i.id),
+    recoveryCode: STATE.recoveryCode || null
   };
+}
+async function refreshUsersFromServer(){
+  const db = getDb();
+  if(!db) return false;
+  try{
+    const snap = await db.collection('meta').doc('main').get();
+    if(!snap.exists) return false;
+    const meta = snap.data();
+    STATE.users = meta.users || [];
+    STATE.recoveryCode = meta.recoveryCode || null;
+    if(SYNCED && SYNCED.meta){
+      SYNCED.meta.users = JSON.parse(JSON.stringify(STATE.users));
+      SYNCED.meta.recoveryCode = STATE.recoveryCode;
+    }
+    return true;
+  }catch(e){
+    console.error('refreshUsersFromServer failed', e);
+    return false;
+  }
 }
 
 let STATE = null;
 let currentItemId = null;
 let userName = '';
 let currentUser = null;
+const SESSION_KEY = 'wolverSessionUser';
 
 /* ============ PERMISSIONS ============ */
 const PERMISSION_GROUPS = { notes: 'الأذونات' };
@@ -799,13 +820,14 @@ async function loadState(){
         flags: meta.flags || {},
         nextNoteSerial: meta.nextNoteSerial || 1,
         users: meta.users || [],
+        recoveryCode: meta.recoveryCode || null,
         itemsManuallyOrdered: !!meta.itemsManuallyOrdered,
         items, notes, transactions
       };
       ensureDefaults();
       const itemsClone = {}; items.forEach(it=>{ itemsClone[it.id] = JSON.parse(JSON.stringify(it)); });
       const notesClone = {}; notes.forEach(n=>{ notesClone[n.id] = JSON.parse(JSON.stringify(n)); });
-      SYNCED = { meta: metaBody(), items: itemsClone, notes: notesClone, txCount: transactions.length };
+      SYNCED = { meta: JSON.parse(JSON.stringify(metaBody())), items: itemsClone, notes: notesClone, txCount: transactions.length };
       return true;
     }
     // أول تشغيل — لسه مفيش بيانات محفوظة، ابدأ بالأصناف الافتراضية
@@ -854,7 +876,7 @@ async function persist(){
   const newMeta = metaBody();
   if(!SYNCED.meta || !deepEqualJson(newMeta, SYNCED.meta)){
     const ok = await writeWithRetry(()=>db.collection('meta').doc('main').set(newMeta));
-    if(ok) SYNCED.meta = newMeta; else allOk = false;
+    if(ok) SYNCED.meta = JSON.parse(JSON.stringify(newMeta)); else allOk = false;
   }
   const currentIds = new Set();
   for(const item of STATE.items){
@@ -1027,6 +1049,7 @@ async function submitSetup(){
   if(!ok){ err.textContent='تعذر الحفظ، تأكد من الاتصال وحاول مرة أخرى'; err.style.display='block'; STATE.users=[]; return; }
   currentUser = STATE.users[0];
   userName = currentUser.username;
+  try{ sessionStorage.setItem(SESSION_KEY, currentUser.username); }catch(e){}
   enterApp();
 }
 function renderLoginForm(){
@@ -1082,6 +1105,7 @@ async function submitLogin(){
   if(!match){ err.textContent='اسم المستخدم أو كلمة المرور غير صحيحة'; err.style.display='block'; return; }
   currentUser = match;
   userName = currentUser.username;
+  try{ sessionStorage.setItem(SESSION_KEY, currentUser.username); }catch(e){}
   enterApp();
 }
 function enterApp(){
@@ -1095,14 +1119,16 @@ function enterApp(){
 }
 function logout(){
   currentUser = null; userName='';
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
   document.getElementById('mainApp').style.display='none';
   document.getElementById('authGate').style.display='flex';
   renderAuthGate();
 }
 
 /* ============ USERS MANAGEMENT (admin only) ============ */
-function openUsersModal(){
+async function openUsersModal(){
   if(!currentUser || currentUser.role!=='admin') return;
+  await refreshUsersFromServer();
   renderUsersList();
   document.getElementById('usersOverlay').classList.add('active');
 }
@@ -1166,12 +1192,13 @@ function openPermissionsModal(username){
 }
 function closePermissionsModal(){ document.getElementById('permissionsOverlay').classList.remove('active'); }
 async function savePermissions(){
-  const user = STATE.users.find(x=>x.username===currentPermUsername);
-  if(!user) return;
   const perms = defaultPermissions();
   document.querySelectorAll('#permissionsBody input[type="checkbox"]').forEach(cb=>{
     perms[cb.dataset.mod][cb.dataset.act] = cb.checked;
   });
+  await refreshUsersFromServer();
+  const user = STATE.users.find(x=>x.username===currentPermUsername);
+  if(!user){ closePermissionsModal(); showToast('المستخدم لم يعد موجودًا — جاري تحديث القائمة'); renderUsersList(); return; }
   const old = user.permissions;
   user.permissions = perms;
   const ok = await persist();
@@ -1186,6 +1213,7 @@ async function generateRecoveryCode(){
   let code = '';
   for(let i=0;i<10;i++) code += chars[Math.floor(Math.random()*chars.length)];
   code = code.slice(0,5)+'-'+code.slice(5);
+  await refreshUsersFromServer();
   const old = STATE.recoveryCode;
   STATE.recoveryCode = code;
   const ok = await persist();
@@ -1203,7 +1231,8 @@ async function addUser(){
   const p = document.getElementById('newUserPass').value;
   const role = document.getElementById('newUserRole').value;
   if(!u || !p){ showToast('اكتب اسم المستخدم وكلمة المرور'); return; }
-  if(STATE.users.some(x=>x.username===u)){ showToast('اسم المستخدم موجود مسبقًا'); return; }
+  await refreshUsersFromServer();
+  if(STATE.users.some(x=>x.username===u)){ showToast('اسم المستخدم موجود مسبقًا'); renderUsersList(); return; }
   STATE.users.push({username:u, password:p, role, permissions: defaultPermissions()});
   const ok = await persist();
   if(ok){
@@ -1212,12 +1241,15 @@ async function addUser(){
     showToast('تم إضافة المستخدم');
   } else {
     STATE.users = STATE.users.filter(x=>x.username!==u);
+    showToast('تعذر الحفظ، حاول مرة أخرى');
   }
 }
 async function changeUserPassword(username){
   const newPass = await customPrompt('كلمة المرور الجديدة لـ '+username+':');
   if(!newPass) return;
+  await refreshUsersFromServer();
   const u = STATE.users.find(x=>x.username===username);
+  if(!u){ showToast('المستخدم لم يعد موجودًا — جاري تحديث القائمة'); renderUsersList(); return; }
   const old = u.password;
   u.password = newPass;
   const ok = await persist();
@@ -1225,8 +1257,9 @@ async function changeUserPassword(username){
   else { u.password = old; showToast('تعذر الحفظ، حاول مرة أخرى'); }
 }
 async function deleteUser(username){
+  await refreshUsersFromServer();
   const target = STATE.users.find(x=>x.username===username);
-  if(!target) return;
+  if(!target){ showToast('المستخدم غير موجود بالفعل'); renderUsersList(); return; }
   const admins = STATE.users.filter(x=>x.role==='admin');
   if(target.role==='admin' && admins.length<=1){ showToast('لا يمكن حذف آخر حساب أدمن'); return; }
   if(currentUser && currentUser.username===username){ showToast('لا يمكنك حذف حسابك الحالي وأنت مسجل دخول به'); return; }
@@ -1234,7 +1267,7 @@ async function deleteUser(username){
   STATE.users = STATE.users.filter(x=>x.username!==username);
   const ok = await persist();
   if(ok){ renderUsersList(); showToast('تم حذف المستخدم'); }
-  else STATE.users.push(target);
+  else { STATE.users.push(target); showToast('تعذر الحفظ، حاول مرة أخرى'); }
 }
 
 function switchView(v){
@@ -2408,6 +2441,18 @@ async function init(){
     await mergeDuplicatePackagingBatches()
   ].some(Boolean);
   if(changed) await persist();
+  let savedUsername = null;
+  try{ savedUsername = sessionStorage.getItem(SESSION_KEY); }catch(e){}
+  if(savedUsername && STATE.users && STATE.users.length){
+    const match = STATE.users.find(x=>x.username===savedUsername);
+    if(match){
+      currentUser = match;
+      userName = currentUser.username;
+      enterApp();
+      return;
+    }
+    try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  }
   renderAuthGate();
 }
 init();
