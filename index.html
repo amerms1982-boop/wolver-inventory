@@ -1492,6 +1492,31 @@ const LANG_KEY = 'wolverLang';
 let LANG = 'ar';
 try{ LANG = localStorage.getItem(LANG_KEY) || 'ar'; }catch(e){ LANG = 'ar'; }
 function t(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.ar[key] || key; }
+/* Transaction-log entries mix translated labels with free-typed data (item/warehouse names,
+   numbers) and were saved to Firestore pre-translated in whatever language was active at the
+   time. To show old AND new log rows correctly in whichever language is being viewed now, we
+   pattern-match the known label phrases (both languages) inside the stored text and swap only
+   those, leaving the surrounding user-typed data untouched. */
+const LOG_TEXT_KEYS = ['oldNameLabel','itemDataEdited','msgItemDeleted','packagingLabel','noInitialPackaging',
+  'openingBalancesTitle','numberLabel','bulkInTitle','supplierName','bulkOutTitle','msgNoteDeletedReversed',
+  'msgRejectedByPrefix','msgRejectedBySuffix','roleAdmin','newWarehouseCreatedLabel','msgWhDeleted',
+  'fromLabel','toLabel','txIn','txOut','txTransfer','transferNoteLabel','locationClient'];
+let LOG_TEXT_PAIRS = null;
+function localizeLogText(str){
+  if(!str) return str;
+  if(!LOG_TEXT_PAIRS){
+    LOG_TEXT_PAIRS = LOG_TEXT_KEYS.map(k=>({ar:I18N.ar[k], en:I18N.en[k]}))
+      .filter(p=>p.ar && p.en && p.ar!==p.en)
+      .sort((a,b)=> Math.max(b.ar.length,b.en.length) - Math.max(a.ar.length,a.en.length));
+  }
+  let out = str;
+  LOG_TEXT_PAIRS.forEach(p=>{
+    const from = LANG==='ar' ? p.en : p.ar;
+    const to = LANG==='ar' ? p.ar : p.en;
+    if(from && out.includes(from)) out = out.split(from).join(to);
+  });
+  return out;
+}
 function applyDir(){
   document.documentElement.setAttribute('dir', LANG==='ar' ? 'rtl' : 'ltr');
   document.documentElement.setAttribute('lang', LANG==='ar' ? 'ar' : 'en');
@@ -2725,7 +2750,7 @@ function renderItemHistoryModal(){
   const rows = getItemHistoryRows();
   document.getElementById('itemHistoryBody').innerHTML = rows.map(tx=>`
     <tr><td>${fmtTime(tx.ts)}</td><td><span class="tag ${tx.type}">${t(TX_LABEL[tx.type])||tx.type}</span></td>
-    <td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${tx.location||''}</td><td>${tx.user}</td></tr>`).join('')
+    <td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
     || `<tr><td colspan="5" style="text-align:center;color:var(--ink-soft);padding:20px;">${t('noTxInPeriod')}</td></tr>`;
 }
 function buildItemHistoryPrintHtml(){
@@ -2735,7 +2760,7 @@ function buildItemHistoryPrintHtml(){
   const to = document.getElementById('itemHistoryTo').value;
   const period = (from||to) ? `<div>${t('periodLabel')}: ${from||t('periodStart')} — ${to||t('periodNow')}</div>` : '';
   const head = `<tr><th>${t('colTime')}</th><th>${t('colType')}</th><th>${t('colQty')}</th><th>${t('colDetails')}</th><th>${t('colUser')}</th></tr>`;
-  const body = rows.map(tx=>`<tr><td>${fmtTime(tx.ts)}</td><td>${t(TX_LABEL[tx.type])||tx.type}</td><td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${tx.location||''}</td><td>${tx.user}</td></tr>`).join('')
+  const body = rows.map(tx=>`<tr><td>${fmtTime(tx.ts)}</td><td>${t(TX_LABEL[tx.type])||tx.type}</td><td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
     || `<tr><td colspan="5">${t('noTx')}</td></tr>`;
   return `<h2>${t('itemHistoryBtn')}: ${item?item.name:''}</h2>${period}<br><table class="note-table">${head}${body}</table>`;
 }
@@ -2751,8 +2776,8 @@ function renderLog(){
   if(q) rows = rows.filter(tx=>(tx.itemName||'').toLowerCase().includes(q) || (tx.location||'').toLowerCase().includes(q));
   rows = rows.slice(0,300);
   document.getElementById('logBody').innerHTML = rows.map(tx=>`
-    <tr><td>${fmtTime(tx.ts)}</td><td>${tx.itemName||''}</td><td><span class="tag ${tx.type}">${t(TX_LABEL[tx.type])||tx.type}</span></td>
-    <td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${tx.location||''}</td><td>${tx.user}</td></tr>`).join('')
+    <tr><td>${fmtTime(tx.ts)}</td><td>${localizeLogText(tx.itemName)||''}</td><td><span class="tag ${tx.type}">${t(TX_LABEL[tx.type])||tx.type}</span></td>
+    <td>${tx.qty} ${tx.packaging?('· '+tx.packaging):''}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
     || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">${t('noTx')}</td></tr>`;
 }
 
