@@ -1570,6 +1570,7 @@ function rerenderCurrentUI(){
     const authGateVisible = document.getElementById('authGate') && document.getElementById('authGate').style.display !== 'none';
     if(authGateVisible){ renderAuthGate(); return; }
   }catch(e){}
+  try{ if(currentUser){ document.getElementById('currentUserLabel').textContent = t('greetingHi') + ' ' + currentUser.username; } }catch(e){}
   try{ if(STATE){ renderDashboard(); renderItems(); renderLog(); } }catch(e){}
   try{ if(document.getElementById('usersOverlay').classList.contains('active')) renderUsersList(); }catch(e){}
   try{ if(document.getElementById('permissionsOverlay').classList.contains('active') && currentPermUsername) openPermissionsModal(currentPermUsername); }catch(e){}
