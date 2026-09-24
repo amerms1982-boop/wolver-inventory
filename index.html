@@ -251,6 +251,12 @@
       <div class="stat warn"><div class="num" id="statSoon">-</div><div class="lbl">تنتهي خلال 6 أشهر</div></div>
     </div>
     <div class="wh-tabs" id="whStatTabs"></div>
+    <div class="section-head" id="reorderReportRow" style="display:none;"><h2>📦 حد الطلب</h2>
+      <button class="btn btn-ghost btn-sm" onclick="openReorderReport()">عرض الأصناف الناقصة (<span id="reorderCount">0</span>)</button>
+    </div>
+    <div class="section-head" id="pendingApprovalsRow" style="display:none;"><h2>⏳ الأذونات المعلّقة</h2>
+      <button class="btn btn-ghost btn-sm" onclick="openPendingApprovals()">مراجعة الأذونات (<span id="pendingApprovalsCount">0</span>)</button>
+    </div>
     <div class="section-head"><h2>⚠️ تنبيهات الصلاحية — صرف هذه الأصناف أولاً</h2><span class="hint">مرتبة من الأقرب انتهاءً</span></div>
     <div id="alertsList"></div>
   </div>
@@ -267,6 +273,7 @@
       <div class="form-grid">
         <div class="full"><label>اسم الصنف</label><input id="niName" placeholder="مثال: WOLVER ..."></div>
         <div class="full"><label>نوع التعبئة</label><input id="niPackaging" placeholder="مثال: 4*5 Ltr."></div>
+        <div class="full"><label>حد الطلب (اختياري)</label><input id="niReorderLevel" type="number" step="0.01" min="0" placeholder="مثال: 20 — سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
         <div class="full">
           <label>صورة الصنف (اختياري)</label>
           <div style="display:flex;align-items:center;gap:12px;">
@@ -355,6 +362,7 @@
     <h2>تعديل الصنف</h2>
     <div class="form-grid">
       <div class="full"><label>اسم الصنف</label><input id="editItemName"></div>
+      <div class="full"><label>حد الطلب (اختياري)</label><input id="editItemReorderLevel" type="number" step="0.01" min="0" placeholder="سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
       <div class="full">
         <label>صورة الصنف</label>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -371,6 +379,39 @@
       <button class="btn btn-ghost" onclick="closeEditItem()">إلغاء</button>
     </div>
     <div class="warn-box" id="editItemWarning" style="display:none;margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- REORDER LEVEL REPORT MODAL -->
+<div class="overlay" id="reorderReportOverlay">
+  <div class="modal wide">
+    <button class="modal-close" onclick="closeReorderReport()">✕</button>
+    <h2>📦 أصناف وصلت لحد الطلب</h2>
+    <div class="item-meta">الأصناف اللي رصيدها الحالي (كل المخازن) وصل لحد الطلب المحدد لها، أو نزل لـ 20 أو أقل، أو نفد تمامًا — في حالة عدم تحديد حد طلب مخصص للصنف.</div>
+    <div class="table-scroll">
+      <table class="log-table">
+        <thead><tr><th>م</th><th>اسم الصنف</th><th>الرصيد الحالي</th><th>حد الطلب</th><th>الحالة</th></tr></thead>
+        <tbody id="reorderReportBody"></tbody>
+      </table>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="previewPrint(buildReorderReportPrintHtml())">👁 معاينة</button>
+      <button class="btn btn-ghost" onclick="doPrint(buildReorderReportPrintHtml())">🖨 طباعة</button>
+      <button class="btn btn-ghost" onclick="closeReorderReport()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- PENDING APPROVALS MODAL -->
+<div class="overlay" id="pendingApprovalsOverlay">
+  <div class="modal wide">
+    <button class="modal-close" onclick="closePendingApprovals()">✕</button>
+    <h2>⏳ الأذونات المعلّقة — بانتظار المراجعة</h2>
+    <div class="item-meta">الأذونات دي متحفوظة بس لسه ما أثّرتش على المخزون. راجعها، وعدّل عليها لو محتاج، ثم اعتمدها أو ارفضها.</div>
+    <div id="pendingApprovalsList"></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closePendingApprovals()">إغلاق</button>
+    </div>
   </div>
 </div>
 
@@ -490,6 +531,46 @@
     <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;">🔑 رمز استرجاع حساب المدير</h2></div>
     <div class="item-meta">الرمز ده هو الوحيد اللي بيسمح بعمل "نسيت بيانات الدخول" — احتفظ بيه في مكان آمن بره التطبيق. أي حد يعرف الرمز يقدر يمسح كل الحسابات، فاحفظه كويس.</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="generateRecoveryCode()">توليد / عرض رمز جديد</button></div>
+    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;">🗑 حذف البيانات المسجلة</h2></div>
+    <div class="item-meta">حذف نهائي لبيانات النظام المسجلة. تقدر تستثني أي قسم من الحذف قبل التنفيذ.</div>
+    <div class="form-actions"><button class="btn btn-danger" onclick="openWipeData()">🗑 حذف البيانات المسجلة</button></div>
+  </div>
+</div>
+
+<!-- WIPE DATA MODAL -->
+<div class="overlay" id="wipeDataOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeWipeData()">✕</button>
+    <h2>🗑 حذف البيانات المسجلة</h2>
+    <div class="warn-box">تحذير: الحذف نهائي ومفيش طريقة للتراجع عنه بعد التنفيذ. علّم على أي قسم عايز تستثنيه من الحذف (يفضل محفوظ زي ما هو)، وأي قسم من غير علامة هيتحذف نهائيًا.</div>
+    <div style="margin-top:10px;">
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepWarehouses"> الاحتفاظ بالمخازن</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepItems"> الاحتفاظ بالأصناف</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:7px 0 9px 0;margin-inline-start:26px;border-bottom:1px solid var(--line);font-weight:600;font-size:12.5px;cursor:pointer;color:var(--ink-soft);"><input type="checkbox" id="wipeKeepBalances"> الاحتفاظ بالأرصدة (وإلا هتتصفّر لصفر مع بقاء الأصناف والباتشات)</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepUsers"> الاحتفاظ بالمستخدمين وصلاحياتهم</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:7px 0 9px 0;margin-inline-start:26px;border-bottom:1px solid var(--line);font-weight:600;font-size:12.5px;cursor:pointer;color:var(--ink-soft);"><input type="checkbox" id="wipeDeleteFounder"> احذف حساب المدير الأول (المؤسس) كمان — مستثنى تلقائيًا لو مش متعلّم</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepLog"> الاحتفاظ بسجل كل الحركات</label>
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepNotes"> الاحتفاظ بالأذونات المحفوظة (إضافة / صرف / تحويل)</label>
+    </div>
+    <div class="item-meta" style="margin-top:6px;">لو حذفت المستخدمين، حساب المدير الأول (المؤسس) بيفضل موجود تلقائيًا إلا لو علّمت على حذفه كمان — وفي الحالة دي هيرجع التطبيق لشاشة إعداد حساب أدمن جديد من الأول، وهتخرج من حسابك الحالي تلقائيًا لو كان هو المتأثر.</div>
+    <div class="form-actions">
+      <button class="btn btn-danger" onclick="requestWipeData()">🗑 تنفيذ الحذف</button>
+      <button class="btn btn-ghost" onclick="closeWipeData()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- WIPE DATA PASSWORD CONFIRM MODAL -->
+<div class="overlay" id="wipePasswordOverlay">
+  <div class="modal small">
+    <h2>تأكيد هوية الأدمن</h2>
+    <div class="item-meta">اكتب كلمة مرور حساب الأدمن الحالي لإتمام عملية الحذف.</div>
+    <div class="form-grid"><div class="full"><label>كلمة المرور</label><div class="pw-wrap"><input id="wipePasswordInput" type="password"><button type="button" class="pw-toggle" onclick="togglePw('wipePasswordInput', this)"></button></div></div></div>
+    <div class="warn-box" id="wipePasswordError" style="display:none;"></div>
+    <div class="form-actions">
+      <button class="btn btn-danger" onclick="confirmWipePassword()">تأكيد وحذف نهائيًا</button>
+      <button class="btn btn-ghost" onclick="cancelWipePassword()">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -499,6 +580,17 @@
     <button class="modal-close" onclick="closePermissionsModal()">✕</button>
     <h2 id="permissionsUserLabel">الصلاحيات</h2>
     <div class="item-meta">حدد لكل نافذة إيه اللي المستخدم ده يقدر يعمله. الإلغاء بيمنع الظهور والاستخدام في نفس الوقت.</div>
+    <div class="warn-box" style="margin:10px 0;">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="permNeedsApproval"> يحتاج موافقة الأدمن قبل تنفيذ أذونات الإضافة/الصرف/التحويل
+      </label>
+      <div class="item-meta" style="margin-top:4px;">لو مفعّل، أي إذن يعمله المستخدم ده هيتحفظ "قيد المراجعة" ومش هيأثر على المخزون إلا لما تراجعه وتوافق عليه من زرار "الأذونات المعلّقة" في لوحة القيادة.</div>
+    </div>
+    <div class="warn-box" style="margin:10px 0;">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="permReorderReport"> يقدر يشوف تقرير "حد الطلب" (الأصناف الناقصة) في لوحة القيادة
+      </label>
+    </div>
     <div id="permissionsBody"></div>
     <div class="form-actions">
       <button class="btn btn-amber" onclick="savePermissions()">حفظ الصلاحيات</button>
@@ -709,6 +801,17 @@ function hasPerm(mod, act){
   if(!p || !p[mod]) return true;
   return p[mod][act] !== false;
 }
+/* ============ PENDING APPROVALS (يحتاج موافقة الأدمن) ============ */
+function needsApproval(user){ return !!(user && user.role!=='admin' && user.needsApproval); }
+function isPendingNote(n){ return !!(n && n.status==='pending'); }
+function getPendingNotes(){ return (STATE.notes||[]).filter(isPendingNote); }
+function updatePendingApprovalsUI(){
+  const row = document.getElementById('pendingApprovalsRow');
+  const el = document.getElementById('pendingApprovalsCount');
+  const isAdmin = !!(currentUser && currentUser.role==='admin');
+  if(row) row.style.display = isAdmin ? '' : 'none';
+  if(el) el.textContent = getPendingNotes().length;
+}
 function applyPermissions(){
   const set = (id, ok)=>{ const el=document.getElementById(id); if(el) el.style.display = ok ? '' : 'none'; };
   set('itemsNavBtn', hasPerm('items','view'));
@@ -849,6 +952,10 @@ function ensureDefaults(){
   if(!STATE.notes) STATE.notes = [];
   if(!STATE.nextNoteSerial) STATE.nextNoteSerial = 1;
   if(!STATE.users) STATE.users = [];
+  if(STATE.users.length && !STATE.users.some(u=>u.isFounder)){
+    const firstAdmin = STATE.users.find(u=>u.role==='admin');
+    if(firstAdmin) firstAdmin.isFounder = true;
+  }
   if(typeof STATE.itemsManuallyOrdered !== 'boolean') STATE.itemsManuallyOrdered = false;
 }
 async function syncTransactionsToDb(db){
@@ -1044,7 +1151,7 @@ async function submitSetup(){
     showToast('تم إعداد حساب المدير من جهاز آخر بالفعل — سجّل الدخول بنفس البيانات اللي أنشأها');
     return;
   }
-  STATE.users = [{username:u, password:p, role:'admin'}];
+  STATE.users = [{username:u, password:p, role:'admin', isFounder:true}];
   const ok = await persist();
   if(!ok){ err.textContent='تعذر الحفظ، تأكد من الاتصال وحاول مرة أخرى'; err.style.display='block'; STATE.users=[]; return; }
   currentUser = STATE.users[0];
@@ -1186,6 +1293,8 @@ function openPermissionsModal(username){
     </div>`;
   });
   document.getElementById('permissionsUserLabel').textContent = 'صلاحيات: ' + username;
+  document.getElementById('permNeedsApproval').checked = !!user.needsApproval;
+  document.getElementById('permReorderReport').checked = !!user.canViewReorderReport;
   document.getElementById('permissionsBody').innerHTML = body;
   wirePermissionCheckboxes();
   document.getElementById('permissionsOverlay').classList.add('active');
@@ -1196,14 +1305,20 @@ async function savePermissions(){
   document.querySelectorAll('#permissionsBody input[type="checkbox"]').forEach(cb=>{
     perms[cb.dataset.mod][cb.dataset.act] = cb.checked;
   });
+  const newNeedsApproval = document.getElementById('permNeedsApproval').checked;
+  const newReorderReport = document.getElementById('permReorderReport').checked;
   await refreshUsersFromServer();
   const user = STATE.users.find(x=>x.username===currentPermUsername);
   if(!user){ closePermissionsModal(); showToast('المستخدم لم يعد موجودًا — جاري تحديث القائمة'); renderUsersList(); return; }
   const old = user.permissions;
+  const oldNeedsApproval = user.needsApproval;
+  const oldReorderReport = user.canViewReorderReport;
   user.permissions = perms;
+  user.needsApproval = newNeedsApproval;
+  user.canViewReorderReport = newReorderReport;
   const ok = await persist();
-  if(ok){ closePermissionsModal(); showToast('تم حفظ الصلاحيات'); if(currentUser && currentUser.username===user.username){ currentUser.permissions = perms; applyPermissions(); } }
-  else { user.permissions = old; showToast('تعذر الحفظ، حاول مرة أخرى'); }
+  if(ok){ closePermissionsModal(); showToast('تم حفظ الصلاحيات'); if(currentUser && currentUser.username===user.username){ currentUser.permissions = perms; currentUser.needsApproval = newNeedsApproval; currentUser.canViewReorderReport = newReorderReport; applyPermissions(); renderDashboard(); } }
+  else { user.permissions = old; user.needsApproval = oldNeedsApproval; user.canViewReorderReport = oldReorderReport; showToast('تعذر الحفظ، حاول مرة أخرى'); }
 }
 async function generateRecoveryCode(){
   if(!currentUser || currentUser.role!=='admin') return;
@@ -1270,6 +1385,138 @@ async function deleteUser(username){
   else { STATE.users.push(target); showToast('تعذر الحفظ، حاول مرة أخرى'); }
 }
 
+/* ============ WIPE RECORDED DATA (أدمن فقط) ============ */
+let pendingWipeOptions = null;
+function wireWipeCheckboxes(){
+  const keepItems = document.getElementById('wipeKeepItems');
+  const keepBalances = document.getElementById('wipeKeepBalances');
+  const keepUsers = document.getElementById('wipeKeepUsers');
+  const deleteFounder = document.getElementById('wipeDeleteFounder');
+  function syncBalances(){
+    if(!keepItems.checked){ keepBalances.checked = false; keepBalances.disabled = true; }
+    else { keepBalances.disabled = false; }
+  }
+  function syncFounder(){
+    if(keepUsers.checked){ deleteFounder.checked = false; deleteFounder.disabled = true; }
+    else { deleteFounder.disabled = false; }
+  }
+  keepItems.onchange = syncBalances;
+  keepUsers.onchange = syncFounder;
+  syncBalances(); syncFounder();
+}
+function openWipeData(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  ['wipeKeepWarehouses','wipeKeepItems','wipeKeepBalances','wipeKeepUsers','wipeDeleteFounder','wipeKeepLog','wipeKeepNotes'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.checked = false;
+  });
+  wireWipeCheckboxes();
+  document.getElementById('wipeDataOverlay').classList.add('active');
+}
+function closeWipeData(){ document.getElementById('wipeDataOverlay').classList.remove('active'); }
+async function requestWipeData(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const opts = {
+    keepWarehouses: document.getElementById('wipeKeepWarehouses').checked,
+    keepItems: document.getElementById('wipeKeepItems').checked,
+    keepBalances: document.getElementById('wipeKeepBalances').checked,
+    keepUsers: document.getElementById('wipeKeepUsers').checked,
+    deleteFounder: document.getElementById('wipeDeleteFounder').checked,
+    keepLog: document.getElementById('wipeKeepLog').checked,
+    keepNotes: document.getElementById('wipeKeepNotes').checked,
+  };
+  const toDelete = [];
+  if(!opts.keepWarehouses) toDelete.push('المخازن (هترجع تلقائيًا للمخزنين الافتراضيين)');
+  if(!opts.keepItems) toDelete.push('كل الأصناف وأرصدتها وباتشاتها');
+  else if(!opts.keepBalances) toDelete.push('أرصدة كل الأصناف (هتترجع صفر، مع بقاء الأصناف والباتشات نفسها)');
+  if(!opts.keepUsers){
+    toDelete.push(opts.deleteFounder
+      ? 'كل المستخدمين بما فيهم حساب المدير المؤسس — وهيرجع التطبيق لشاشة إعداد حساب أدمن جديد'
+      : 'كل المستخدمين ما عدا حساب المدير المؤسس (الحساب الأول) اللي هيفضل موجود');
+  }
+  if(!opts.keepLog) toDelete.push('سجل كل الحركات');
+  if(!opts.keepNotes) toDelete.push('كل الأذونات المحفوظة (إضافة / صرف / تحويل)');
+  if(!toDelete.length){ showToast('كل الأقسام مستثناة من الحذف — مفيش حاجة هتتحذف'); return; }
+  const sure = await customConfirm('هيتم حذف نهائيًا:\n- '+toDelete.join('\n- ')+'\n\nمفيش طريقة للتراجع بعد التنفيذ. متأكد؟');
+  if(!sure) return;
+  pendingWipeOptions = opts;
+  document.getElementById('wipePasswordInput').value = '';
+  document.getElementById('wipePasswordError').style.display = 'none';
+  document.getElementById('wipeDataOverlay').classList.remove('active');
+  document.getElementById('wipePasswordOverlay').classList.add('active');
+  setTimeout(()=>{ const el=document.getElementById('wipePasswordInput'); if(el) el.focus(); }, 60);
+}
+function cancelWipePassword(){
+  document.getElementById('wipePasswordOverlay').classList.remove('active');
+  pendingWipeOptions = null;
+}
+async function confirmWipePassword(){
+  const pass = document.getElementById('wipePasswordInput').value;
+  const errEl = document.getElementById('wipePasswordError');
+  if(!currentUser){ errEl.textContent='لازم تكون مسجل دخول'; errEl.style.display='block'; return; }
+  await refreshUsersFromServer();
+  const freshUser = STATE.users.find(x=>x.username===currentUser.username && x.role==='admin');
+  if(!freshUser || freshUser.password !== pass){
+    errEl.textContent = 'كلمة المرور غير صحيحة';
+    errEl.style.display = 'block';
+    return;
+  }
+  currentUser = freshUser;
+  const opts = pendingWipeOptions;
+  pendingWipeOptions = null;
+  document.getElementById('wipePasswordOverlay').classList.remove('active');
+  await performWipeData(opts);
+}
+async function performWipeData(opts){
+  if(!opts) return;
+  const backup = {
+    warehouses: STATE.warehouses,
+    items: JSON.parse(JSON.stringify(STATE.items)),
+    transactions: STATE.transactions,
+    notes: STATE.notes, nextNoteSerial: STATE.nextNoteSerial, users: STATE.users,
+    recoveryCode: STATE.recoveryCode, itemsManuallyOrdered: STATE.itemsManuallyOrdered
+  };
+  if(!opts.keepWarehouses) STATE.warehouses = {w1:'المخزن الأول', w2:'المخزن الثاني'};
+  if(!opts.keepItems){
+    STATE.items = []; STATE.itemsManuallyOrdered = false;
+  } else if(!opts.keepBalances){
+    STATE.items.forEach(item=>{
+      (item.batches||[]).forEach(b=>{
+        Object.keys(b.balances||{}).forEach(w=>{ b.balances[w] = 0; });
+      });
+    });
+  }
+  if(!opts.keepLog) STATE.transactions = [];
+  if(!opts.keepNotes){ STATE.notes = []; STATE.nextNoteSerial = 1; }
+  let wipingCurrentUser = false;
+  if(!opts.keepUsers){
+    const founder = STATE.users.find(u=>u.isFounder);
+    if(opts.deleteFounder || !founder){
+      STATE.users = [];
+      STATE.recoveryCode = null;
+    } else {
+      STATE.users = [founder];
+    }
+    wipingCurrentUser = !currentUser || !STATE.users.some(u=>u.username===currentUser.username);
+  }
+  const ok = await persist();
+  if(!ok){
+    STATE.warehouses = backup.warehouses; STATE.items = backup.items; STATE.transactions = backup.transactions;
+    STATE.notes = backup.notes; STATE.nextNoteSerial = backup.nextNoteSerial; STATE.users = backup.users;
+    STATE.recoveryCode = backup.recoveryCode; STATE.itemsManuallyOrdered = backup.itemsManuallyOrdered;
+    showToast('تعذر تنفيذ الحذف، حاول مرة أخرى');
+    return;
+  }
+  if(wipingCurrentUser){
+    showToast('تم تنفيذ الحذف — جاري تسجيل الخروج');
+    logout();
+    return;
+  }
+  closeUsersModal();
+  showToast('تم تنفيذ الحذف بنجاح');
+  renderDashboard(); renderItems(); renderLog();
+}
+
+
 function switchView(v){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
@@ -1333,6 +1580,8 @@ function renderDashboard(){
   document.getElementById('statQty').textContent = totalQty.toLocaleString('ar-EG',{maximumFractionDigits:1});
   document.getElementById('statExpired').textContent = expiredCount;
   document.getElementById('statSoon').textContent = soonCount;
+  updateReorderBadge();
+  updatePendingApprovalsUI();
 
   document.getElementById('whStatTabs').innerHTML = warehouseIds().map(id=>`
     <div class="wh-tab"><div class="n">${(whTotals[id]||0).toLocaleString('ar-EG',{maximumFractionDigits:1})}</div><div class="l">${whName(id)}</div></div>
@@ -1352,6 +1601,60 @@ function renderDashboard(){
 
 /* ============ ITEMS LIST ============ */
 function itemTotal(item){ return item.batches.reduce((s,b)=>s+batchTotal(b),0); }
+
+/* ============ REORDER LEVEL (حد الطلب) ============ */
+const DEFAULT_REORDER_LEVEL = 20; // يُستخدم تلقائيًا لو الصنف مالوش حد طلب مخصص
+function hasCustomReorderLevel(item){ return typeof item.reorderLevel==='number' && !isNaN(item.reorderLevel) && item.reorderLevel>0; }
+function effectiveReorderLevel(item){ return hasCustomReorderLevel(item) ? item.reorderLevel : DEFAULT_REORDER_LEVEL; }
+function isLowStock(item){ return itemTotal(item) <= effectiveReorderLevel(item); }
+function getLowStockItems(){
+  return STATE.items
+    .map(item=>({ item, total:itemTotal(item), threshold:effectiveReorderLevel(item), custom:hasCustomReorderLevel(item) }))
+    .filter(r=>r.total<=r.threshold)
+    .sort((a,b)=>a.total-b.total);
+}
+function canViewReorderReport(user){ return !!(user && (user.role==='admin' || user.canViewReorderReport)); }
+function updateReorderBadge(){
+  const row = document.getElementById('reorderReportRow');
+  if(row) row.style.display = canViewReorderReport(currentUser) ? '' : 'none';
+  const el = document.getElementById('reorderCount');
+  if(el) el.textContent = getLowStockItems().length;
+}
+function openReorderReport(){
+  if(!canViewReorderReport(currentUser)) return;
+  renderReorderReportBody();
+  document.getElementById('reorderReportOverlay').classList.add('active');
+}
+function closeReorderReport(){ document.getElementById('reorderReportOverlay').classList.remove('active'); }
+function renderReorderReportBody(){
+  const rows = getLowStockItems();
+  const body = document.getElementById('reorderReportBody');
+  if(!rows.length){
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-soft);padding:20px;">لا توجد أصناف تحت حد الطلب حاليًا 👍</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map((r,i)=>{
+    const statusText = r.total<=0 ? 'نفد من المخزن' : 'وصل لحد الطلب';
+    const statusClass = r.total<=0 ? 'danger' : 'warn';
+    const thresholdText = r.threshold.toLocaleString('ar-EG',{maximumFractionDigits:2}) + (r.custom ? '' : ' (افتراضي)');
+    return `<tr onclick="closeReorderReport();openItemModal('${r.item.id}')" style="cursor:pointer;">
+      <td>${i+1}</td><td>${r.item.name}</td>
+      <td>${r.total.toLocaleString('ar-EG',{maximumFractionDigits:2})}</td>
+      <td>${thresholdText}</td>
+      <td><span class="badge ${statusClass}">${statusText}</span></td>
+    </tr>`;
+  }).join('');
+}
+function buildReorderReportPrintHtml(){
+  const rows = getLowStockItems();
+  const head = '<tr><th>م</th><th>اسم الصنف</th><th>الرصيد الحالي</th><th>حد الطلب</th><th>الحالة</th></tr>';
+  const body = rows.map((r,i)=>{
+    const statusText = r.total<=0 ? 'نفد من المخزن' : 'وصل لحد الطلب';
+    const thresholdText = r.threshold + (r.custom ? '' : ' (افتراضي)');
+    return `<tr><td>${i+1}</td><td>${r.item.name}</td><td>${r.total}</td><td>${thresholdText}</td><td>${statusText}</td></tr>`;
+  }).join('') || '<tr><td colspan="5">لا توجد أصناف تحت حد الطلب</td></tr>';
+  return `<h2>تقرير أصناف تحت حد الطلب</h2><br><table class="note-table">${head}${body}</table>`;
+}
 
 let reorderMode = false;
 let draggedItemId = null;
@@ -1422,6 +1725,7 @@ function openNewItemForm(){
   niImageData = null;
   document.getElementById('niImgFile').value='';
   document.getElementById('niImgPreview').style.display='none';
+  document.getElementById('niReorderLevel').value='';
   document.getElementById('newItemPanel').classList.add('active');
 }
 function closeNewItemForm(){ document.getElementById('newItemPanel').classList.remove('active'); }
@@ -1440,16 +1744,20 @@ async function submitNewItem(){
   const name = document.getElementById('niName').value.trim();
   const pkg = document.getElementById('niPackaging').value.trim();
   if(!name){ showToast('اكتب اسم الصنف'); return; }
+  const rlRaw = document.getElementById('niReorderLevel').value.trim();
+  const rlNum = rlRaw ? parseFloat(rlRaw) : NaN;
+  const reorderLevel = (!isNaN(rlNum) && rlNum>0) ? rlNum : null;
   const id = name.replace(/\s+/g,'-').slice(0,30)+'-'+Date.now();
   const balances = {}; warehouseIds().forEach(w=>balances[w]=0);
   const newItem = { id, name, batches: pkg ? [{id:id+'-b1', packaging:pkg, expiry:null, balances}] : [] };
   if(niImageData) newItem.image = niImageData;
+  if(reorderLevel!==null) newItem.reorderLevel = reorderLevel;
   STATE.items.push(newItem);
   const tx = logTx({itemId:id, itemName:name, type:'item_create', qty:'', location: pkg ? ('تعبئة: '+pkg) : 'بدون تعبئة ابتدائية'});
   const ok = await persist();
   if(ok){
     closeNewItemForm();
-    ['niName','niPackaging'].forEach(i=>document.getElementById(i).value='');
+    ['niName','niPackaging','niReorderLevel'].forEach(i=>document.getElementById(i).value='');
     niImageData = null;
     document.getElementById('niImgFile').value='';
     document.getElementById('niImgPreview').style.display='none';
@@ -1501,6 +1809,7 @@ let editItemBatchesRemoved = new Set();
 function openEditItem(){
   const item = STATE.items.find(i=>i.id===currentItemId);
   document.getElementById('editItemName').value = item.name;
+  document.getElementById('editItemReorderLevel').value = hasCustomReorderLevel(item) ? item.reorderLevel : '';
   editItemImageData = undefined;
   editItemBatchesRemoved = new Set();
   document.getElementById('editItemImgFile').value='';
@@ -1550,11 +1859,17 @@ async function saveEditItem(){
   if(!newName){ showToast('اكتب اسم الصنف'); return; }
 
   const oldName = item.name;
+  const hadReorderLevel = 'reorderLevel' in item;
+  const oldReorderLevel = item.reorderLevel;
   const hadImage = 'image' in item;
   const oldImage = item.image;
   const oldBatches = item.batches.map(b=>({...b, balances:{...b.balances}}));
 
   item.name = newName;
+  const rlRaw = document.getElementById('editItemReorderLevel').value.trim();
+  const rlNum = rlRaw ? parseFloat(rlRaw) : NaN;
+  if(!isNaN(rlNum) && rlNum>0) item.reorderLevel = rlNum;
+  else delete item.reorderLevel;
   if(editItemImageData === null) delete item.image;
   else if(typeof editItemImageData === 'string') item.image = editItemImageData;
 
@@ -1575,6 +1890,7 @@ async function saveEditItem(){
     showToast('تم حفظ التعديلات');
   } else {
     item.name = oldName;
+    if(hadReorderLevel) item.reorderLevel = oldReorderLevel; else delete item.reorderLevel;
     if(hadImage) item.image = oldImage; else delete item.image;
     item.batches = oldBatches;
     removeTx(tx.id);
@@ -1611,11 +1927,11 @@ function logTx(tx){
 }
 function removeTx(id){ STATE.transactions = STATE.transactions.filter(t=>t.id!==id); }
 function fmtTime(iso){ return new Date(iso).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}); }
-const TX_LABEL = {in:'دخول', out:'صرف', transfer:'نقل', opening:'أرصدة بداية المدة', item_create:'إنشاء صنف', item_edit:'تعديل صنف', item_delete:'حذف صنف', wh_create:'إنشاء مخزن', wh_edit:'تعديل مخزن', wh_delete:'حذف مخزن', note_delete:'حذف إذن'};
+const TX_LABEL = {in:'دخول', out:'صرف', transfer:'نقل', opening:'أرصدة بداية المدة', item_create:'إنشاء صنف', item_edit:'تعديل صنف', item_delete:'حذف صنف', wh_create:'إنشاء مخزن', wh_edit:'تعديل مخزن', wh_delete:'حذف مخزن', note_delete:'حذف إذن', note_reject:'رفض إذن'};
 const LOG_GROUP_TYPES = {
   create: ['item_create','wh_create'],
   edit: ['item_edit','wh_edit'],
-  delete: ['item_delete','wh_delete','note_delete'],
+  delete: ['item_delete','wh_delete','note_delete','note_reject'],
 };
 
 let currentHistoryItemId = null;
@@ -1784,9 +2100,15 @@ function closeBulkIn(){
 }
 function updateEditingBanner(which){
   const ids = {bi:'biEditingBanner', bo:'boEditingBanner', op:'opEditingBanner', tr:'trEditingBanner'};
+  const btnIds = {bi:'bulkInCommitBtn', bo:'bulkOutCommitBtn', tr:'transferCommitBtn'};
   const el = document.getElementById(ids[which]);
+  const btn = document.getElementById(btnIds[which]);
+  const approving = !!(editingNoteMeta && editingNoteMeta.approving);
+  if(btn) btn.textContent = approving ? '✔ تأكيد وموافقة' : 'تأكيد وحفظ';
   if(!el) return;
-  el.innerHTML = editingNoteMeta ? `<div class="warn-box">تعديل الإذن المحفوظ رقم ${editingNoteMeta.serial} — اضغط "تأكيد وحفظ" لإتمام التعديل، أو أغلق النافذة للتراجع.</div>` : '';
+  el.innerHTML = approving
+    ? `<div class="warn-box">⏳ جاري مراجعة الإذن المعلّق رقم ${editingNoteMeta.serial} — عدّل لو محتاج ثم اضغط "تأكيد وموافقة" لاعتماده وتنفيذه على المخزون، أو أغلق النافذة لإرجاعه لقائمة الانتظار.</div>`
+    : (editingNoteMeta ? `<div class="warn-box">تعديل الإذن المحفوظ رقم ${editingNoteMeta.serial} — اضغط "تأكيد وحفظ" لإتمام التعديل، أو أغلق النافذة للتراجع.</div>` : '');
 }
 function addBulkInRow(){
   const itemId = document.getElementById('biItem').value;
@@ -1835,8 +2157,31 @@ async function commitBulkIn(){
   if(!bulkInRows.length){ showToast('الجدول فاضي'); return; }
   const supplier = document.getElementById('biSupplierName').value.trim();
   const recipient = document.getElementById('biRecipientName').value.trim();
-  const appliedAllocations = []; const txIds = [];
   const serial = editingNoteMeta ? editingNoteMeta.serial : STATE.nextNoteSerial++;
+  const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
+
+  if(!isApproving && needsApproval(currentUser)){
+    const note = {
+      id: editingNoteMeta ? editingNoteMeta.id : ('note-'+Date.now()),
+      serial, type:'in', status:'pending',
+      createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      user: userName || 'غير معروف',
+      supplier, recipient,
+      rows: bulkInRows.map(r=>({...r})),
+      appliedAllocations: [], txIds: []
+    };
+    STATE.notes.unshift(note);
+    editingNoteMeta = null; editingNoteBackup = null;
+    const ok = await persist();
+    if(ok){ showToast('تم حفظ إذن الإضافة رقم '+serial+' — بانتظار موافقة الأدمن'); renderBulkInTable(); }
+    else { STATE.notes = STATE.notes.filter(n=>n.id!==note.id); showToast('تعذر الحفظ، حاول مرة أخرى'); }
+    updateEditingBanner('bi');
+    renderDashboard(); renderItems();
+    return;
+  }
+
+  const appliedAllocations = []; const txIds = [];
   bulkInRows.forEach(r=>{
     const item = STATE.items.find(i=>i.id===r.itemId);
     if(!item) return;
@@ -1852,17 +2197,18 @@ async function commitBulkIn(){
     serial, type:'in',
     createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    user: userName || 'غير معروف',
+    user: isApproving ? ((editingNoteBackup && editingNoteBackup.user) || 'غير معروف') : (userName || 'غير معروف'),
     supplier, recipient,
     rows: bulkInRows.map(r=>({...r})),
     appliedAllocations, txIds
   };
+  if(isApproving){ note.approvedBy = userName || 'غير معروف'; note.approvedAt = new Date().toISOString(); }
   STATE.notes.unshift(note);
   const wasEditing = editingNoteMeta;
   editingNoteMeta = null; editingNoteBackup = null;
   const ok = await persist();
   if(ok){
-    showToast('تم تأكيد وحفظ إذن الإضافة رقم '+serial);
+    showToast(isApproving ? ('تم اعتماد وتنفيذ إذن الإضافة رقم '+serial) : ('تم تأكيد وحفظ إذن الإضافة رقم '+serial));
     renderBulkInTable();
   } else {
     appliedAllocations.forEach(a=>{
@@ -1953,9 +2299,32 @@ async function commitBulkOut(){
   if(!bulkOutRows.length){ showToast('الجدول فاضي'); return; }
   const location = document.getElementById('boLocationName').value.trim();
   const recipient = document.getElementById('boRecipientName').value.trim();
+  const serial = editingNoteMeta ? editingNoteMeta.serial : STATE.nextNoteSerial++;
+  const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
+
+  if(!isApproving && needsApproval(currentUser)){
+    const note = {
+      id: editingNoteMeta ? editingNoteMeta.id : ('note-'+Date.now()),
+      serial, type:'out', status:'pending',
+      createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      user: userName || 'غير معروف',
+      location, recipient,
+      rows: bulkOutRows.map(r=>({...r})),
+      appliedAllocations: [], txIds: []
+    };
+    STATE.notes.unshift(note);
+    editingNoteMeta = null; editingNoteBackup = null;
+    const ok = await persist();
+    if(ok){ showToast('تم حفظ إذن الصرف رقم '+serial+' — بانتظار موافقة الأدمن'); renderBulkOutTable(); }
+    else { STATE.notes = STATE.notes.filter(n=>n.id!==note.id); showToast('تعذر الحفظ، حاول مرة أخرى'); }
+    updateEditingBanner('bo');
+    renderDashboard(); renderItems();
+    return;
+  }
+
   let anyShort=false;
   const appliedAllocations=[]; const txIds=[];
-  const serial = editingNoteMeta ? editingNoteMeta.serial : STATE.nextNoteSerial++;
   bulkOutRows.forEach(r=>{
     const item = STATE.items.find(i=>i.id===r.itemId);
     if(!item) return;
@@ -1970,17 +2339,19 @@ async function commitBulkOut(){
     serial, type:'out',
     createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    user: userName || 'غير معروف',
+    user: isApproving ? ((editingNoteBackup && editingNoteBackup.user) || 'غير معروف') : (userName || 'غير معروف'),
     location, recipient,
     rows: bulkOutRows.map(r=>({...r})),
     appliedAllocations, txIds
   };
+  if(isApproving){ note.approvedBy = userName || 'غير معروف'; note.approvedAt = new Date().toISOString(); }
   STATE.notes.unshift(note);
   const wasEditing = editingNoteMeta;
   editingNoteMeta = null; editingNoteBackup = null;
   const ok = await persist();
   if(ok){
-    showToast(anyShort ? ('تم التأكيد والحفظ (رقم '+serial+') — بعض الأصناف لم يكتمل صرفها بالكامل لنقص الرصيد') : ('تم تأكيد وحفظ إذن الصرف رقم '+serial));
+    const base = isApproving ? ('تم اعتماد وتنفيذ إذن الصرف رقم '+serial) : ('تم تأكيد وحفظ إذن الصرف رقم '+serial);
+    showToast(anyShort ? (base+' — بعض الأصناف لم يكتمل صرفها بالكامل لنقص الرصيد') : base);
     renderBulkOutTable();
   } else {
     appliedAllocations.forEach(a=>{
@@ -2056,6 +2427,72 @@ async function deleteSavedNote(id){
   renderDashboard(); renderItems();
   showToast('تم حذف الإذن رقم '+note.serial+' وعكس تأثيره على المخزون');
 }
+
+/* ============ PENDING APPROVALS UI ============ */
+function openPendingApprovals(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  renderPendingApprovalsList();
+  document.getElementById('pendingApprovalsOverlay').classList.add('active');
+}
+function closePendingApprovals(){ document.getElementById('pendingApprovalsOverlay').classList.remove('active'); }
+function renderPendingApprovalsList(){
+  const list = [...getPendingNotes()].sort((a,b)=> new Date(a.createdAt)-new Date(b.createdAt));
+  const el = document.getElementById('pendingApprovalsList');
+  if(!list.length){ el.innerHTML = '<div class="empty-note">لا توجد أذونات معلّقة حاليًا 👍</div>'; return; }
+  const typeLabel = {in:'إذن إضافة', out:'إذن صرف', transfer:'إذن نقل'};
+  el.innerHTML = list.map(n=>{
+    const total = n.rows.reduce((s,r)=>s+(r.qty||0),0);
+    return `<div class="wh-row" style="align-items:flex-start;flex-wrap:wrap;gap:10px;">
+      <div>
+        <span class="wname">${typeLabel[n.type]||n.type} رقم ${n.serial} <span class="pill warn">قيد المراجعة</span></span>
+        <div class="item-meta">بواسطة: ${n.user} · ${fmtTime(n.createdAt)} · ${n.rows.length} صنف · إجمالي ${total.toLocaleString('ar-EG',{maximumFractionDigits:1})}</div>
+      </div>
+      <div class="wactions">
+        <button class="btn btn-teal btn-sm" onclick="openApprovalNote('${n.id}')">✎ مراجعة واعتماد</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectPendingNote('${n.id}')">✕ رفض</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function openApprovalNote(id){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const note = STATE.notes.find(n=>n.id===id && n.status==='pending');
+  if(!note) return;
+  STATE.notes = STATE.notes.filter(n=>n.id!==id);
+  editingNoteBackup = note;
+  editingNoteMeta = {id:note.id, serial:note.serial, createdAt:note.createdAt, type:note.type, approving:true};
+  const ok = await persist();
+  if(!ok){
+    STATE.notes.unshift(note);
+    editingNoteBackup = null; editingNoteMeta = null;
+    showToast('تعذر فتح الإذن للمراجعة، حاول مرة أخرى');
+    return;
+  }
+  closePendingApprovals();
+  if(note.type==='in'){ bulkInRows = note.rows.map(r=>({...r})); openBulkIn(); }
+  else if(note.type==='out'){ bulkOutRows = note.rows.map(r=>({...r})); openBulkOut(); }
+  else if(note.type==='transfer'){ transferRows = note.rows.map(r=>({...r})); openTransferModal(); }
+  renderDashboard(); renderItems();
+  showToast('جاري مراجعة الإذن رقم '+note.serial+' — عدّل لو محتاج ثم اضغط "تأكيد وموافقة"');
+}
+async function rejectPendingNote(id){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const note = STATE.notes.find(n=>n.id===id && n.status==='pending');
+  if(!note) return;
+  if(!(await customConfirm('رفض الإذن رقم '+note.serial+'؟ لن يتم تنفيذه ولن يؤثر على المخزون، ولا يمكن التراجع عن الرفض.'))) return;
+  STATE.notes = STATE.notes.filter(n=>n.id!==id);
+  const typeLabel = {in:'إذن إضافة', out:'إذن صرف', transfer:'إذن نقل'};
+  logTx({itemId:null, itemName:(typeLabel[note.type]||note.type)+' رقم '+note.serial, type:'note_reject', qty:'', location:'تم رفض الإذن بواسطة '+(userName||'الأدمن')+' — مقدّم الطلب: '+(note.user||'')});
+  const ok = await persist();
+  if(ok){
+    showToast('تم رفض الإذن رقم '+note.serial);
+    renderPendingApprovalsList();
+    renderDashboard();
+  } else {
+    STATE.notes.unshift(note);
+    showToast('تعذر الرفض، حاول مرة أخرى');
+  }
+}
 function buildNoteRowsTableHtml(type, rows){
   if(type==='in'){
     const head = '<tr><th>م</th><th>اسم الصنف</th><th>نوع التعبئة</th><th>الكمية</th><th>تاريخ الصلاحية</th><th>المخزن</th></tr>';
@@ -2090,6 +2527,7 @@ function buildSavedNotePrintHtml(id){
   let extraLine = '';
   if(note.type==='in' && note.supplier) extraLine = `<div>المورد: ${note.supplier}</div>`;
   if(note.type==='out' && note.location) extraLine = `<div>المكان / العميل: ${note.location}</div>`;
+  if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>تمت الموافقة بواسطة: ${note.approvedBy} — ${appDate}</div>`; }
   const recipientLine = buildRecipientLineHtml(note.recipient);
   return `<h2>${title}</h2><div>التاريخ: ${dateStr}</div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows)}${recipientLine}`;
 }
@@ -2106,7 +2544,7 @@ function openSavedNotes(type){
 function closeSavedNotes(){ document.getElementById('notesOverlay').classList.remove('active'); }
 function renderSavedNotesList(){
   const el = document.getElementById('notesList');
-  let list = STATE.notes;
+  let list = STATE.notes.filter(n=>n.status!=='pending');
   if(notesFilterType) list = list.filter(n=>n.type===notesFilterType);
   const sorted = [...list].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
   if(!sorted.length){ el.innerHTML = '<div class="empty-note">لا توجد أذون محفوظة بعد</div>'; return; }
@@ -2137,35 +2575,13 @@ function previewPrint(html){
   document.getElementById('previewOverlay').classList.add('active');
 }
 function closePreview(){ document.getElementById('previewOverlay').classList.remove('active'); }
-function buildStandalonePrintDoc(innerHtml){
-  return `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>طباعة</title>
-  <style>
-    body{font-family:Tahoma, Arial, sans-serif; padding:30px; color:#161616; background:#fff;}
-    h2{font-size:20px; margin:0 0 10px; font-weight:800;}
-    table{width:100%; border-collapse:collapse; margin-top:16px;}
-    th{background:#F0F0F0;border:1px solid #999;padding:8px;font-size:13px;text-align:right;}
-    td{border:1px solid #BBB;padding:8px;font-size:13px;}
-    div{font-size:13px;color:#333;margin-bottom:4px;}
-    @page{size:A4 portrait;margin:15mm;}
-  </style></head><body>${innerHtml}
-  <` + `script>window.onload=function(){ try{ window.print(); }catch(e){} };<` + `/script>
-  </body></html>`;
-}
 function doPrint(html){
   document.getElementById('printArea').innerHTML = html;
-  try{ window.print(); }catch(e){ console.error('inline print failed', e); }
   try{
-    const doc = buildStandalonePrintDoc(html);
-    const blob = new Blob([doc], {type:'text/html'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'طباعة-'+Date.now()+'.html';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url), 8000);
-    showToast('تم تحميل ملف الطباعة — افتحه من التنزيلات وسيفتح فورًا نافذة الطباعة، أو اضغط Ctrl+P');
+    window.print();
   }catch(e){
-    console.error('download fallback failed', e);
-    showToast('⚠️ تعذرت الطباعة في هذه المعاينة — افتح رابط التطبيق المنشور في تبويب مستقل وحاول من هناك');
+    console.error('print failed', e);
+    showToast('⚠️ تعذرت الطباعة — جرّب افتح رابط الموقع في تبويب مستقل وحاول تاني');
   }
 }
 function buildBulkPrintHtml(which){
@@ -2364,8 +2780,31 @@ function printTransferAndClear(){
 async function commitTransfer(){
   if(!transferRows.length){ showToast('الجدول فاضي'); return; }
   const recipient = document.getElementById('trRecipientName').value.trim();
-  const appliedAllocations = []; const txIds = [];
   const serial = editingNoteMeta ? editingNoteMeta.serial : STATE.nextNoteSerial++;
+  const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
+
+  if(!isApproving && needsApproval(currentUser)){
+    const note = {
+      id: editingNoteMeta ? editingNoteMeta.id : ('note-'+Date.now()),
+      serial, type:'transfer', status:'pending',
+      createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      user: userName || 'غير معروف',
+      recipient,
+      rows: transferRows.map(r=>({...r})),
+      appliedAllocations: [], txIds: []
+    };
+    STATE.notes.unshift(note);
+    editingNoteMeta = null; editingNoteBackup = null;
+    const ok = await persist();
+    if(ok){ showToast('تم حفظ إذن النقل رقم '+serial+' — بانتظار موافقة الأدمن'); renderTransferTable(); }
+    else { STATE.notes = STATE.notes.filter(n=>n.id!==note.id); showToast('تعذر الحفظ، حاول مرة أخرى'); }
+    updateEditingBanner('tr');
+    renderDashboard(); renderItems();
+    return;
+  }
+
+  const appliedAllocations = []; const txIds = [];
   let anyShort = false;
   transferRows.forEach(r=>{
     const item = STATE.items.find(i=>i.id===r.itemId);
@@ -2389,17 +2828,19 @@ async function commitTransfer(){
     serial, type:'transfer',
     createdAt: editingNoteMeta ? editingNoteMeta.createdAt : new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    user: userName || 'غير معروف',
+    user: isApproving ? ((editingNoteBackup && editingNoteBackup.user) || 'غير معروف') : (userName || 'غير معروف'),
     recipient,
     rows: transferRows.map(r=>({...r})),
     appliedAllocations, txIds
   };
+  if(isApproving){ note.approvedBy = userName || 'غير معروف'; note.approvedAt = new Date().toISOString(); }
   STATE.notes.unshift(note);
   const wasEditing = editingNoteMeta;
   editingNoteMeta = null; editingNoteBackup = null;
   const ok = await persist();
   if(ok){
-    showToast(anyShort ? ('تم التأكيد والحفظ (رقم '+serial+') — بعض الكميات لم تكتمل لنقص الرصيد') : ('تم تأكيد وحفظ إذن النقل رقم '+serial));
+    const base = isApproving ? ('تم اعتماد وتنفيذ إذن النقل رقم '+serial) : ('تم تأكيد وحفظ إذن النقل رقم '+serial);
+    showToast(anyShort ? (base+' — بعض الكميات لم تكتمل لنقص الرصيد') : base);
     renderTransferTable();
   } else {
     appliedAllocations.forEach(a=>{
