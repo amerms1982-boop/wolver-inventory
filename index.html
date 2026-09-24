@@ -14,6 +14,8 @@
     --success:#1F8A4C; --success-dark:#146334; --success-rgb:31,138,76; --success-ink:#fff;
     --indigo:#2C4A8C; --indigo-dark:#123061; --indigo-rgb:44,74,140; --indigo-ink:#fff;
     --topbar-accent:#CC1430;
+    --nav-active:#CC1430; --nav-active-ink:#fff;
+    --quick-hover:#CC1430; --quick-hover-dark:#970F22;
     --amber:#C4792A; --amber-dark:#9C5E1E;
     --safe:#3E7A5B; --safe-bg:#E7F1EA; --warn:#C4792A; --warn-bg:#F8EBDA;
     --danger:#AE4430; --danger-bg:#F7E6E1; --dead:#8A8072; --dead-bg:#EDE8DC;
@@ -51,11 +53,11 @@
 
   .quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
   .quick-actions button{background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%);border:1.5px solid var(--line);border-radius:10px;padding:9px 14px;font-family:'Cairo';font-weight:700;font-size:12.5px;cursor:pointer;color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.15);transition:all .15s;}
-  .quick-actions button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(30,20,10,.1);border-color:var(--brand);color:var(--brand-dark);}
+  .quick-actions button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(30,20,10,.1);border-color:var(--quick-hover);color:var(--quick-hover-dark);}
 
   .nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
   .nav button{background:rgba(255,255,255,.82);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%);color:var(--ink-soft);padding:10px 18px;border-radius:999px;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;border:1.5px solid var(--line);transition:all .15s;box-shadow:0 6px 18px rgba(0,0,0,.15);}
-  .nav button.active{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);}
+  .nav button.active{background:var(--nav-active);color:var(--nav-active-ink);border-color:var(--nav-active);}
   .nav button:hover:not(.active){background:var(--canvas);border-color:#C8CCD2;color:var(--ink);}
 
   .view{display:none;} .view.active{display:block;}
@@ -1230,6 +1232,8 @@ const I18N = {
     brandingRoleTeal: `أذون الإضافة والصرف، وإضافة مخزن جديد`,
     brandingRoleIndigo: `التحويل بين المخازن`,
     brandingRoleTopbarAccent: `الشريط اللوني أسفل الهيدر`,
+    brandingRoleNavActive: `لون التبويب المختار (لوحة القيادة، الأصناف، سجل الحركات)`,
+    brandingRoleQuickHover: `لون إطار الأزرار عند المرور بالماوس (المخازن، إذن إضافة...)`,
     brandingResetFieldBtn: `استرجاع الافتراضي`,
     brandingResetAllBtn: `استرجاع كل الهوية للافتراضي`,
     brandingAppNameHeading: `اسم التطبيق (يظهر في تبويب المتصفح)`,
@@ -1597,6 +1601,8 @@ This cannot be undone once executed. Are you sure?`,
     brandingRoleTeal: `Stock-in/out vouchers, and adding a new warehouse`,
     brandingRoleIndigo: `Transfer between warehouses`,
     brandingRoleTopbarAccent: `Header accent strip`,
+    brandingRoleNavActive: `Selected tab color (Dashboard, Items, Log)`,
+    brandingRoleQuickHover: `Button border color on hover (Warehouses, Add voucher...)`,
     brandingResetFieldBtn: `Reset to default`,
     brandingResetAllBtn: `Reset entire branding to default`,
     brandingAppNameHeading: `App name (shown in the browser tab)`,
@@ -1705,7 +1711,9 @@ const BRANDING_COLOR_ROLES = [
   { key:'success', cssVar:'--success', cssDarkVar:'--success-dark', cssRgbVar:'--success-rgb', cssInkVar:'--success-ink', btnClass:'btn-amber',  labelKey:'brandingRoleSuccess', sampleKey:'add' },
   { key:'teal',    cssVar:'--blue',    cssDarkVar:'--blue-dark',    cssRgbVar:'--blue-rgb',    cssInkVar:'--blue-ink',    btnClass:'btn-teal',   labelKey:'brandingRoleTeal',    sampleKey:'inNotes' },
   { key:'indigo',  cssVar:'--indigo',  cssDarkVar:'--indigo-dark',  cssRgbVar:'--indigo-rgb',  cssInkVar:'--indigo-ink',  btnClass:'btn-indigo', labelKey:'brandingRoleIndigo',  sampleKey:'transferBetweenWh' },
-  { key:'topbarAccent', cssVar:'--topbar-accent', cssDarkVar:null, cssRgbVar:null, cssInkVar:null, isSwatch:true, labelKey:'brandingRoleTopbarAccent' }
+  { key:'topbarAccent', cssVar:'--topbar-accent', cssDarkVar:null, cssRgbVar:null, cssInkVar:null, isSwatch:true, labelKey:'brandingRoleTopbarAccent' },
+  { key:'navActive', cssVar:'--nav-active', cssDarkVar:null, cssRgbVar:null, cssInkVar:'--nav-active-ink', isSwatch:true, labelKey:'brandingRoleNavActive' },
+  { key:'quickHover', cssVar:'--quick-hover', cssDarkVar:'--quick-hover-dark', cssRgbVar:null, cssInkVar:null, isSwatch:true, labelKey:'brandingRoleQuickHover' }
 ];
 function captureDefaultBranding(){
   if(DEFAULT_BRANDING) return;
