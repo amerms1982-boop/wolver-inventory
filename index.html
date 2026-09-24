@@ -257,7 +257,7 @@
         <svg class="lang-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span class="lang-toggle-label">ENG</span>
       </button>
-      <div class="user-chip">👤 <span id="currentUserLabel">-</span></div>
+      <div class="user-chip"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span id="currentUserLabel">-</span></div>
       <button class="icon-btn" onclick="logout()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> <span data-i18n="logout">خروج</span></button>
     </div>
   </div>
@@ -271,9 +271,9 @@
   </div>
 
   <div class="nav">
-    <button class="active" data-view="dashboard" onclick="switchView('dashboard')" data-i18n="dashboard">لوحة القيادة</button>
-    <button id="itemsNavBtn" data-view="items" onclick="switchView('items')" data-i18n="items">الأصناف</button>
-    <button id="logNavBtn" data-view="log" onclick="switchView('log')" data-i18n="log">سجل الحركات</button>
+    <button class="active" data-view="dashboard" onclick="switchView('dashboard')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> <span data-i18n="dashboard">لوحة القيادة</span></button>
+    <button id="itemsNavBtn" data-view="items" onclick="switchView('items')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.41l8.83 8.83a2 2 0 0 0 2.82 0l7.17-7.17a2 2 0 0 0 0-2.82z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg> <span data-i18n="items">الأصناف</span></button>
+    <button id="logNavBtn" data-view="log" onclick="switchView('log')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg> <span data-i18n="log">سجل الحركات</span></button>
   </div>
 
   <div class="view active" id="view-dashboard">
