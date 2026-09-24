@@ -81,6 +81,11 @@
   .btn-ghost:hover{border-color:var(--brand);color:var(--brand-dark);background:#FDF3F4;}
   .btn-ghost.active-reorder{background:var(--brand);color:#fff;border-color:var(--brand);}
   .btn-danger{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;letter-spacing:.2px;} .btn-sm{padding:7px 12px;font-size:12.5px;}
+  /* Native <input type=file> renders its "Choose file"/"No file chosen" text in the browser's
+     own locale, which our language toggle can't control. Hide it and trigger it from a styled
+     <label for=...> whose text we do control via data-i18n. */
+  .file-input-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+  label.file-picker-btn{display:inline-flex;align-items:center;cursor:pointer;}
   .btn:hover{filter:brightness(1.08);}
 
   .alert-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.14);}
@@ -297,7 +302,8 @@
           <label data-i18n="itemImageOptionalLabel">صورة الصنف (اختياري)</label>
           <div style="display:flex;align-items:center;gap:12px;">
             <img id="niImgPreview" class="zoomable" onclick="openImageZoom(this.src)" style="width:56px;height:56px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fff;display:none;">
-            <input type="file" id="niImgFile" accept="image/*" onchange="onNiImgSelected(event)">
+            <input type="file" id="niImgFile" class="file-input-hidden" accept="image/*" onchange="onNiImgSelected(event)">
+            <label for="niImgFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
           </div>
         </div>
       </div>
@@ -386,7 +392,8 @@
         <label data-i18n="itemImageLabel">صورة الصنف</label>
         <div style="display:flex;align-items:center;gap:12px;">
           <img id="editItemImgPreview" class="zoomable" onclick="openImageZoom(this.src)" style="width:110px;height:110px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fff;display:none;">
-          <input type="file" id="editItemImgFile" accept="image/*" onchange="onEditItemImgSelected(event)">
+          <input type="file" id="editItemImgFile" class="file-input-hidden" accept="image/*" onchange="onEditItemImgSelected(event)">
+          <label for="editItemImgFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
           <button class="btn btn-ghost btn-sm" onclick="removeEditItemImg()" data-i18n="removeImageBtn">إزالة الصورة</button>
         </div>
       </div>
@@ -961,6 +968,7 @@ const I18N = {
     printBtn: `طباعة`,
     editItemHeading: `تعديل الصنف`,
     removeImageBtn: `إزالة الصورة`,
+    chooseImageBtn: `اختر صورة`,
     batchesDataHeading: `بيانات الباتشات (التعبئة وتاريخ الصلاحية)`,
     saveChangesBtn: `حفظ التعديلات`,
     lowStockItemsHeading: `📦 أصناف وصلت لحد الطلب`,
@@ -1305,6 +1313,7 @@ const I18N = {
     printBtn: `Print`,
     editItemHeading: `Edit Item`,
     removeImageBtn: `Remove Image`,
+    chooseImageBtn: `Choose Image`,
     batchesDataHeading: `Batch Data (packaging & expiry date)`,
     saveChangesBtn: `Save Changes`,
     lowStockItemsHeading: `📦 Items at Reorder Level`,
