@@ -13,6 +13,7 @@
     --blue:#1E4FA3; --blue-dark:#123061; --blue-rgb:30,79,163; --blue-ink:#fff; --blue-soft:rgba(var(--blue-rgb),.09);
     --success:#1F8A4C; --success-dark:#146334; --success-rgb:31,138,76; --success-ink:#fff;
     --indigo:#2C4A8C; --indigo-dark:#123061; --indigo-rgb:44,74,140; --indigo-ink:#fff;
+    --topbar-accent:#CC1430;
     --amber:#C4792A; --amber-dark:#9C5E1E;
     --safe:#3E7A5B; --safe-bg:#E7F1EA; --warn:#C4792A; --warn-bg:#F8EBDA;
     --danger:#AE4430; --danger-bg:#F7E6E1; --dead:#8A8072; --dead-bg:#EDE8DC;
@@ -27,15 +28,17 @@
   h1,h2,h3,.display{font-family:'Cairo', sans-serif; font-weight:800; letter-spacing:.2px;}
   .app{max-width:1180px;margin:0 auto;padding:20px 20px 80px;}
 
-  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border-radius:var(--radius);color:var(--ink);margin-bottom:14px;flex-wrap:wrap;border-bottom:4px solid var(--brand);box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border-radius:var(--radius);color:var(--ink);margin-bottom:14px;flex-wrap:wrap;border-bottom:4px solid var(--topbar-accent);box-shadow:0 10px 30px rgba(0,0,0,.25);}
   .brand{display:flex;align-items:center;gap:12px;}
   .wordmark{height:34px;max-width:160px;width:auto;object-fit:contain;flex:none;}
   @media(max-width:480px){.wordmark{height:26px;}}
   .brand-text .t2{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:2px;text-shadow:0 1px 2px rgba(255,255,255,.7);}
   .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .icon-btn{background:color-mix(in srgb, var(--brand) 6%, white);border:1.5px solid rgba(var(--brand-rgb),.22);color:var(--brand-dark);border-radius:999px;padding:7.5px 14px;font-family:'Cairo';font-weight:700;font-size:12.5px;cursor:pointer;transition:all .15s;}
+  .icon-btn{background:var(--surface);border:1.5px solid var(--line);color:var(--ink);border-radius:999px;padding:7.5px 14px;font-family:'Cairo';font-weight:700;font-size:12.5px;cursor:pointer;transition:all .15s;}
   .btn-ico{width:15px;height:15px;vertical-align:-3px;margin-inline-end:5px;}
-  .icon-btn:hover{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);}
+  .icon-btn:hover{background:var(--canvas);color:var(--ink);border-color:#C8CCD2;}
+  .icon-btn.icon-only{padding:8px;line-height:0;}
+  .icon-btn.icon-only .btn-ico{margin-inline-end:0;width:17px;height:17px;}
   .lang-toggle-btn{display:inline-flex;align-items:center;gap:5px;min-width:58px;justify-content:center;letter-spacing:.4px;}
   .lang-toggle-btn .lang-ico{width:13px;height:13px;flex:none;}
   .pw-wrap{position:relative;}
@@ -83,7 +86,7 @@
   .btn-amber{background:linear-gradient(135deg,var(--success),var(--success-dark));color:var(--success-ink);letter-spacing:.2px;}
   .btn-teal{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:var(--blue-ink);letter-spacing:.2px;}
   .btn-indigo{background:linear-gradient(135deg,var(--indigo),var(--indigo-dark));color:var(--indigo-ink);letter-spacing:.2px;}
-  .btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid #E4C7CB;transition:all .15s;}
+  .btn-ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);transition:all .15s;}
   .btn-ghost:hover{border-color:var(--brand);color:var(--brand-dark);background:color-mix(in srgb, var(--brand) 6%, white);}
   .btn-ghost.active-reorder{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);}
   .btn-danger{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:var(--brand-ink);letter-spacing:.2px;} .btn-sm{padding:7px 12px;font-size:12.5px;}
@@ -260,6 +263,7 @@
         <svg class="lang-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span class="lang-toggle-label">ENG</span>
       </button>
+      <button class="icon-btn icon-only" id="brandingSettingsBtn" onclick="openBrandingModal()" type="button" style="display:none;" data-i18n-title="brandingSettingsBtn" title="تخصيص الهوية"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1" fill="currentColor" stroke="none"/></svg></button>
       <div class="user-chip"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span id="currentUserLabel">-</span></div>
       <button class="icon-btn" onclick="logout()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> <span data-i18n="logout">خروج</span></button>
     </div>
@@ -271,7 +275,6 @@
     <button id="bulkOutBtn" onclick="openBulkOut()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="bulkOutTitle">إذن صرف</span></button>
     <button id="notesHubBtn" onclick="openNotesHub()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span data-i18n="savedNotes">الأذونات المحفوظة</span></button>
     <button id="usersSettingsBtn" onclick="openUsersModal()" style="display:none;"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span data-i18n="userSettings">إعدادات المستخدمين</span></button>
-    <button id="brandingSettingsBtn" onclick="openBrandingModal()" style="display:none;"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1" fill="currentColor" stroke="none"/></svg> <span data-i18n="brandingSettingsBtn">تخصيص الهوية</span></button>
   </div>
 
   <div class="nav">
@@ -1226,6 +1229,7 @@ const I18N = {
     brandingRoleSuccess: `زرار التأكيد والإضافة — تسجيل الدخول، إضافة مستخدم، حفظ`,
     brandingRoleTeal: `أذون الإضافة والصرف، وإضافة مخزن جديد`,
     brandingRoleIndigo: `التحويل بين المخازن`,
+    brandingRoleTopbarAccent: `الشريط اللوني أسفل الهيدر`,
     brandingResetFieldBtn: `استرجاع الافتراضي`,
     brandingResetAllBtn: `استرجاع كل الهوية للافتراضي`,
     brandingAppNameHeading: `اسم التطبيق (يظهر في تبويب المتصفح)`,
@@ -1592,6 +1596,7 @@ This cannot be undone once executed. Are you sure?`,
     brandingRoleSuccess: `Confirm & add button — login, add user, save`,
     brandingRoleTeal: `Stock-in/out vouchers, and adding a new warehouse`,
     brandingRoleIndigo: `Transfer between warehouses`,
+    brandingRoleTopbarAccent: `Header accent strip`,
     brandingResetFieldBtn: `Reset to default`,
     brandingResetAllBtn: `Reset entire branding to default`,
     brandingAppNameHeading: `App name (shown in the browser tab)`,
@@ -1647,6 +1652,10 @@ function applyI18n(){
     const key = el.getAttribute('data-i18n-placeholder');
     el.setAttribute('placeholder', t(key));
   });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-title');
+    el.setAttribute('title', t(key));
+  });
   document.querySelectorAll('.lang-toggle-label').forEach(el=>{ el.textContent = LANG==='ar' ? 'ENG' : 'ع'; });
   document.title = (typeof STATE!=='undefined' && STATE && STATE.branding && STATE.branding.appName) ? STATE.branding.appName : t('pageTitle');
 }
@@ -1695,7 +1704,8 @@ const BRANDING_COLOR_ROLES = [
   { key:'brand',   cssVar:'--brand',   cssDarkVar:'--brand-dark',   cssRgbVar:'--brand-rgb',   cssInkVar:'--brand-ink',   btnClass:'btn-danger', labelKey:'brandingRoleBrand',   sampleKey:'deleteBtn' },
   { key:'success', cssVar:'--success', cssDarkVar:'--success-dark', cssRgbVar:'--success-rgb', cssInkVar:'--success-ink', btnClass:'btn-amber',  labelKey:'brandingRoleSuccess', sampleKey:'add' },
   { key:'teal',    cssVar:'--blue',    cssDarkVar:'--blue-dark',    cssRgbVar:'--blue-rgb',    cssInkVar:'--blue-ink',    btnClass:'btn-teal',   labelKey:'brandingRoleTeal',    sampleKey:'inNotes' },
-  { key:'indigo',  cssVar:'--indigo',  cssDarkVar:'--indigo-dark',  cssRgbVar:'--indigo-rgb',  cssInkVar:'--indigo-ink',  btnClass:'btn-indigo', labelKey:'brandingRoleIndigo',  sampleKey:'transferBetweenWh' }
+  { key:'indigo',  cssVar:'--indigo',  cssDarkVar:'--indigo-dark',  cssRgbVar:'--indigo-rgb',  cssInkVar:'--indigo-ink',  btnClass:'btn-indigo', labelKey:'brandingRoleIndigo',  sampleKey:'transferBetweenWh' },
+  { key:'topbarAccent', cssVar:'--topbar-accent', cssDarkVar:null, cssRgbVar:null, cssInkVar:null, isSwatch:true, labelKey:'brandingRoleTopbarAccent' }
 ];
 function captureDefaultBranding(){
   if(DEFAULT_BRANDING) return;
@@ -1760,9 +1770,9 @@ function applyBranding(){
   BRANDING_COLOR_ROLES.forEach(role=>{
     const hex = colors[role.key] || DEFAULT_BRANDING.colors[role.key];
     root.setProperty(role.cssVar, hex);
-    root.setProperty(role.cssDarkVar, darkenHex(hex, 0.24));
-    root.setProperty(role.cssRgbVar, hexToRgbTriplet(hex));
-    root.setProperty(role.cssInkVar, inkColorFor(hex));
+    if(role.cssDarkVar) root.setProperty(role.cssDarkVar, darkenHex(hex, 0.24));
+    if(role.cssRgbVar) root.setProperty(role.cssRgbVar, hexToRgbTriplet(hex));
+    if(role.cssInkVar) root.setProperty(role.cssInkVar, inkColorFor(hex));
   });
   if(custom.bgImage) root.setProperty('--bg-image', `url("${custom.bgImage}")`);
   else root.removeProperty('--bg-image');
@@ -1798,7 +1808,9 @@ function renderBrandingModal(){
   document.getElementById('brandingBgPreview').style.backgroundImage = `url("${b.bgImage}")`;
   document.getElementById('brandingColorRows').innerHTML = BRANDING_COLOR_ROLES.map(role=>`
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:10px;">
-      <button type="button" class="btn ${role.btnClass} btn-sm" style="pointer-events:none;flex:none;">${t(role.sampleKey)}</button>
+      ${role.isSwatch
+        ? `<div style="flex:none;width:64px;height:16px;border-radius:5px;background:${b.colors[role.key]};border:1px solid var(--line);"></div>`
+        : `<button type="button" class="btn ${role.btnClass} btn-sm" style="pointer-events:none;flex:none;">${t(role.sampleKey)}</button>`}
       <span style="flex:1;min-width:120px;font-size:12.5px;color:var(--ink-soft);font-weight:600;" data-i18n="${role.labelKey}">${t(role.labelKey)}</span>
       <input type="color" id="brandingColorRole_${role.key}" value="${b.colors[role.key]}" onchange="onBrandingColorChange('${role.key}')" style="width:52px;height:36px;padding:2px;border:1px solid var(--line);border-radius:8px;cursor:pointer;flex:none;">
     </div>
