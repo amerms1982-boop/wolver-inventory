@@ -1492,6 +1492,7 @@ const LANG_KEY = 'wolverLang';
 let LANG = 'ar';
 try{ LANG = localStorage.getItem(LANG_KEY) || 'ar'; }catch(e){ LANG = 'ar'; }
 function t(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.ar[key] || key; }
+function appLocale(){ return LANG==='ar' ? 'ar-EG' : 'en-US'; }
 /* Transaction-log entries mix translated labels with free-typed data (item/warehouse names,
    numbers) and were saved to Firestore pre-translated in whatever language was active at the
    time. To show old AND new log rows correctly in whichever language is being viewed now, we
@@ -2364,14 +2365,14 @@ function renderDashboard(){
   });
 
   document.getElementById('statItems').textContent = STATE.items.length;
-  document.getElementById('statQty').textContent = totalQty.toLocaleString('ar-EG',{maximumFractionDigits:1});
+  document.getElementById('statQty').textContent = totalQty.toLocaleString(appLocale(),{maximumFractionDigits:1});
   document.getElementById('statExpired').textContent = expiredCount;
   document.getElementById('statSoon').textContent = soonCount;
   updateReorderBadge();
   updatePendingApprovalsUI();
 
   document.getElementById('whStatTabs').innerHTML = warehouseIds().map(id=>`
-    <div class="wh-tab"><div class="n">${(whTotals[id]||0).toLocaleString('ar-EG',{maximumFractionDigits:1})}</div><div class="l">${whName(id)}</div></div>
+    <div class="wh-tab"><div class="n">${(whTotals[id]||0).toLocaleString(appLocale(),{maximumFractionDigits:1})}</div><div class="l">${whName(id)}</div></div>
   `).join('');
 
   alerts.sort((a,b)=>{ const ma=a.st.months===null?9999:a.st.months, mb=b.st.months===null?9999:b.st.months; return ma-mb; });
@@ -2423,10 +2424,10 @@ function renderReorderReportBody(){
   body.innerHTML = rows.map((r,i)=>{
     const statusText = r.total<=0 ? t('statusOutOfStock') : t('statusAtReorderLevel');
     const statusClass = r.total<=0 ? 'danger' : 'warn';
-    const thresholdText = r.threshold.toLocaleString('ar-EG',{maximumFractionDigits:2}) + (r.custom ? '' : ' '+t('defaultParenthetical'));
+    const thresholdText = r.threshold.toLocaleString(appLocale(),{maximumFractionDigits:2}) + (r.custom ? '' : ' '+t('defaultParenthetical'));
     return `<tr onclick="closeReorderReport();openItemModal('${r.item.id}')" style="cursor:pointer;">
       <td>${i+1}</td><td>${r.item.name}</td>
-      <td>${r.total.toLocaleString('ar-EG',{maximumFractionDigits:2})}</td>
+      <td>${r.total.toLocaleString(appLocale(),{maximumFractionDigits:2})}</td>
       <td>${thresholdText}</td>
       <td><span class="badge ${statusClass}">${statusText}</span></td>
     </tr>`;
@@ -2501,7 +2502,7 @@ function renderItems(){
         ${thumb}
         <div class="body">
           <div class="name">${it.name}</div>
-          <div class="sub"><span>${it.batches.length} ${t('batchUnit')}</span><span style="font-size:16px;font-weight:800;color:var(--ink);font-family:'Cairo';">${t('totalLabel')}: ${itemTotal(it).toLocaleString('ar-EG',{maximumFractionDigits:1})}</span></div>
+          <div class="sub"><span>${it.batches.length} ${t('batchUnit')}</span><span style="font-size:16px;font-weight:800;color:var(--ink);font-family:'Cairo';">${t('totalLabel')}: ${itemTotal(it).toLocaleString(appLocale(),{maximumFractionDigits:1})}</span></div>
           <div class="queue">${chips || '<span class="chip empty"></span>'}</div>
         </div>
       </div>`;
@@ -2564,7 +2565,7 @@ function openItemModal(id){
   document.getElementById('editItemBtn').style.display = hasPerm('items','edit') ? '' : 'none';
   document.getElementById('deleteItemBtn').style.display = hasPerm('items','delete') ? '' : 'none';
   document.getElementById('miName').textContent = item.name;
-  document.getElementById('miMeta').textContent = `${t('currentTotalLabel')}: ${itemTotal(item).toLocaleString('ar-EG',{maximumFractionDigits:2})}`;
+  document.getElementById('miMeta').textContent = `${t('currentTotalLabel')}: ${itemTotal(item).toLocaleString(appLocale(),{maximumFractionDigits:2})}`;
   const img = itemImg(item.id);
   const thumbEl = document.getElementById('miThumb');
   if(img){ thumbEl.src=img; thumbEl.style.display='block'; } else { thumbEl.style.display='none'; }
@@ -2713,7 +2714,7 @@ function logTx(tx){
   return full;
 }
 function removeTx(id){ STATE.transactions = STATE.transactions.filter(t=>t.id!==id); }
-function fmtTime(iso){ return new Date(iso).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}); }
+function fmtTime(iso){ return new Date(iso).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); }
 const TX_LABEL = {in:'txIn', out:'txOut', transfer:'txTransfer', opening:'openingBalancesTitle', item_create:'txItemCreate', item_edit:'txItemEdit', item_delete:'txItemDelete', wh_create:'txWhCreate', wh_edit:'txWhEdit', wh_delete:'txWhDelete', note_delete:'txNoteDelete', note_reject:'txNoteReject'};
 const LOG_GROUP_TYPES = {
   create: ['item_create','wh_create'],
@@ -3232,7 +3233,7 @@ function renderPendingApprovalsList(){
     return `<div class="wh-row" style="align-items:flex-start;flex-wrap:wrap;gap:10px;">
       <div>
         <span class="wname">${typeLabel[n.type]||n.type} ${t('numberLabel')} ${n.serial} <span class="pill warn">${t('statusPendingReview')}</span></span>
-        <div class="item-meta">${t('byLabel')}: ${n.user} · ${fmtTime(n.createdAt)} · ${n.rows.length} ${t('itemUnit')} · ${t('totalLabel')} ${total.toLocaleString('ar-EG',{maximumFractionDigits:1})}</div>
+        <div class="item-meta">${t('byLabel')}: ${n.user} · ${fmtTime(n.createdAt)} · ${n.rows.length} ${t('itemUnit')} · ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}</div>
       </div>
       <div class="wactions">
         <button class="btn btn-teal btn-sm" onclick="openApprovalNote('${n.id}')">✎ ${t('reviewApproveBtn')}</button>
@@ -3310,11 +3311,11 @@ function buildSavedNotePrintHtml(id){
   if(!note) return '';
   const titles = {in:t('bulkInTitle')+' '+t('numberLabel')+' ', out:t('bulkOutTitle')+' '+t('numberLabel')+' ', opening:t('openingBalancesTitle')+' — '+t('numberLabel')+' ', transfer:t('transferTitle')+' '+t('numberLabel')+' '};
   const title = (titles[note.type]||(t('numberLabel')+' '))+note.serial;
-  const dateStr = new Date(note.createdAt).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'});
+  const dateStr = new Date(note.createdAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   let extraLine = '';
   if(note.type==='in' && note.supplier) extraLine = `<div>${t('supplierName')}: ${note.supplier}</div>`;
   if(note.type==='out' && note.location) extraLine = `<div>${t('locationClient')}: ${note.location}</div>`;
-  if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: ${note.approvedBy} — ${appDate}</div>`; }
+  if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: ${note.approvedBy} — ${appDate}</div>`; }
   const recipientLine = buildRecipientLineHtml(note.recipient);
   return `<h2>${title}</h2><div>${t('dateLabel')}: ${dateStr}</div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows)}${recipientLine}`;
 }
@@ -3343,7 +3344,7 @@ function renderSavedNotesList(){
     const permMod = n.type==='transfer' ? 'transfer' : n.type==='out' ? 'bulkOut' : 'bulkIn';
     return `<div class="wh-row">
       <span class="tag ${n.type}">${typeLabel[n.type]||n.type}</span>
-      <span class="wname">${t('numberLabel')} ${n.serial} — ${n.rows.length} ${t('itemUnit')} — ${t('totalLabel')} ${total.toLocaleString('ar-EG',{maximumFractionDigits:1})}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(n.createdAt)}${n.updatedAt && n.updatedAt!==n.createdAt ? ' ('+t('lastEditLabel')+': '+fmtTime(n.updatedAt)+')' : ''}</span></span>
+      <span class="wname">${t('numberLabel')} ${n.serial} — ${n.rows.length} ${t('itemUnit')} — ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(n.createdAt)}${n.updatedAt && n.updatedAt!==n.createdAt ? ' ('+t('lastEditLabel')+': '+fmtTime(n.updatedAt)+')' : ''}</span></span>
       <div class="wactions">
         ${hasPerm(permMod,'print') ? `<button class="btn btn-ghost btn-sm" onclick="previewPrint(buildSavedNotePrintHtml('${n.id}'))">👁 ${t('previewBtn')}</button>
         <button class="btn btn-ghost btn-sm" onclick="doPrint(buildSavedNotePrintHtml('${n.id}'))">🖨 ${t('printBtn')}</button>` : ''}
@@ -3387,7 +3388,7 @@ function buildBulkPrintHtml(which){
     const recipient = document.getElementById('boRecipientName').value.trim();
     recipientLine = buildRecipientLineHtml(recipient);
   }
-  const dateStr = new Date().toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'});
+  const dateStr = new Date().toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   return `<h2>${title}</h2><div>${t('dateLabel')}: ${dateStr}</div>${extraLine}<br>${tableHtml}${recipientLine}`;
 }
 
@@ -3481,7 +3482,7 @@ function closeWhContents(){ document.getElementById('whContentsOverlay').classLi
 function buildWhContentsPrintHtml(){
   const title = document.getElementById('whContentsTitle').textContent;
   const tableHtml = document.getElementById('whContentsTable').outerHTML;
-  const dateStr = new Date().toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'});
+  const dateStr = new Date().toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   return `<h2>${title}</h2><div>${t('inventoryDateLabel')}: ${dateStr}</div><br>${tableHtml}`;
 }
 
@@ -3556,7 +3557,7 @@ function newTransferTable(){
   updateEditingBanner('tr');
 }
 function buildTransferPrintHtml(){
-  const dateStr = new Date().toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'});
+  const dateStr = new Date().toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   const recipient = document.getElementById('trRecipientName').value.trim();
   const recipientLine = buildRecipientLineHtml(recipient);
   return `<h2>${t('transferTitle')}</h2><div>${t('dateLabel')}: ${dateStr}</div><br>${document.getElementById('trTable').outerHTML}${recipientLine}`;
