@@ -29,7 +29,7 @@
 
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border-radius:var(--radius);color:var(--ink);margin-bottom:14px;flex-wrap:wrap;border-bottom:4px solid var(--brand);box-shadow:0 10px 30px rgba(0,0,0,.25);}
   .brand{display:flex;align-items:center;gap:12px;}
-  .wordmark{height:34px;flex:none;}
+  .wordmark{height:34px;max-width:160px;width:auto;object-fit:contain;flex:none;}
   @media(max-width:480px){.wordmark{height:26px;}}
   .brand-text .t2{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:2px;text-shadow:0 1px 2px rgba(255,255,255,.7);}
   .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
@@ -193,7 +193,7 @@
     border-radius:20px;padding:30px 28px 32px;box-shadow:0 25px 70px rgba(0,0,0,.5);
     border:1px solid rgba(255,255,255,.6);border-top:5px solid var(--brand);
   }
-  .auth-logo{height:42px;display:block;margin:0 auto 20px;}
+  .auth-logo{height:42px;max-width:220px;width:auto;object-fit:contain;display:block;margin:0 auto 20px;}
   .auth-card h2{font-size:19px;text-align:center;margin:0 0 6px;}
   .auth-card .item-meta{text-align:center;margin-bottom:18px;font-weight:600;}
   .auth-card label{font-weight:700;color:var(--ink);}
@@ -590,6 +590,7 @@
       <label for="brandingLogoFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
       <button type="button" class="btn btn-ghost btn-sm" onclick="resetBrandingField('logo')" data-i18n="brandingResetFieldBtn">استرجاع الافتراضي</button>
     </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;" data-i18n="brandingLogoHint">الأفضل صورة أفقية (عرضها أكبر من ارتفاعها) بخلفية شفافة (PNG) — التطبيق بيظبط حجمها تلقائيًا فمش هتتقص أو تتمطط.</div>
 
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="brandingFaviconHeading">أيقونة تبويب المتصفح</h2></div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;">
@@ -598,6 +599,7 @@
       <label for="brandingFaviconFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
       <button type="button" class="btn btn-ghost btn-sm" onclick="resetBrandingField('favicon')" data-i18n="brandingResetFieldBtn">استرجاع الافتراضي</button>
     </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;" data-i18n="brandingFaviconHint">الأفضل صورة مربعة (الطول = العرض) — التطبيق بيحطها في مربع تلقائيًا مهما كان شكل الصورة الأصلي.</div>
 
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="brandingBgHeading">صورة الخلفية</h2></div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;">
@@ -606,6 +608,7 @@
       <label for="brandingBgFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
       <button type="button" class="btn btn-ghost btn-sm" onclick="resetBrandingField('bgImage')" data-i18n="brandingResetFieldBtn">استرجاع الافتراضي</button>
     </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;" data-i18n="brandingBgHint">الأفضل صورة أفقية عريضة (Landscape) بمقاس كبير — بتتملى في الشاشة تلقائيًا (Cover) والحواف الزيادة بتتقص حسب حجم الشاشة، فحاول العناصر المهمة تكون في نص الصورة.</div>
 
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="brandingColorsHeading">ألوان الأزرار</h2></div>
     <div class="item-meta" data-i18n="brandingColorsDesc">كل صف فيه زرار حقيقي من التطبيق — اختار لونه من جنبه وهيتغيّر فورًا. كل لون مستقل عن التاني.</div>
@@ -1214,6 +1217,9 @@ const I18N = {
     brandingLogoHeading: `الشعار (اللوجو)`,
     brandingFaviconHeading: `أيقونة تبويب المتصفح`,
     brandingBgHeading: `صورة الخلفية`,
+    brandingLogoHint: `الأفضل صورة أفقية (عرضها أكبر من ارتفاعها) بخلفية شفافة (PNG) — التطبيق بيظبط حجمها تلقائيًا فمش هتتقص أو تتمطط.`,
+    brandingFaviconHint: `الأفضل صورة مربعة (الطول = العرض) — التطبيق بيحطها في مربع تلقائيًا مهما كان شكل الصورة الأصلي.`,
+    brandingBgHint: `الأفضل صورة أفقية عريضة (Landscape) بمقاس كبير — بتتملى في الشاشة تلقائيًا (Cover) والحواف الزيادة بتتقص حسب حجم الشاشة، فحاول العناصر المهمة تكون في نص الصورة.`,
     brandingColorsHeading: `ألوان الأزرار`,
     brandingColorsDesc: `كل صف فيه زرار حقيقي من التطبيق — اختار لونه من جنبه وهيتغيّر فورًا. كل لون مستقل عن التاني.`,
     brandingRoleBrand: `اللون الرئيسي — زرار الحذف، التبويب النشط، التنبيهات والحدود`,
@@ -1577,6 +1583,9 @@ This cannot be undone once executed. Are you sure?`,
     brandingLogoHeading: `Logo`,
     brandingFaviconHeading: `Browser Tab Icon`,
     brandingBgHeading: `Background Image`,
+    brandingLogoHint: `A wide (landscape) image with a transparent background (PNG) works best — the app resizes it automatically so it's never cropped or stretched.`,
+    brandingFaviconHint: `A square image (width = height) works best — the app fits it into a square automatically no matter what shape the original is.`,
+    brandingBgHint: `A large, wide (landscape) image works best — it fills the screen automatically (Cover) and extra edges get cropped depending on screen size, so keep important elements near the center.`,
     brandingColorsHeading: `Button Colors`,
     brandingColorsDesc: `Each row shows a real button from the app — pick its color right next to it and it updates instantly. Every color is independent of the others.`,
     brandingRoleBrand: `Main color — delete button, active tab, alerts and borders`,
@@ -1804,7 +1813,7 @@ async function onBrandingImageSelected(event, field){
     let dataUrl;
     if(field==='bgImage') dataUrl = await resizeImageFile(file, 1600, 0.55);
     else if(field==='logo') dataUrl = await resizeImagePng(file, 320);
-    else dataUrl = await resizeImagePng(file, 64);
+    else dataUrl = await resizeImagePngSquare(file, 64);
     if(!STATE.branding) STATE.branding = {colors:{}};
     STATE.branding[field] = dataUrl;
     applyBranding();
@@ -1826,6 +1835,30 @@ function resizeImagePng(file, maxDim){
         const canvas = document.createElement('canvas');
         canvas.width=w; canvas.height=h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function resizeImagePngSquare(file, size){
+  // Fits the source image inside a perfectly square canvas (like the
+  // browser tab icon needs), centered with transparent padding, so a
+  // non-square upload never comes out stretched or cropped.
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const scale = Math.min(size/img.width, size/img.height);
+        const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+        const x = Math.round((size-w)/2), y = Math.round((size-h)/2);
+        canvas.getContext('2d').drawImage(img, x, y, w, h);
         resolve(canvas.toDataURL('image/png'));
       };
       img.onerror = reject;
