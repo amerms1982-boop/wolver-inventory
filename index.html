@@ -351,7 +351,7 @@
     <div class="section-head" id="pendingApprovalsRow" style="display:none;"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg><span data-i18n="pendingApprovalsHeading">الأذونات المعلّقة</span></h2>
       <button class="btn btn-ghost btn-sm" onclick="openPendingApprovals()"><span data-i18n="reviewApprovals">مراجعة الأذونات</span> (<span id="pendingApprovalsCount">0</span>)</button>
     </div>
-    <div class="section-head"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span data-i18n="expiryAlertsHeading">تنبيهات الصلاحية — صرف هذه الأصناف أولاً</span></h2><span class="hint" data-i18n="sortedByNearestExpiry">مرتبة من الأقرب انتهاءً</span></div>
+    <div class="section-head"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span data-i18n="expiryAlertsHeading">تنبيهات الصلاحية</span></h2><span class="hint" data-i18n="sortedByNearestExpiry">مرتبة من الأقرب انتهاءً</span></div>
     <div id="alertsList"></div>
   </div>
 
@@ -563,7 +563,7 @@
     <button class="modal-close" onclick="closeBulkOut()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="bulkOutTitle">إذن صرف</h2>
     <div id="boEditingBanner"></div>
-    <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد.</div>
+    <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
       <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم"></div>
@@ -1052,7 +1052,7 @@ const I18N = {
     viewLowStockItems: `عرض الأصناف الناقصة`,
     pendingApprovalsHeading: `الأذونات المعلّقة`,
     reviewApprovals: `مراجعة الأذونات`,
-    expiryAlertsHeading: `تنبيهات الصلاحية — صرف هذه الأصناف أولاً`,
+    expiryAlertsHeading: `تنبيهات الصلاحية`,
     sortedByNearestExpiry: `مرتبة من الأقرب انتهاءً`,
     searchItemPlaceholder: `بحث عن صنف...`,
     manualReorderBtn: `ترتيب يدوي`,
@@ -1127,7 +1127,9 @@ const I18N = {
     addToTableBtn: `أضف للجدول`,
     confirmSaveBtn: `تأكيد وحفظ`,
     newTableBtn: `جدول جديد`,
-    fefoAutoDesc: `يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد.`,
+    fefoAutoDesc: `يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.`,
+    errOnlyExpiredInWhPrefix: `الرصيد المتاح من الصنف ده في `,
+    errOnlyExpiredInWhSuffix: ` كله منتهي الصلاحية، ومينفعش يتصرف`,
     locationClient: `المكان / العميل`,
     qtyRequested: `الكمية المطلوبة`,
     chooseNoteType: `اختر نوع الأذون اللي تريد تراجعه.`,
@@ -1424,7 +1426,7 @@ const I18N = {
     viewLowStockItems: `View low-stock items`,
     pendingApprovalsHeading: `Pending Approvals`,
     reviewApprovals: `Review approvals`,
-    expiryAlertsHeading: `Expiry alerts — issue these items first`,
+    expiryAlertsHeading: `Expiry alerts`,
     sortedByNearestExpiry: `Sorted by nearest expiry`,
     searchItemPlaceholder: `Search for an item...`,
     manualReorderBtn: `Manual order`,
@@ -1499,7 +1501,9 @@ const I18N = {
     addToTableBtn: `Add to Table`,
     confirmSaveBtn: `Confirm & Save`,
     newTableBtn: `New Table`,
-    fefoAutoDesc: `Batches are auto-selected (FEFO) on confirmation.`,
+    fefoAutoDesc: `Batches are auto-selected (FEFO) on confirmation; expired batches are excluded.`,
+    errOnlyExpiredInWhPrefix: `All available stock of this item in `,
+    errOnlyExpiredInWhSuffix: ` is expired and cannot be issued`,
     locationClient: `Location / Customer`,
     qtyRequested: `Requested Quantity`,
     chooseNoteType: `Choose the voucher type you want to review.`,
@@ -3076,8 +3080,16 @@ function openItemModal(id){
 }
 function closeItemModal(){ document.getElementById('itemOverlay').classList.remove('active'); }
 
-function computeFefoAllocation(item, packaging, wh, qtyNeeded){
-  const candidates = sortBatchesFEFO(item.batches.filter(b=>b.packaging===packaging && (b.balances[wh]||0)>0));
+function isBatchExpired(b){
+  const p = parseExpiry(b.expiry);
+  if(p.special || !p.sortDate) return false;
+  const m = monthsUntil(p.sortDate);
+  return m !== null && m < 0;
+}
+// Stock-out (skipExpired=true) never issues expired batches; transfers still can,
+// e.g. to move expired stock to a returns/damaged warehouse.
+function computeFefoAllocation(item, packaging, wh, qtyNeeded, skipExpired){
+  const candidates = sortBatchesFEFO(item.batches.filter(b=>b.packaging===packaging && (b.balances[wh]||0)>0 && !(skipExpired && isBatchExpired(b))));
   let remaining = qtyNeeded; const alloc=[];
   for(const b of candidates){ if(remaining<=0) break; const avail=b.balances[wh]||0; const take=Math.min(avail,remaining); if(take>0){ alloc.push({batch:b,take}); remaining-=take; } }
   return {alloc, shortfall: remaining};
@@ -3538,8 +3550,12 @@ function addBulkOutRow(){
   const qty = parseFloat(document.getElementById('boQty').value);
   const wh = document.getElementById('boWarehouse').value;
   if(!item || !packaging || !qty || qty<=0){ showToast(t('errCompleteRowData')); return; }
-  const {alloc} = computeFefoAllocation(item, packaging, wh, qty);
-  if(!alloc.length){ showToast(t('errNoBalanceForItemInWhPrefix')+whName(wh)); return; }
+  const {alloc} = computeFefoAllocation(item, packaging, wh, qty, true);
+  if(!alloc.length){
+    const hasExpiredOnly = computeFefoAllocation(item, packaging, wh, qty, false).alloc.length > 0;
+    showToast(hasExpiredOnly ? (t('errOnlyExpiredInWhPrefix')+whName(wh)+t('errOnlyExpiredInWhSuffix')) : (t('errNoBalanceForItemInWhPrefix')+whName(wh)));
+    return;
+  }
   const expiry = formatFefoExpiryLabel(alloc);
   bulkOutRows.push({itemId, itemName:item.name, packaging, qty, wh, whLabel:whName(wh), expiry});
   document.getElementById('boQty').value='';
@@ -3561,7 +3577,7 @@ function updateBulkOutRow(i, field, value){
   else row.packaging = value.trim();
   const item = STATE.items.find(x=>x.id===row.itemId);
   if(item){
-    const {alloc} = computeFefoAllocation(item, row.packaging, row.wh, row.qty);
+    const {alloc} = computeFefoAllocation(item, row.packaging, row.wh, row.qty, true);
     row.expiry = formatFefoExpiryLabel(alloc);
   }
   renderBulkOutTable();
@@ -3608,7 +3624,7 @@ async function commitBulkOut(){
   bulkOutRows.forEach(r=>{
     const item = STATE.items.find(i=>i.id===r.itemId);
     if(!item) return;
-    const {alloc, shortfall} = computeFefoAllocation(item, r.packaging, r.wh, r.qty);
+    const {alloc, shortfall} = computeFefoAllocation(item, r.packaging, r.wh, r.qty, true);
     alloc.forEach(a=>{ a.batch.balances[r.wh] = Math.round(((a.batch.balances[r.wh]||0)-a.take)*100)/100; appliedAllocations.push({itemId:item.id, batchId:a.batch.id, wh:r.wh, delta:-a.take}); });
     const dispensed = r.qty - shortfall;
     if(shortfall>0) anyShort=true;
