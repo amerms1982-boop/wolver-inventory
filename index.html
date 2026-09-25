@@ -362,26 +362,6 @@
       <button id="newItemBtn" class="btn btn-teal" onclick="openNewItemForm()">+ <span data-i18n="newItemBtn">صنف جديد</span></button>
     </div>
     <div id="reorderHint" class="item-meta" style="display:none;margin-bottom:8px;" data-i18n="dragHint">اسحب أي بطاقة وأفلتها في المكان اللي عايزه فيه لإعادة الترتيب.</div>
-    <div class="form-panel" id="newItemPanel">
-      <h3 data-i18n="addNewItemHeading">إضافة صنف جديد</h3>
-      <div class="form-grid">
-        <div class="full"><label data-i18n="itemNameLabel">اسم الصنف</label><input id="niName" data-i18n-placeholder="itemNameExamplePlaceholder" placeholder="مثال: WOLVER ..."></div>
-        <div class="full"><label data-i18n="packagingLabel">نوع التعبئة</label><input id="niPackaging" data-i18n-placeholder="packagingExamplePlaceholder" placeholder="مثال: 4*5 Ltr."></div>
-        <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="niReorderLevel" type="number" step="0.01" min="0" data-i18n-placeholder="reorderLevelExamplePlaceholder" placeholder="مثال: 20 — سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
-        <div class="full">
-          <label data-i18n="itemImageOptionalLabel">صورة الصنف (اختياري)</label>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <img id="niImgPreview" class="zoomable" onclick="openImageZoom(this.src)" style="width:56px;height:56px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:var(--field-bg);display:none;">
-            <input type="file" id="niImgFile" class="file-input-hidden" accept="image/*" onchange="onNiImgSelected(event)">
-            <label for="niImgFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
-          </div>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-amber" onclick="submitNewItem()" data-i18n="saveItemBtn">حفظ الصنف</button>
-        <button class="btn btn-ghost" onclick="closeNewItemForm()" data-i18n="cancel">إلغاء</button>
-      </div>
-    </div>
     <div class="item-grid" id="itemGrid"></div>
   </div>
 
@@ -446,6 +426,31 @@
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="previewPrint(buildItemHistoryPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
       <button class="btn btn-ghost" onclick="doPrint(buildItemHistoryPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ITEM MODAL -->
+<div class="overlay" id="newItemOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeNewItemForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 data-i18n="addNewItemHeading">إضافة صنف جديد</h2>
+    <div class="form-grid">
+      <div class="full"><label data-i18n="itemNameLabel">اسم الصنف</label><input id="niName" data-i18n-placeholder="itemNameExamplePlaceholder" placeholder="مثال: WOLVER ..."></div>
+      <div class="full"><label data-i18n="packagingLabel">نوع التعبئة</label><input id="niPackaging" data-i18n-placeholder="packagingExamplePlaceholder" placeholder="مثال: 4*5 Ltr."></div>
+      <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="niReorderLevel" type="number" step="0.01" min="0" data-i18n-placeholder="reorderLevelExamplePlaceholder" placeholder="مثال: 20 — سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
+      <div class="full">
+        <label data-i18n="itemImageOptionalLabel">صورة الصنف (اختياري)</label>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img id="niImgPreview" class="zoomable" onclick="openImageZoom(this.src)" style="width:110px;height:110px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:var(--field-bg);display:none;">
+          <input type="file" id="niImgFile" class="file-input-hidden" accept="image/*" onchange="onNiImgSelected(event)">
+          <label for="niImgFile" class="btn btn-ghost btn-sm file-picker-btn" data-i18n="chooseImageBtn">اختر صورة</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-amber" onclick="submitNewItem()" data-i18n="saveItemBtn">حفظ الصنف</button>
+      <button class="btn btn-ghost" onclick="closeNewItemForm()" data-i18n="cancel">إلغاء</button>
     </div>
   </div>
 </div>
@@ -2999,9 +3004,11 @@ function openNewItemForm(){
   document.getElementById('niImgFile').value='';
   document.getElementById('niImgPreview').style.display='none';
   document.getElementById('niReorderLevel').value='';
-  document.getElementById('newItemPanel').classList.add('active');
+  ['niName','niPackaging'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('newItemOverlay').classList.add('active');
+  setTimeout(()=>{ try{ document.getElementById('niName').focus(); }catch(e){} }, 60);
 }
-function closeNewItemForm(){ document.getElementById('newItemPanel').classList.remove('active'); }
+function closeNewItemForm(){ document.getElementById('newItemOverlay').classList.remove('active'); }
 let niImageData = null;
 function onNiImgSelected(e){
   const file = e.target.files[0];
