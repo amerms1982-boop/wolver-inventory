@@ -202,6 +202,9 @@
     border-radius:20px;padding:30px 28px 32px;box-shadow:0 25px 70px rgba(0,0,0,.5);
     border:1px solid rgba(var(--glass-rgb),.6);border-top:5px solid var(--brand);
   }
+  /* keep the login/setup card fully reachable on short screens: centered when it fits, scrollable when it doesn't */
+  .auth-gate{overflow-y:auto;align-items:flex-start;}
+  .auth-card{margin:auto;}
   .auth-logo{height:42px;max-width:220px;width:auto;object-fit:contain;display:block;margin:0 auto 20px;}
   .auth-card h2{font-size:19px;text-align:center;margin:0 0 6px;}
   .auth-card .item-meta{text-align:center;margin-bottom:18px;font-weight:600;}
