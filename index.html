@@ -878,11 +878,11 @@
 
 <div class="overlay" id="confirmOverlay">
   <div class="modal small">
-    <h2 data-i18n="confirm">تأكيد</h2>
+    <h2 id="confirmTitle" data-i18n="confirm">تأكيد</h2>
     <div class="item-meta" id="confirmMessage" style="white-space:pre-line;"></div>
     <div class="form-actions">
-      <button class="btn btn-danger" onclick="resolveConfirm(true)" data-i18n="confirm">تأكيد</button>
-      <button class="btn btn-ghost" onclick="resolveConfirm(false)" data-i18n="cancel">إلغاء</button>
+      <button class="btn btn-danger" id="confirmOkBtn" onclick="resolveConfirm(true)" data-i18n="confirm">تأكيد</button>
+      <button class="btn btn-ghost" id="confirmCancelBtn" onclick="resolveConfirm(false)" data-i18n="cancel">إلغاء</button>
     </div>
   </div>
 </div>
@@ -918,23 +918,238 @@ const FIREBASE_CONFIG = {
   appId: "1:1048496956711:web:28933fb06e97ab57eef502"
 };
 let fsDb = null;
-let fsAuthReady = null;
-async function getDb(){
-  if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('PASTE_')===0){ return null; }
+/* ============ تسجيل الدخول الآمن (Firebase Authentication) ============
+   كل مستخدم في النظام ليه حساب حقيقي في Firebase Authentication، وقواعد Firestore
+   (firestore.rules) بتسمح بالقراءة والكتابة لأعضاء النظام فقط (access/members).
+   - كلمة المرور بتتبعت لـ Firebase بعد تحويلها لبصمة (authPass)، وFirebase نفسه بيخزنها مشفرة.
+   - logins/{key}: بيربط اسم المستخدم بالإيميل الداخلي للحساب (بيتقري قبل الدخول، ومحدش يقدر يعدّله غير المدير).
+   - access/recovery: بصمة رمز الاسترجاع — محدش يقدر يقراها، والقواعد نفسها هي اللي بتتأكد من الرمز.
+   - access/public: علامة إن النظام اتحوّل للدخول الآمن.
+   AUTH_MODE: 'secure' (الطبيعي) | 'legacy' (بيانات قديمة لسه ما اتحولتش) | 'fresh' (أول تشغيل)
+*/
+const AUTH_BACKEND = 'firebase';
+let AUTH_MODE = null;
+let _authFirstState = null;
+let pendingResetCode = null;
+function fbReady(){
+  if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('PASTE_')===0) return false;
   if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   if(!fsDb) fsDb = firebase.firestore();
-  // The database rules require a signed-in request. The app has its own username/
-  // password screen on top, but that's just UI — anonymous auth is the technical
-  // handshake that stops someone from reading or writing the database directly
-  // (e.g. with the public API key alone, bypassing the app entirely).
-  if(!fsAuthReady){
-    fsAuthReady = firebase.auth().signInAnonymously().catch(e=>{
-      console.error('anonymous sign-in failed', e);
-      fsAuthReady = null;
-    });
+  return true;
+}
+function authInitBackend(){
+  if(!_authFirstState){
+    _authFirstState = (async()=>{
+      try{ await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION); }catch(e){}
+      await new Promise(res=>{ const un = firebase.auth().onAuthStateChanged(()=>{ un(); res(); }); });
+    })();
   }
-  await fsAuthReady;
+  return _authFirstState;
+}
+async function getDb(){
+  if(!fbReady()) return null;
+  await authInitBackend();
   return fsDb;
+}
+function fbUser(){ return fbReady() ? firebase.auth().currentUser : null; }
+async function authSignOut(){ try{ if(fbReady()) await firebase.auth().signOut(); }catch(e){} }
+async function ensureAnonSession(){
+  if(fbUser()) return true;
+  try{ await firebase.auth().signInAnonymously(); return true; }catch(e){ console.warn('anonymous sign-in unavailable', e); return false; }
+}
+async function sha256Hex(str){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str)));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function normUser(u){ return String(u||'').trim().toLowerCase(); }
+async function loginKey(username){ return (await sha256Hex('wolver-login|'+normUser(username))).slice(0,40); }
+async function authPass(username, password){ return 'W1.' + await sha256Hex('wolver-pass|'+normUser(username)+'|'+String(password)); }
+function newAuthEmail(key){
+  const r = new Uint8Array(5); crypto.getRandomValues(r);
+  return 'u' + key.slice(0,16) + '.' + [...r].map(x=>x.toString(16).padStart(2,'0')).join('') + '@' + FIREBASE_CONFIG.authDomain;
+}
+const accessDoc = id => fsDb.collection('access').doc(id);
+async function secureWriteLogin(username, email){ await fsDb.collection('logins').doc(await loginKey(username)).set({email}); }
+async function secureDeleteLogin(username){ try{ await fsDb.collection('logins').doc(await loginKey(username)).delete(); }catch(e){ console.warn('login doc delete failed', e); } }
+async function secureWriteRecovery(code){
+  await accessDoc('recovery').set({hash: await sha256Hex(normRecovery(code))});
+  await accessDoc('public').set({v:2, hasRecovery:true});
+}
+function secondaryAuth(){
+  const app = firebase.apps.find(a=>a.name==='wolverSecondary') || firebase.initializeApp(FIREBASE_CONFIG, 'wolverSecondary');
+  return app.auth();
+}
+// إنشاء حساب لمستخدم تاني من غير ما المدير يخرج من حسابه
+async function createAuthAccount(username, password){
+  const auth = secondaryAuth();
+  try{ await auth.setPersistence(firebase.auth.Auth.Persistence.NONE); }catch(e){}
+  const email = newAuthEmail(await loginKey(username));
+  const cred = await auth.createUserWithEmailAndPassword(email, await authPass(username, password));
+  const uid = cred.user.uid;
+  try{ await auth.signOut(); }catch(e){}
+  return {uid, email};
+}
+async function detectAuthMode(){
+  const db = await getDb();
+  if(!db) return 'noconfig';
+  try{
+    const pub = await accessDoc('public').get();
+    if(pub.exists) return 'secure';
+  }catch(e){ if(!e || e.code!=='permission-denied') return 'offline'; }
+  if(!(await ensureAnonSession())) return 'fresh';
+  try{
+    const m = await db.collection('meta').doc('main').get();
+    const d = m.exists ? m.data() : null;
+    return (d && d.users && d.users.length) ? 'legacy' : 'fresh';
+  }catch(e){ return (e && e.code==='permission-denied') ? 'fresh' : 'offline'; }
+}
+async function secureSignIn(username, password){
+  let snap;
+  try{ snap = await fsDb.collection('logins').doc(await loginKey(username)).get(); }
+  catch(e){ return {err:'net'}; }
+  if(!snap.exists) return {err:'bad'};
+  try{
+    await firebase.auth().signInWithEmailAndPassword(snap.data().email, await authPass(username, password));
+    return {ok:true};
+  }catch(e){
+    const c = (e && e.code) || '';
+    if(c.indexOf('too-many-requests')>=0) return {err:'rate'};
+    if(c.indexOf('network')>=0) return {err:'net'};
+    return {err:'bad'};
+  }
+}
+async function secureVerifyPassword(user, pass){
+  try{
+    const cred = firebase.auth.EmailAuthProvider.credential(user.email, await authPass(user.username, pass));
+    await firebase.auth().currentUser.reauthenticateWithCredential(cred);
+    return true;
+  }catch(e){ return false; }
+}
+// أول تشغيل، أو إعادة ضبط حساب المدير برمز الاسترجاع
+async function submitSecureSetup(u, p, err){
+  const resetCode = pendingResetCode;
+  let acct;
+  try{
+    const email = newAuthEmail(await loginKey(u));
+    const cred = await firebase.auth().createUserWithEmailAndPassword(email, await authPass(u, p));
+    acct = {uid:cred.user.uid, email};
+  }catch(e){ console.error('create admin account failed', e); err.textContent=t('errConnectServer'); err.style.display='block'; return; }
+  try{
+    if(resetCode) await accessDoc('members').set({uids:{[acct.uid]:'admin'}, resetProof: normRecovery(resetCode)});
+    else await accessDoc('members').set({uids:{[acct.uid]:'admin'}});
+  }catch(e){
+    console.warn('admin claim refused', e);
+    try{ await firebase.auth().currentUser.delete(); }catch(_){}
+    await authSignOut();
+    pendingResetCode = null;
+    if(resetCode){ AUTH_MODE = 'secure'; renderLoginForm(); showToast(t('msgWrongRecoveryCode')); }
+    else { AUTH_MODE = await detectAuthMode(); renderAuthGate(); showToast(t('msgAdminAlreadySetup')); }
+    return;
+  }
+  pendingResetCode = null;
+  try{
+    if(resetCode) await accessDoc('members').set({uids:{[acct.uid]:'admin'}});
+    const loaded = await loadState();
+    if(!loaded) throw new Error('load');
+    for(const old of (STATE.users||[])) await secureDeleteLogin(old.username);
+    const founder = {username:u, role:'admin', isFounder:true, uid:acct.uid, email:acct.email};
+    STATE.users = [founder];
+    STATE.recoveryCode = null; STATE.recovery = null; STATE.recoverySet = true;
+    const ok = await persist();
+    if(!ok) throw new Error('persist');
+    await secureWriteLogin(u, acct.email);
+    const code = makeRecoveryCode();
+    await secureWriteRecovery(code);
+    AUTH_MODE = 'secure';
+    currentUser = founder; userName = founder.username;
+    enterApp(true);
+    document.getElementById('recoveryCodeDisplay').textContent = code;
+    document.getElementById('recoveryCodeOverlay').classList.add('active');
+  }catch(e){
+    console.error('secure setup failed', e);
+    err.textContent = t('errSaveFailed'); err.style.display='block';
+  }
+}
+// تحويل البيانات القديمة (كلمات مرور داخل meta/main) لحسابات Firebase — بيحصل مرة واحدة لما المدير يدخل
+async function migrateToSecure(adminUser, adminPlain){
+  showToast(t('msgSecuringAccounts'));
+  try{
+    const uids = {};
+    for(const u of STATE.users){
+      if(u.uid && u.email && u!==adminUser){ uids[u.uid] = u.role; continue; }
+      const plain = (u===adminUser) ? adminPlain : (typeof u.password==='string' ? u.password : null);
+      if(plain===null) continue;   // المدير هيحتاج يعيّن له كلمة مرور جديدة
+      const a = await createAuthAccount(u.username, plain);
+      u.uid = a.uid; u.email = a.email; uids[a.uid] = u.role;
+    }
+    await firebase.auth().signInWithEmailAndPassword(adminUser.email, await authPass(adminUser.username, adminPlain));
+    await accessDoc('members').set({uids});
+    for(const u of STATE.users) if(u.email) await secureWriteLogin(u.username, u.email);
+    const legacyCode = STATE.recoveryCode;
+    for(const u of STATE.users){ if(u.uid){ delete u.password; delete u.pw; } }
+    STATE.recoveryCode = null; STATE.recovery = null; STATE.recoverySet = !!legacyCode;
+    const ok = await persist();
+    if(!ok) throw new Error('persist');
+    if(legacyCode) await secureWriteRecovery(legacyCode);
+    else await accessDoc('public').set({v:2, hasRecovery:false});
+    AUTH_MODE = 'secure';
+    return true;
+  }catch(e){
+    console.error('migration to secure login failed', e);
+    return false;
+  }
+}
+async function secureAddUser(u, p, role){
+  const a = await createAuthAccount(u, p);
+  await accessDoc('members').update({['uids.'+a.uid]: role});
+  const nu = {username:u, role, permissions: defaultPermissions(), uid:a.uid, email:a.email};
+  STATE.users.push(nu);
+  const ok = await persist();
+  if(!ok){
+    STATE.users = STATE.users.filter(x=>x!==nu);
+    try{ await accessDoc('members').update({['uids.'+a.uid]: firebase.firestore.FieldValue.delete()}); }catch(e){}
+    return false;
+  }
+  await secureWriteLogin(u, a.email);
+  return true;
+}
+async function secureChangePassword(u, newPass){
+  const a = await createAuthAccount(u.username, newPass);
+  await accessDoc('members').update({['uids.'+a.uid]: u.role});
+  const oldUid = u.uid, oldEmail = u.email;
+  u.uid = a.uid; u.email = a.email;
+  const ok = await persist();
+  if(!ok){
+    u.uid = oldUid; u.email = oldEmail;
+    try{ await accessDoc('members').update({['uids.'+a.uid]: firebase.firestore.FieldValue.delete()}); }catch(e){}
+    return false;
+  }
+  await secureWriteLogin(u.username, a.email);
+  if(currentUser && currentUser.username===u.username){
+    await firebase.auth().signInWithEmailAndPassword(a.email, await authPass(u.username, newPass));
+    currentUser = u;
+  }
+  if(oldUid){ try{ await accessDoc('members').update({['uids.'+oldUid]: firebase.firestore.FieldValue.delete()}); }catch(e){} }
+  return true;
+}
+async function secureRemoveUsers(users){
+  for(const u of users){
+    if(u.uid){ try{ await accessDoc('members').update({['uids.'+u.uid]: firebase.firestore.FieldValue.delete()}); }catch(e){ console.warn(e); } }
+    await secureDeleteLogin(u.username);
+  }
+}
+// بعد مسح كل الحسابات: النظام يرجع لشاشة "أول تشغيل"
+async function secureWipeAllAccess(users){
+  for(const u of users) await secureDeleteLogin(u.username);
+  for(const id of ['recovery','public','members']){ try{ await accessDoc(id).delete(); }catch(e){ console.warn('access cleanup', id, e); } }
+}
+async function secureGenerateRecovery(code){
+  await secureWriteRecovery(code);
+  STATE.recoverySet = true;
+  return await persist();
+}
+async function secureHasRecovery(){
+  try{ const pub = await accessDoc('public').get(); return !!(pub.exists && pub.data().hasRecovery); }catch(e){ return true; }
 }
 const TX_PAGE_SIZE = 500;
 function deepEqualJson(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
@@ -955,6 +1170,8 @@ function metaBody(){
     itemsManuallyOrdered: STATE.itemsManuallyOrdered,
     itemOrder: STATE.items.map(i=>i.id),
     recoveryCode: STATE.recoveryCode || null,
+    recovery: STATE.recovery || null,
+    recoverySet: !!STATE.recoverySet,
     branding: STATE.branding || null
   };
 }
@@ -967,9 +1184,13 @@ async function refreshUsersFromServer(){
     const meta = snap.data();
     STATE.users = meta.users || [];
     STATE.recoveryCode = meta.recoveryCode || null;
+    STATE.recovery = meta.recovery || null;
+    STATE.recoverySet = !!meta.recoverySet;
     if(SYNCED && SYNCED.meta){
       SYNCED.meta.users = JSON.parse(JSON.stringify(STATE.users));
       SYNCED.meta.recoveryCode = STATE.recoveryCode;
+      SYNCED.meta.recovery = STATE.recovery ? JSON.parse(JSON.stringify(STATE.recovery)) : null;
+      SYNCED.meta.recoverySet = STATE.recoverySet;
     }
     return true;
   }catch(e){
@@ -983,6 +1204,63 @@ let currentItemId = null;
 let userName = '';
 let currentUser = null;
 const SESSION_KEY = 'wolverSessionUser';
+/* ============ تشفير كلمات المرور ورمز الاسترجاع ============
+   مفيش أي كلمة مرور أو رمز بيتخزن كنص عادي: بيتخزن "بصمة" (PBKDF2-SHA256 + ملح عشوائي لكل قيمة)،
+   ومفيش طريقة ترجّع البصمة لكلمة المرور الأصلية. التحقق بيتم بحساب البصمة من اللي اتكتب ومقارنتها. */
+const PW_ITER = 150000;
+function _b64(buf){ let s=''; new Uint8Array(buf).forEach(b=>s+=String.fromCharCode(b)); return btoa(s); }
+function _unb64(str){ const bin=atob(str); const a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return a; }
+async function _pbkdf2(secret, saltB64, iter){
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(secret)), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({name:'PBKDF2', hash:'SHA-256', salt:_unb64(saltB64), iterations:iter}, key, 256);
+  return _b64(bits);
+}
+async function makeSecret(plain){
+  const salt = new Uint8Array(16); crypto.getRandomValues(salt);
+  const saltB64 = _b64(salt);
+  return {v:1, iter:PW_ITER, salt:saltB64, hash: await _pbkdf2(plain, saltB64, PW_ITER)};
+}
+async function checkSecret(plain, rec){
+  if(!rec || !rec.salt || !rec.hash) return false;
+  try{ return (await _pbkdf2(plain, rec.salt, rec.iter||PW_ITER)) === rec.hash; }catch(e){ return false; }
+}
+async function userPasswordMatches(user, plain){
+  if(!user) return false;
+  if(user.pw) return checkSecret(plain, user.pw);
+  return typeof user.password==='string' && user.password===plain;   // حسابات قديمة لسه ما اتحولتش
+}
+async function setUserPassword(user, plain){ user.pw = await makeSecret(plain); delete user.password; }
+function normUserName(u){ return String(u||'').trim().toLowerCase(); }
+function normRecovery(code){ return String(code||'').trim().toUpperCase(); }
+function hasRecoveryCode(){ if(AUTH_MODE==='secure') return !!STATE.recoverySet; return !!(STATE.recovery || STATE.recoveryCode); }
+async function recoveryCodeMatches(entered){
+  if(STATE.recovery) return checkSecret(normRecovery(entered), STATE.recovery);
+  return !!STATE.recoveryCode && normRecovery(entered)===normRecovery(STATE.recoveryCode);
+}
+async function setRecoveryCode(code){ STATE.recovery = await makeSecret(normRecovery(code)); STATE.recoveryCode = null; }
+function clearRecoveryCode(){ STATE.recovery = null; STATE.recoveryCode = null; }
+// تحويل أي بيانات قديمة (كلمات مرور أو رمز بنص عادي) لبصمات — بيحصل مرة واحدة تلقائيًا
+async function migrateSecrets(){
+  let changed = false;
+  for(const u of (STATE.users||[])){
+    if(!u.pw && typeof u.password==='string'){ await setUserPassword(u, u.password); changed = true; }
+    else if(u.pw && 'password' in u){ delete u.password; changed = true; }
+  }
+  if(STATE.recoveryCode){ await setRecoveryCode(STATE.recoveryCode); changed = true; }
+  return changed;
+}
+// الجلسة: بنحفظ اسم المستخدم + جزء من بصمته، عشان كتابة اسم مستخدم يدويًا في المتصفح ما تكفيش للدخول
+function saveSession(user){
+  try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify({u:user.username, k:(user.pw&&user.pw.hash||'').slice(0,24)})); }catch(e){}
+}
+function sessionUser(){
+  let raw = null; try{ raw = sessionStorage.getItem(SESSION_KEY); }catch(e){}
+  if(!raw) return null;
+  let d = null; try{ d = JSON.parse(raw); }catch(e){ return null; }
+  if(!d || !d.u || !d.k) return null;
+  const m = (STATE.users||[]).find(x=>x.username===d.u);
+  return (m && m.pw && m.pw.hash.slice(0,24)===d.k) ? m : null;
+}
 
 const I18N = {
   ar: {
@@ -1242,6 +1520,16 @@ const I18N = {
     errConnectRetry: `تعذر الاتصال بالخادم — حاول مرة أخرى`,
     promptRecoveryCode: `اكتب رمز استرجاع حساب المدير:`,
     msgWrongRecoveryCode: `رمز الاسترجاع غير صحيح`,
+    noticeTitle: `تنبيه`,
+    okBtn: `حسنًا`,
+    resetSetupTitle: `إعداد حساب مدير جديد`,
+    resetSetupDesc: `اكتب اسم مستخدم وكلمة مرور لحساب المدير الجديد. كل الحسابات القديمة هتتلغي، والمخزون والأذون مش هيتأثروا.`,
+    errAccountInactive: `الحساب ده مش مفعّل على النظام. راجع مدير النظام.`,
+    errTooManyAttempts: `محاولات دخول كتير غلط. استنى شوية وحاول تاني.`,
+    msgSecuringAccounts: `جاري تأمين الحسابات لأول مرة… استنى ثواني`,
+    errMigrationFailed: `حصلت مشكلة أثناء تأمين الحسابات. حاول تاني، ولو اتكررت تواصل مع الدعم.`,
+    errNoRecoveryCode: `مفيش رمز استرجاع متسجّل للنظام ده، علشان كده إعادة ضبط حساب المدير غير متاحة من هنا. تواصل مع مسؤول النظام.`,
+    askCreateRecoveryCode: `مفيش رمز استرجاع لحساب المدير لحد دلوقتي. من غيره مش هتقدر تسترجع الحساب لو نسيت بيانات الدخول. تحب تولّده دلوقتي؟`,
     confirmResetAdmin: `هذا سيحذف كل حسابات المستخدمين الحالية نهائيًا (بدون التأثير على المخزون أو الأذون المحفوظة) وتحتاج تعمل حساب مدير جديد من الأول. متأكد؟`,
     msgUsersCleared: `تم مسح حسابات المستخدمين — اعمل حساب مدير جديد`,
     errSaveRetry: `تعذر الحفظ، حاول مرة أخرى`,
@@ -1633,6 +1921,16 @@ const I18N = {
     errConnectRetry: `Could not connect to the server — try again`,
     promptRecoveryCode: `Enter the admin recovery code:`,
     msgWrongRecoveryCode: `Recovery code is incorrect`,
+    noticeTitle: `Notice`,
+    okBtn: `OK`,
+    resetSetupTitle: `Set Up a New Admin Account`,
+    resetSetupDesc: `Enter a username and password for the new admin account. All old accounts will be removed; stock and vouchers are not affected.`,
+    errAccountInactive: `This account is not active on the system. Please contact the administrator.`,
+    errTooManyAttempts: `Too many failed attempts. Please wait a bit and try again.`,
+    msgSecuringAccounts: `Securing accounts for the first time… please wait a few seconds`,
+    errMigrationFailed: `Something went wrong while securing the accounts. Please try again, and contact support if it keeps happening.`,
+    errNoRecoveryCode: `No recovery code has been set for this system, so the admin account can't be reset from here. Please contact the system administrator.`,
+    askCreateRecoveryCode: `No admin recovery code has been created yet. Without it you can't recover the account if you forget your login. Generate one now?`,
     confirmResetAdmin: `This will permanently delete all current user accounts (without affecting stock or saved vouchers) and you'll need to create a new admin account from scratch. Are you sure?`,
     msgUsersCleared: `User accounts cleared — create a new admin account`,
     errSaveRetry: `Save failed, try again`,
@@ -2316,6 +2614,8 @@ async function loadState(){
         nextNoteSerial: meta.nextNoteSerial || 1,
         users: meta.users || [],
         recoveryCode: meta.recoveryCode || null,
+        recovery: meta.recovery || null,
+        recoverySet: !!meta.recoverySet,
         itemsManuallyOrdered: !!meta.itemsManuallyOrdered,
         branding: meta.branding || null,
         items, notes, transactions
@@ -2492,9 +2792,13 @@ async function mergeDuplicatePackagingBatches(){
 
 /* ============ UI HELPERS ============ */
 let _confirmResolve = null;
-function customConfirm(message){
+function customConfirm(message, alertOnly){
   return new Promise(resolve=>{
     _confirmResolve = resolve;
+    document.getElementById('confirmTitle').textContent = alertOnly ? t('noticeTitle') : t('confirm');
+    document.getElementById('confirmOkBtn').textContent = alertOnly ? t('okBtn') : t('confirm');
+    document.getElementById('confirmOkBtn').className = alertOnly ? 'btn btn-amber' : 'btn btn-danger';
+    document.getElementById('confirmCancelBtn').style.display = alertOnly ? 'none' : '';
     document.getElementById('confirmMessage').textContent = message;
     document.getElementById('confirmOverlay').classList.add('active');
   });
@@ -2534,13 +2838,16 @@ function initPwToggles(){
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
 /* ============ AUTH ============ */
 function renderAuthGate(){
+  if(AUTH_MODE==='secure') return renderLoginForm();
+  if(AUTH_MODE==='fresh') return renderSetupForm();
   if(!STATE.users || STATE.users.length===0) renderSetupForm();
   else renderLoginForm();
 }
 function renderSetupForm(){
+  const resetting = (typeof pendingResetCode!=='undefined') && !!pendingResetCode;
   document.getElementById('authBody').innerHTML = `
-    <h2>${t('setupTitle')}</h2>
-    <div class="item-meta">${t('setupDesc')}</div>
+    <h2>${t(resetting ? 'resetSetupTitle' : 'setupTitle')}</h2>
+    <div class="item-meta">${t(resetting ? 'resetSetupDesc' : 'setupDesc')}</div>
     <div class="form-grid">
       <div class="full"><label>${t('username')}</label><input id="setupUser"></div>
       <div class="full"><label>${t('password')}</label><div class="pw-wrap"><input id="setupPass" type="password"><button type="button" class="pw-toggle" onclick="togglePw('setupPass', this)"></button></div></div>
@@ -2558,6 +2865,7 @@ async function submitSetup(){
   const err = document.getElementById('setupError');
   if(!u || !p){ err.textContent=t('errFillUserPass'); err.style.display='block'; return; }
   if(p!==p2){ err.textContent=t('errPassMismatch'); err.style.display='block'; return; }
+  if(AUTH_MODE==='secure' || AUTH_MODE==='fresh'){ await submitSecureSetup(u, p, err); return; }
   const loaded = await loadState();
   if(!loaded){ err.textContent=t('errConnectServer'); err.style.display='block'; return; }
   if(STATE.users && STATE.users.length>0){
@@ -2565,13 +2873,19 @@ async function submitSetup(){
     showToast(t('msgAdminAlreadySetup'));
     return;
   }
-  STATE.users = [{username:u, password:p, role:'admin', isFounder:true}];
+  const founder = {username:u, role:'admin', isFounder:true};
+  await setUserPassword(founder, p);
+  STATE.users = [founder];
+  const newCode = makeRecoveryCode();
+  await setRecoveryCode(newCode);
   const ok = await persist();
-  if(!ok){ err.textContent=t('errSaveFailed'); err.style.display='block'; STATE.users=[]; return; }
+  if(!ok){ err.textContent=t('errSaveFailed'); err.style.display='block'; STATE.users=[]; clearRecoveryCode(); return; }
   currentUser = STATE.users[0];
   userName = currentUser.username;
-  try{ sessionStorage.setItem(SESSION_KEY, currentUser.username); }catch(e){}
-  enterApp();
+  saveSession(currentUser);
+  enterApp(true);
+  document.getElementById('recoveryCodeDisplay').textContent = newCode;
+  document.getElementById('recoveryCodeOverlay').classList.add('active');
 }
 function renderLoginForm(){
   document.getElementById('authBody').innerHTML = `
@@ -2593,21 +2907,35 @@ function renderLoginForm(){
 async function forgotPassword(){
   try{
     showToast(t('msgVerifying'));
-    const loaded = await loadState();
-    if(!loaded){ showToast(t('errConnectRetry')); return; }
-    if(STATE.recoveryCode){
+    if(AUTH_MODE==='secure'){
+      if(!(await secureHasRecovery())){ await customConfirm(t('errNoRecoveryCode'), true); return; }
       const entered = await customPrompt(t('promptRecoveryCode'));
       if(!entered) return;
-      if(entered.trim().toUpperCase() !== STATE.recoveryCode.toUpperCase()){
-        showToast(t('msgWrongRecoveryCode'));
-        return;
-      }
+      if(!(await customConfirm(t('confirmResetAdmin')))) return;
+      pendingResetCode = entered;
+      renderSetupForm();
+      return;
+    }
+    if(AUTH_MODE==='legacy') await ensureAnonSession();
+    const loaded = await loadState();
+    if(!loaded){ showToast(t('errConnectRetry')); return; }
+    // الرمز إجباري دايمًا: لو مفيش رمز متولّد، إعادة الضبط ممنوعة من الشاشة دي
+    if(!hasRecoveryCode()){
+      await customConfirm(t('errNoRecoveryCode'), true);
+      return;
+    }
+    const entered = await customPrompt(t('promptRecoveryCode'));
+    if(!entered) return;
+    if(!(await recoveryCodeMatches(entered))){
+      showToast(t('msgWrongRecoveryCode'));
+      return;
     }
     const sure = await customConfirm(t('confirmResetAdmin'));
     if(!sure) return;
     STATE.users = [];
-    STATE.recoveryCode = null;
+    clearRecoveryCode();
     const ok = await persist();
+    if(ok && AUTH_MODE==='legacy') AUTH_MODE = 'fresh';
     if(ok){ renderSetupForm(); showToast(t('msgUsersCleared')); }
     else showToast(t('errSaveRetry'));
   }catch(e){
@@ -2619,17 +2947,44 @@ async function submitLogin(){
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value.trim();
   const err = document.getElementById('loginError');
+  if(AUTH_MODE==='secure'){
+    const r = await secureSignIn(u, p);
+    if(r.err){ err.textContent = t(r.err==='rate' ? 'errTooManyAttempts' : r.err==='net' ? 'errConnectServer' : 'errBadCredentials'); err.style.display='block'; return; }
+    if(!(await enterSecureSession())){ await authSignOut(); err.textContent=t('errAccountInactive'); err.style.display='block'; }
+    return;
+  }
+  if(AUTH_MODE==='legacy') await ensureAnonSession();
   const loaded = await loadState();
   if(!loaded){ err.textContent=t('errConnectServer'); err.style.display='block'; return; }
   if(!STATE.users || STATE.users.length===0){ renderSetupForm(); return; }
-  const match = STATE.users.find(x=>x.username.toLowerCase()===u.toLowerCase() && x.password===p);
-  if(!match){ err.textContent=t('errBadCredentials'); err.style.display='block'; return; }
-  currentUser = match;
+  const cand = STATE.users.find(x=>x.username.toLowerCase()===u.toLowerCase());
+  const okPass = cand ? await userPasswordMatches(cand, p) : false;
+  if(!okPass){ err.textContent=t('errBadCredentials'); err.style.display='block'; return; }
+  if(AUTH_MODE==='legacy' && cand.role==='admin'){
+    if(!(await migrateToSecure(cand, p))){ err.textContent=t('errMigrationFailed'); err.style.display='block'; return; }
+    await runDataMigrations();
+    currentUser = cand; userName = cand.username;
+    enterApp();
+    return;
+  }
+  if(AUTH_MODE==='local' && await migrateSecrets()) await persist();
+  currentUser = cand;
   userName = currentUser.username;
-  try{ sessionStorage.setItem(SESSION_KEY, currentUser.username); }catch(e){}
+  saveSession(currentUser);
   enterApp();
 }
-function enterApp(){
+async function enterSecureSession(){
+  const ok = await loadState();
+  if(!ok) return false;
+  const u = fbUser();
+  const me = u ? (STATE.users||[]).find(x=>x.uid===u.uid) : null;
+  if(!me) return false;
+  await runDataMigrations();
+  currentUser = me; userName = me.username;
+  enterApp();
+  return true;
+}
+function enterApp(skipRecoveryCheck){
   document.getElementById('authGate').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('currentUserLabel').textContent = t('greetingHi') + ' ' + currentUser.username;
@@ -2638,10 +2993,17 @@ function enterApp(){
   document.getElementById('logNavBtn').style.display = currentUser.role==='admin' ? 'inline-block' : 'none';
   applyPermissions();
   renderDashboard(); renderItems(); renderLog();
+  if(!skipRecoveryCheck && currentUser.role==='admin' && !hasRecoveryCode()){
+    setTimeout(async ()=>{
+      const yes = await customConfirm(t('askCreateRecoveryCode'));
+      if(yes) generateRecoveryCode(true);
+    }, 600);
+  }
 }
 function logout(){
   currentUser = null; userName='';
   try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  authSignOut();
   document.getElementById('mainApp').style.display='none';
   document.getElementById('authGate').style.display='flex';
   renderAuthGate();
@@ -2735,23 +3097,31 @@ async function savePermissions(){
   if(ok){ closePermissionsModal(); showToast(t('msgPermissionsSaved')); if(currentUser && currentUser.username===user.username){ currentUser.permissions = perms; currentUser.needsApproval = newNeedsApproval; currentUser.canViewReorderReport = newReorderReport; applyPermissions(); renderDashboard(); } }
   else { user.permissions = old; user.needsApproval = oldNeedsApproval; user.canViewReorderReport = oldReorderReport; showToast(t('errSaveRetry')); }
 }
-async function generateRecoveryCode(){
-  if(!currentUser || currentUser.role!=='admin') return;
-  const sure = await customConfirm(t('confirmGenerateCode'));
-  if(!sure) return;
+function makeRecoveryCode(){
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const rnd = new Uint32Array(10);
+  try{ crypto.getRandomValues(rnd); }catch(e){ for(let i=0;i<10;i++) rnd[i]=Math.floor(Math.random()*4294967296); }
   let code = '';
-  for(let i=0;i<10;i++) code += chars[Math.floor(Math.random()*chars.length)];
-  code = code.slice(0,5)+'-'+code.slice(5);
+  for(let i=0;i<10;i++) code += chars[rnd[i] % chars.length];
+  return code.slice(0,5)+'-'+code.slice(5);
+}
+async function generateRecoveryCode(skipConfirm){
+  if(!currentUser || currentUser.role!=='admin') return;
+  if(!skipConfirm){
+    const sure = await customConfirm(t('confirmGenerateCode'));
+    if(!sure) return;
+  }
+  const code = makeRecoveryCode();
   await refreshUsersFromServer();
-  const old = STATE.recoveryCode;
-  STATE.recoveryCode = code;
-  const ok = await persist();
+  const old = {recovery: STATE.recovery, recoveryCode: STATE.recoveryCode};
+  let ok;
+  if(AUTH_MODE==='secure'){ try{ ok = await secureGenerateRecovery(code); }catch(e){ console.error(e); ok = false; } }
+  else { await setRecoveryCode(code); ok = await persist(); }
   if(ok){
     document.getElementById('recoveryCodeDisplay').textContent = code;
     document.getElementById('recoveryCodeOverlay').classList.add('active');
   } else {
-    STATE.recoveryCode = old;
+    STATE.recovery = old.recovery; STATE.recoveryCode = old.recoveryCode;
     showToast(t('errSaveRetry'));
   }
 }
@@ -2762,8 +3132,19 @@ async function addUser(){
   const role = document.getElementById('newUserRole').value;
   if(!u || !p){ showToast(t('errFillUserPass')); return; }
   await refreshUsersFromServer();
-  if(STATE.users.some(x=>x.username===u)){ showToast(t('errUsernameExists')); renderUsersList(); return; }
-  STATE.users.push({username:u, password:p, role, permissions: defaultPermissions()});
+  if(STATE.users.some(x=>normUserName(x.username)===normUserName(u))){ showToast(t('errUsernameExists')); renderUsersList(); return; }
+  if(AUTH_MODE==='secure'){
+    let done = false;
+    try{ done = await secureAddUser(u, p, role); }catch(e){ console.error('add user failed', e); }
+    if(done){
+      document.getElementById('newUserName').value=''; document.getElementById('newUserPass').value='';
+      renderUsersList(); showToast(t('msgUserAdded'));
+    } else showToast(t('errSaveRetry'));
+    return;
+  }
+  const nu = {username:u, role, permissions: defaultPermissions()};
+  await setUserPassword(nu, p);
+  STATE.users.push(nu);
   const ok = await persist();
   if(ok){
     document.getElementById('newUserName').value=''; document.getElementById('newUserPass').value='';
@@ -2780,11 +3161,20 @@ async function changeUserPassword(username){
   await refreshUsersFromServer();
   const u = STATE.users.find(x=>x.username===username);
   if(!u){ showToast(t('msgUserGone')); renderUsersList(); return; }
-  const old = u.password;
-  u.password = newPass;
+  if(AUTH_MODE==='secure'){
+    let done = false;
+    try{ done = await secureChangePassword(u, newPass); }catch(e){ console.error('change password failed', e); }
+    showToast(t(done ? 'msgPasswordChanged' : 'errSaveRetry'));
+    return;
+  }
+  const old = {pw:u.pw, password:u.password};
+  await setUserPassword(u, newPass);
   const ok = await persist();
-  if(ok) showToast(t('msgPasswordChanged'));
-  else { u.password = old; showToast(t('errSaveRetry')); }
+  if(ok){
+    showToast(t('msgPasswordChanged'));
+    if(currentUser && currentUser.username===u.username){ currentUser = u; saveSession(u); }
+  }
+  else { if(old.pw) u.pw = old.pw; else delete u.pw; if(old.password!==undefined) u.password = old.password; showToast(t('errSaveRetry')); }
 }
 async function deleteUser(username){
   await refreshUsersFromServer();
@@ -2796,6 +3186,7 @@ async function deleteUser(username){
   if(!(await customConfirm(t('confirmDeleteUserPrefix')+username+t('confirmDeleteUserSuffix')))) return;
   STATE.users = STATE.users.filter(x=>x.username!==username);
   const ok = await persist();
+  if(ok && AUTH_MODE==='secure') await secureRemoveUsers([target]);
   if(ok){ renderUsersList(); showToast(t('msgUserDeleted')); }
   else { STATE.users.push(target); showToast(t('errSaveRetry')); }
 }
@@ -2870,7 +3261,8 @@ async function confirmWipePassword(){
   if(!currentUser){ errEl.textContent=t('errMustBeLoggedIn'); errEl.style.display='block'; return; }
   await refreshUsersFromServer();
   const freshUser = STATE.users.find(x=>x.username===currentUser.username && x.role==='admin');
-  if(!freshUser || freshUser.password !== pass){
+  const passOk = !!freshUser && (AUTH_MODE==='secure' ? await secureVerifyPassword(freshUser, pass) : await userPasswordMatches(freshUser, pass));
+  if(!passOk){
     errEl.textContent = t('errWrongPassword');
     errEl.style.display = 'block';
     return;
@@ -2888,7 +3280,7 @@ async function performWipeData(opts){
     items: JSON.parse(JSON.stringify(STATE.items)),
     transactions: STATE.transactions,
     notes: STATE.notes, nextNoteSerial: STATE.nextNoteSerial, users: STATE.users,
-    recoveryCode: STATE.recoveryCode, itemsManuallyOrdered: STATE.itemsManuallyOrdered
+    recoveryCode: STATE.recoveryCode, recovery: STATE.recovery, itemsManuallyOrdered: STATE.itemsManuallyOrdered
   };
   if(!opts.keepWarehouses) STATE.warehouses = {w1:'المخزن الأول', w2:'المخزن الثاني'};
   if(!opts.keepItems){
@@ -2907,7 +3299,7 @@ async function performWipeData(opts){
     const founder = STATE.users.find(u=>u.isFounder);
     if(opts.deleteFounder || !founder){
       STATE.users = [];
-      STATE.recoveryCode = null;
+      clearRecoveryCode();
     } else {
       STATE.users = [founder];
     }
@@ -2917,9 +3309,14 @@ async function performWipeData(opts){
   if(!ok){
     STATE.warehouses = backup.warehouses; STATE.items = backup.items; STATE.transactions = backup.transactions;
     STATE.notes = backup.notes; STATE.nextNoteSerial = backup.nextNoteSerial; STATE.users = backup.users;
-    STATE.recoveryCode = backup.recoveryCode; STATE.itemsManuallyOrdered = backup.itemsManuallyOrdered;
+    STATE.recoveryCode = backup.recoveryCode; STATE.recovery = backup.recovery; STATE.itemsManuallyOrdered = backup.itemsManuallyOrdered;
     showToast(t('errWipeRetry'));
     return;
+  }
+  if(AUTH_MODE==='secure' && !opts.keepUsers){
+    const removed = (backup.users||[]).filter(x=>!STATE.users.some(y=>y.username===x.username));
+    if(STATE.users.length===0){ await secureWipeAllAccess(backup.users||[]); AUTH_MODE = 'fresh'; }
+    else await secureRemoveUsers(removed);
   }
   if(wipingCurrentUser){
     showToast(t('msgWipeSuccessLogout'));
@@ -4286,14 +4683,35 @@ async function commitTransfer(){
 }
 
 /* ============ INIT ============ */
+async function runDataMigrations(){
+  const changed = [
+    await migrateUltraTecToWarehouse2(),
+    await wipeAllBalances(),
+    await clearAllImagesAndExpiries(),
+    await mergeDuplicatePackagingBatches(),
+    AUTH_MODE==='local' ? await migrateSecrets() : false
+  ].some(Boolean);
+  if(changed) await persist();
+}
 async function init(){
   initI18n();
   document.getElementById('wordmarkImg').src = 'data:image/png;base64,'+WORDMARK_B64;
   document.getElementById('authWordmarkImg').src = 'data:image/png;base64,'+WORDMARK_B64;
   initPwToggles();
-  const ok = await loadState();
+  const db = await getDb();
+  if(db){
+    const fu = fbUser();
+    if(fu && !fu.isAnonymous){
+      AUTH_MODE = 'secure';
+      if(await enterSecureSession()) return;
+      await authSignOut();
+    }
+    AUTH_MODE = await detectAuthMode();
+  }
+  if(AUTH_MODE==='secure' || AUTH_MODE==='fresh'){ renderAuthGate(); return; }
+  const ok = db && AUTH_MODE!=='offline' && await loadState();
   if(!ok){
-    const noConfig = !(await getDb());
+    const noConfig = !db;
     document.getElementById('authBody').innerHTML = noConfig ? `
       <h2>${t('dbSetupMissingTitle')}</h2>
       <div class="item-meta">${t('dbSetupMissingDesc')}</div>
@@ -4305,25 +4723,15 @@ async function init(){
     `;
     return;
   }
-  const changed = [
-    await migrateUltraTecToWarehouse2(),
-    await wipeAllBalances(),
-    await clearAllImagesAndExpiries(),
-    await mergeDuplicatePackagingBatches()
-  ].some(Boolean);
-  if(changed) await persist();
-  let savedUsername = null;
-  try{ savedUsername = sessionStorage.getItem(SESSION_KEY); }catch(e){}
-  if(savedUsername && STATE.users && STATE.users.length){
-    const match = STATE.users.find(x=>x.username===savedUsername);
-    if(match){
-      currentUser = match;
-      userName = currentUser.username;
-      enterApp();
-      return;
-    }
-    try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  await runDataMigrations();
+  const match = sessionUser();
+  if(match){
+    currentUser = match;
+    userName = currentUser.username;
+    enterApp();
+    return;
   }
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
   renderAuthGate();
 }
 init();

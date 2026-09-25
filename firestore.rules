@@ -1,0 +1,51 @@
+rules_version = '2';
+// WOLVER / StockPro — قواعد الحماية
+// القراءة والكتابة مسموحة بس لأعضاء النظام (access/members).
+// access/recovery محدش يقدر يقراه، والقواعد هي اللي بتتأكد من رمز الاسترجاع.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function membersDoc() { return /databases/$(database)/documents/access/members; }
+    function recoveryDoc() { return /databases/$(database)/documents/access/recovery; }
+    function signedIn() { return request.auth != null; }
+    function isMember() {
+      return signedIn() && exists(membersDoc())
+        && request.auth.uid in get(membersDoc()).data.uids;
+    }
+    function isAdmin() {
+      return isMember() && get(membersDoc()).data.uids[request.auth.uid] == 'admin';
+    }
+    function onlySelfAsAdmin() {
+      return request.resource.data.uids.keys().hasOnly([request.auth.uid])
+        && request.resource.data.uids[request.auth.uid] == 'admin';
+    }
+    function recoveryOk() {
+      return exists(recoveryDoc())
+        && request.resource.data.get('resetProof', '') is string
+        && hashing.sha256(request.resource.data.get('resetProof', '')).toHexString().lower()
+             == get(recoveryDoc()).data.hash;
+    }
+
+    match /access/members {
+      allow read: if isMember();
+      allow create: if signedIn() && onlySelfAsAdmin();
+      allow update: if isAdmin() || (signedIn() && onlySelfAsAdmin() && recoveryOk());
+      allow delete: if isAdmin();
+    }
+    match /access/recovery {
+      allow read: if false;
+      allow write: if isAdmin();
+    }
+    match /access/public {
+      allow get: if true;
+      allow write: if isAdmin();
+    }
+    match /logins/{key} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+    match /{coll}/{doc=**} {
+      allow read, write: if isMember() && coll != 'access' && coll != 'logins';
+    }
+  }
+}
