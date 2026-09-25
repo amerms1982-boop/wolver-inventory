@@ -293,20 +293,20 @@
       <div class="stat warn"><div class="num" id="statSoon">-</div><div class="lbl" data-i18n="statSoonLbl">تنتهي خلال 6 أشهر</div></div>
     </div>
     <div class="wh-tabs" id="whStatTabs"></div>
-    <div class="section-head" id="reorderReportRow" style="display:none;"><h2 data-i18n="reorderLevelHeading">📦 حد الطلب</h2>
+    <div class="section-head" id="reorderReportRow" style="display:none;"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg><span data-i18n="reorderLevelHeading">حد الطلب</span></h2>
       <button class="btn btn-ghost btn-sm" onclick="openReorderReport()"><span data-i18n="viewLowStockItems">عرض الأصناف الناقصة</span> (<span id="reorderCount">0</span>)</button>
     </div>
-    <div class="section-head" id="pendingApprovalsRow" style="display:none;"><h2 data-i18n="pendingApprovalsHeading">⏳ الأذونات المعلّقة</h2>
+    <div class="section-head" id="pendingApprovalsRow" style="display:none;"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg><span data-i18n="pendingApprovalsHeading">الأذونات المعلّقة</span></h2>
       <button class="btn btn-ghost btn-sm" onclick="openPendingApprovals()"><span data-i18n="reviewApprovals">مراجعة الأذونات</span> (<span id="pendingApprovalsCount">0</span>)</button>
     </div>
-    <div class="section-head"><h2 data-i18n="expiryAlertsHeading">⚠️ تنبيهات الصلاحية — صرف هذه الأصناف أولاً</h2><span class="hint" data-i18n="sortedByNearestExpiry">مرتبة من الأقرب انتهاءً</span></div>
+    <div class="section-head"><h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span data-i18n="expiryAlertsHeading">تنبيهات الصلاحية — صرف هذه الأصناف أولاً</span></h2><span class="hint" data-i18n="sortedByNearestExpiry">مرتبة من الأقرب انتهاءً</span></div>
     <div id="alertsList"></div>
   </div>
 
   <div class="view" id="view-items">
     <div class="search-row">
       <input id="itemSearch" data-i18n-placeholder="searchItemPlaceholder" placeholder="بحث عن صنف..." oninput="renderItems()">
-      <button id="reorderModeBtn" class="btn btn-ghost" onclick="toggleReorderMode()">🔀 <span data-i18n="manualReorderBtn">ترتيب يدوي</span></button>
+      <button id="reorderModeBtn" class="btn btn-ghost" onclick="toggleReorderMode()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> <span data-i18n="manualReorderBtn">ترتيب يدوي</span></button>
       <button id="newItemBtn" class="btn btn-teal" onclick="openNewItemForm()">+ <span data-i18n="newItemBtn">صنف جديد</span></button>
     </div>
     <div id="reorderHint" class="item-meta" style="display:none;margin-bottom:8px;" data-i18n="dragHint">اسحب أي بطاقة وأفلتها في المكان اللي عايزه فيه لإعادة الترتيب.</div>
@@ -335,7 +335,7 @@
 
   <div class="view" id="view-log">
     <div class="section-head"><h2 data-i18n="allTransactionsLog">سجل كل الحركات</h2>
-      <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑 <span data-i18n="clearLogBtn">مسح السجل</span></button>
+      <button class="btn btn-danger btn-sm" onclick="clearLog()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> <span data-i18n="clearLogBtn">مسح السجل</span></button>
     </div>
     <div class="log-filters">
       <select id="logType" onchange="renderLog()">
@@ -359,7 +359,7 @@
 <!-- ITEM DETAIL MODAL -->
 <div class="overlay" id="itemOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeItemModal()">✕</button>
+    <button class="modal-close" onclick="closeItemModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <div style="display:flex;align-items:center;gap:12px;">
       <img id="miThumb" class="zoomable" onclick="openImageZoom(this.src)" style="width:52px;height:52px;object-fit:contain;background:var(--surface);border:1px solid var(--line);border-radius:10px;display:none;">
       <div><h2 id="miName" style="margin:0;"></h2><div class="item-meta" id="miMeta" style="margin:2px 0 0;"></div></div>
@@ -368,8 +368,8 @@
     <table class="batches" id="miBatchTable"></table>
 
     <div class="action-row">
-      <button id="editItemBtn" class="btn btn-ghost btn-sm" onclick="openEditItem()">✎ <span data-i18n="editItemBtn">تعديل الصنف</span></button>
-      <button class="btn btn-ghost btn-sm" onclick="openItemHistoryModal()">📋 <span data-i18n="itemHistoryBtn">حركة الصنف</span></button>
+      <button id="editItemBtn" class="btn btn-ghost btn-sm" onclick="openEditItem()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> <span data-i18n="editItemBtn">تعديل الصنف</span></button>
+      <button class="btn btn-ghost btn-sm" onclick="openItemHistoryModal()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg> <span data-i18n="itemHistoryBtn">حركة الصنف</span></button>
       <button id="deleteItemBtn" class="btn btn-danger btn-sm" onclick="deleteCurrentItem()" data-i18n="deleteItemBtn2">حذف الصنف</button>
     </div>
   </div>
@@ -378,7 +378,7 @@
 <!-- ITEM HISTORY MODAL -->
 <div class="overlay" id="itemHistoryOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closeItemHistoryModal()">✕</button>
+    <button class="modal-close" onclick="closeItemHistoryModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 id="itemHistoryTitle" data-i18n="itemHistoryBtn">حركة الصنف</h2>
     <div class="log-filters">
       <input type="date" id="itemHistoryFrom" onchange="renderItemHistoryModal()">
@@ -392,8 +392,8 @@
       </table>
     </div>
     <div class="form-actions">
-      <button class="btn btn-ghost" onclick="previewPrint(buildItemHistoryPrintHtml())">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button class="btn btn-ghost" onclick="doPrint(buildItemHistoryPrintHtml())">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button class="btn btn-ghost" onclick="previewPrint(buildItemHistoryPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button class="btn btn-ghost" onclick="doPrint(buildItemHistoryPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
     </div>
   </div>
 </div>
@@ -401,7 +401,7 @@
 <!-- EDIT ITEM MODAL -->
 <div class="overlay" id="editItemOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeEditItem()">✕</button>
+    <button class="modal-close" onclick="closeEditItem()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="editItemHeading">تعديل الصنف</h2>
     <div class="form-grid">
       <div class="full"><label data-i18n="itemNameLabel">اسم الصنف</label><input id="editItemName"></div>
@@ -429,8 +429,8 @@
 <!-- REORDER LEVEL REPORT MODAL -->
 <div class="overlay" id="reorderReportOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closeReorderReport()">✕</button>
-    <h2 data-i18n="lowStockItemsHeading">📦 أصناف وصلت لحد الطلب</h2>
+    <button class="modal-close" onclick="closeReorderReport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg><span data-i18n="lowStockItemsHeading">أصناف وصلت لحد الطلب</span></h2>
     <div class="item-meta" data-i18n="lowStockReportDesc">الأصناف اللي رصيدها الحالي (كل المخازن) وصل لحد الطلب المحدد لها، أو نزل لـ 20 أو أقل، أو نفد تمامًا — في حالة عدم تحديد حد طلب مخصص للصنف.</div>
     <div class="table-scroll">
       <table class="log-table">
@@ -439,8 +439,8 @@
       </table>
     </div>
     <div class="form-actions">
-      <button class="btn btn-ghost" onclick="previewPrint(buildReorderReportPrintHtml())">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button class="btn btn-ghost" onclick="doPrint(buildReorderReportPrintHtml())">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button class="btn btn-ghost" onclick="previewPrint(buildReorderReportPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button class="btn btn-ghost" onclick="doPrint(buildReorderReportPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
       <button class="btn btn-ghost" onclick="closeReorderReport()" data-i18n="close">إغلاق</button>
     </div>
   </div>
@@ -449,8 +449,8 @@
 <!-- PENDING APPROVALS MODAL -->
 <div class="overlay" id="pendingApprovalsOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closePendingApprovals()">✕</button>
-    <h2 data-i18n="pendingApprovalsTitle">⏳ الأذونات المعلّقة — بانتظار المراجعة</h2>
+    <button class="modal-close" onclick="closePendingApprovals()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg><span data-i18n="pendingApprovalsTitle">الأذونات المعلّقة — بانتظار المراجعة</span></h2>
     <div class="item-meta" data-i18n="pendingApprovalsDesc">الأذونات دي متحفوظة بس لسه ما أثّرتش على المخزون. راجعها، وعدّل عليها لو محتاج، ثم اعتمدها أو ارفضها.</div>
     <div id="pendingApprovalsList"></div>
     <div class="form-actions">
@@ -462,7 +462,7 @@
 <!-- OPENING BALANCES MODAL -->
 <div class="overlay" id="openingOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closeOpeningBalances()">✕</button>
+    <button class="modal-close" onclick="closeOpeningBalances()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="openingBalancesTitle">أرصدة بداية المدة</h2>
     <div id="opEditingBanner"></div>
     <div class="item-meta" data-i18n="openingBalancesDesc">حدّد الكمية الفعلية لكل صنف/تعبئة/تاريخ صلاحية في كل مخزن، ثم اضغط حفظ.</div>
@@ -477,7 +477,7 @@
 <!-- BULK IN (إذن إضافة) MODAL -->
 <div class="overlay" id="bulkInOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closeBulkIn()">✕</button>
+    <button class="modal-close" onclick="closeBulkIn()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="bulkInTitle">إذن إضافة</h2>
     <div id="biEditingBanner"></div>
     <div class="form-grid">
@@ -492,8 +492,8 @@
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkInRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="biTable"></table>
     <div class="form-actions">
-      <button id="bulkInPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildBulkPrintHtml('bi'))">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button id="bulkInPrintBtn" class="btn btn-ghost" onclick="printBulkInAndClear()">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button id="bulkInPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildBulkPrintHtml('bi'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button id="bulkInPrintBtn" class="btn btn-ghost" onclick="printBulkInAndClear()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
       <button id="bulkInCommitBtn" class="btn btn-amber" onclick="commitBulkIn()" data-i18n="confirmSaveBtn">تأكيد وحفظ</button>
       <button class="btn btn-danger" onclick="newBulkInTable()" data-i18n="newTableBtn">جدول جديد</button>
     </div>
@@ -503,7 +503,7 @@
 <!-- BULK OUT (إذن صرف) MODAL -->
 <div class="overlay" id="bulkOutOverlay">
   <div class="modal wide">
-    <button class="modal-close" onclick="closeBulkOut()">✕</button>
+    <button class="modal-close" onclick="closeBulkOut()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="bulkOutTitle">إذن صرف</h2>
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد.</div>
@@ -518,8 +518,8 @@
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkOutRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="boTable"></table>
     <div class="form-actions">
-      <button id="bulkOutPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildBulkPrintHtml('bo'))">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button id="bulkOutPrintBtn" class="btn btn-ghost" onclick="printBulkOutAndClear()">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button id="bulkOutPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildBulkPrintHtml('bo'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button id="bulkOutPrintBtn" class="btn btn-ghost" onclick="printBulkOutAndClear()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
       <button id="bulkOutCommitBtn" class="btn btn-amber" onclick="commitBulkOut()" data-i18n="confirmSaveBtn">تأكيد وحفظ</button>
       <button class="btn btn-danger" onclick="newBulkOutTable()" data-i18n="newTableBtn">جدول جديد</button>
     </div>
@@ -529,13 +529,13 @@
 <!-- SAVED NOTES HUB MODAL -->
 <div class="overlay" id="notesHubOverlay">
   <div class="modal small">
-    <button class="modal-close" onclick="closeNotesHub()">✕</button>
+    <button class="modal-close" onclick="closeNotesHub()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="savedNotes">الأذونات المحفوظة</h2>
     <div class="item-meta" data-i18n="chooseNoteType">اختر نوع الأذون اللي تريد تراجعه.</div>
     <div class="form-actions" style="flex-direction:column;align-items:stretch;">
       <button id="notesHubBulkInBtn" class="btn btn-teal" onclick="closeNotesHub(); openSavedNotes('in')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="inNotes">أذون الإضافة</span></button>
       <button id="notesHubBulkOutBtn" class="btn btn-teal" onclick="closeNotesHub(); openSavedNotes('out')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="outNotes">أذون الصرف</span></button>
-      <button id="notesHubTransferBtn" class="btn btn-indigo" onclick="closeNotesHub(); openSavedNotes('transfer')">⇄ <span data-i18n="transferNotes">أذون التحويل</span></button>
+      <button id="notesHubTransferBtn" class="btn btn-indigo" onclick="closeNotesHub(); openSavedNotes('transfer')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> <span data-i18n="transferNotes">أذون التحويل</span></button>
     </div>
   </div>
 </div>
@@ -543,8 +543,8 @@
 <!-- SAVED NOTES MODAL -->
 <div class="overlay" id="notesOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeSavedNotes()">✕</button>
-    <button class="modal-close" style="left:48px;font-size:13.5px;font-family:'Cairo';font-weight:700;" onclick="closeSavedNotes(); openNotesHub();">⬅ <span data-i18n="back">رجوع</span></button>
+    <button class="modal-close" onclick="closeSavedNotes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="modal-close" style="left:48px;font-size:13.5px;font-family:'Cairo';font-weight:700;display:inline-flex;align-items:center;gap:4px;" onclick="closeSavedNotes(); openNotesHub();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex:none;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span data-i18n="back">رجوع</span></button>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-left:96px;">
       <h2 id="notesTitle" style="margin:0;" data-i18n="savedNotesTitle">الأذون المحفوظة</h2>
     </div>
@@ -556,11 +556,11 @@
 <!-- USERS SETTINGS MODAL (admin only) -->
 <div class="overlay" id="usersOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeUsersModal()">✕</button>
+    <button class="modal-close" onclick="closeUsersModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="userSettings">إعدادات المستخدمين</h2>
     <div class="item-meta" data-i18n="usersDesc">إضافة وحذف مستخدمين، وتحديد صلاحياتهم.</div>
     <div id="usersList"></div>
-    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;" data-i18n="addNewUserHeading">+ إضافة مستخدم جديد</h2></div>
+    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg><span data-i18n="addNewUserHeading">إضافة مستخدم جديد</span></h2></div>
     <div class="form-grid">
       <div><label data-i18n="username">اسم المستخدم</label><input id="newUserName"></div>
       <div><label data-i18n="password">كلمة المرور</label><div class="pw-wrap"><input id="newUserPass" type="password"><button type="button" class="pw-toggle" onclick="togglePw('newUserPass', this)"></button></div></div>
@@ -572,19 +572,19 @@
       </div>
     </div>
     <div class="form-actions"><button class="btn btn-amber" onclick="addUser()" data-i18n="add">إضافة</button></div>
-    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;" data-i18n="recoveryCodeHeading">🔑 رمز استرجاع حساب المدير</h2></div>
+    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span data-i18n="recoveryCodeHeading">رمز استرجاع حساب المدير</span></h2></div>
     <div class="item-meta" data-i18n="recoveryCodeDesc">الرمز ده هو الوحيد اللي بيسمح بعمل "نسيت بيانات الدخول" — احتفظ بيه في مكان آمن بره التطبيق. أي حد يعرف الرمز يقدر يمسح كل الحسابات، فاحفظه كويس.</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="generateRecoveryCode()" data-i18n="generateCodeBtn">توليد / عرض رمز جديد</button></div>
-    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;" data-i18n="wipeDataHeading">🗑 حذف البيانات المسجلة</h2></div>
+    <div class="section-head" style="margin-top:18px;"><h2 style="font-size:14px;display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span data-i18n="wipeDataHeading">حذف البيانات المسجلة</span></h2></div>
     <div class="item-meta" data-i18n="wipeDataSettingsDesc">حذف نهائي لبيانات النظام المسجلة. تقدر تستثني أي قسم من الحذف قبل التنفيذ.</div>
-    <div class="form-actions"><button class="btn btn-danger" onclick="openWipeData()" data-i18n="wipeDataHeading">🗑 حذف البيانات المسجلة</button></div>
+    <div class="form-actions"><button class="btn btn-danger" onclick="openWipeData()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> <span data-i18n="wipeDataHeading">حذف البيانات المسجلة</span></button></div>
   </div>
 </div>
 
 <!-- BRANDING / WHITE-LABEL MODAL -->
 <div class="overlay" id="brandingOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeBrandingModal(true)">✕</button>
+    <button class="modal-close" onclick="closeBrandingModal(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="brandingSettingsBtn">تخصيص الهوية</h2>
     <div class="item-meta" data-i18n="brandingDesc">تحكم في شكل التطبيق بالكامل: صورة الخلفية، الشعار، الألوان، وأيقونة المتصفح. أي تغيير بيتطبّق فورًا هنا كمعاينة، ولازم تضغط "حفظ" عشان يتحفظ لكل المستخدمين.</div>
 
@@ -634,8 +634,8 @@
 <!-- WIPE DATA MODAL -->
 <div class="overlay" id="wipeDataOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeWipeData()">✕</button>
-    <h2 data-i18n="wipeDataHeading">🗑 حذف البيانات المسجلة</h2>
+    <button class="modal-close" onclick="closeWipeData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span data-i18n="wipeDataHeading">حذف البيانات المسجلة</span></h2>
     <div class="warn-box" data-i18n="wipeWarnBox">تحذير: الحذف نهائي ومفيش طريقة للتراجع عنه بعد التنفيذ. علّم على أي قسم عايز تستثنيه من الحذف (يفضل محفوظ زي ما هو)، وأي قسم من غير علامة هيتحذف نهائيًا.</div>
     <div style="margin-top:10px;">
       <label style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepWarehouses"> <span data-i18n="keepWarehouses">الاحتفاظ بالمخازن</span></label>
@@ -648,7 +648,7 @@
     </div>
     <div class="item-meta" style="margin-top:6px;" data-i18n="wipeFooterDesc">لو حذفت المستخدمين، حساب المدير الأول (المؤسس) بيفضل موجود تلقائيًا إلا لو علّمت على حذفه كمان — وفي الحالة دي هيرجع التطبيق لشاشة إعداد حساب أدمن جديد من الأول، وهتخرج من حسابك الحالي تلقائيًا لو كان هو المتأثر.</div>
     <div class="form-actions">
-      <button class="btn btn-danger" onclick="requestWipeData()">🗑 <span data-i18n="executeWipeBtn">تنفيذ الحذف</span></button>
+      <button class="btn btn-danger" onclick="requestWipeData()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> <span data-i18n="executeWipeBtn">تنفيذ الحذف</span></button>
       <button class="btn btn-ghost" onclick="closeWipeData()" data-i18n="cancel">إلغاء</button>
     </div>
   </div>
@@ -671,7 +671,7 @@
 <!-- USER PERMISSIONS MODAL -->
 <div class="overlay" id="permissionsOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closePermissionsModal()">✕</button>
+    <button class="modal-close" onclick="closePermissionsModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 id="permissionsUserLabel" data-i18n="permissionsTitle">الصلاحيات</h2>
     <div class="item-meta" data-i18n="permissionsDesc">حدد لكل نافذة إيه اللي المستخدم ده يقدر يعمله. الإلغاء بيمنع الظهور والاستخدام في نفس الوقت.</div>
     <div class="warn-box" style="margin:10px 0;">
@@ -696,7 +696,7 @@
 <!-- RECOVERY CODE DISPLAY MODAL -->
 <div class="overlay" id="recoveryCodeOverlay">
   <div class="modal small">
-    <button class="modal-close" onclick="closeRecoveryCodeModal()">✕</button>
+    <button class="modal-close" onclick="closeRecoveryCodeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="recoveryCodeHeading">رمز استرجاع حساب المدير</h2>
     <div class="item-meta" data-i18n="recoveryCodeModalDesc">احفظ الرمز ده في مكان آمن (زي مدير كلمات مرور أو ورقة مقفولة). أي رمز جديد تولّده بيلغي القديم.</div>
     <div id="recoveryCodeDisplay" style="font-family:monospace;font-size:22px;font-weight:800;text-align:center;background:var(--surface);border:2px dashed var(--brand);border-radius:12px;padding:16px;letter-spacing:2px;margin:10px 0;"></div>
@@ -707,12 +707,12 @@
 <!-- WAREHOUSES MODAL -->
 <div class="overlay" id="warehousesOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeWarehousesModal()">✕</button>
+    <button class="modal-close" onclick="closeWarehousesModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="warehouses">المخازن</h2>
     <div id="warehousesList"></div>
     <div class="form-actions">
       <button id="addWhBtn" class="btn btn-teal" onclick="addWarehouse()">+ <span data-i18n="addNewWarehouseBtn">إضافة مخزن جديد</span></button>
-      <button id="transferBtn" class="btn btn-indigo" onclick="openTransferModal()">⇄ <span data-i18n="transferBetweenWh">تحويل بين المخازن</span></button>
+      <button id="transferBtn" class="btn btn-indigo" onclick="openTransferModal()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> <span data-i18n="transferBetweenWh">تحويل بين المخازن</span></button>
     </div>
   </div>
 </div>
@@ -720,12 +720,12 @@
 <!-- WAREHOUSE CONTENTS MODAL -->
 <div class="overlay" id="whContentsOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeWhContents()">✕</button>
+    <button class="modal-close" onclick="closeWhContents()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 id="whContentsTitle"></h2>
     <div class="table-scroll"><table class="note-table" id="whContentsTable"></table></div>
     <div class="form-actions" id="whContentsPrintActions">
-      <button class="btn btn-ghost" onclick="previewPrint(buildWhContentsPrintHtml())">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button class="btn btn-ghost" onclick="doPrint(buildWhContentsPrintHtml())">🖨 <span data-i18n="printInventoryBtn">طباعة جرد</span></button>
+      <button class="btn btn-ghost" onclick="previewPrint(buildWhContentsPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button class="btn btn-ghost" onclick="doPrint(buildWhContentsPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printInventoryBtn">طباعة جرد</span></button>
     </div>
   </div>
 </div>
@@ -733,7 +733,7 @@
 <!-- TRANSFER MODAL -->
 <div class="overlay" id="transferOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeTransferModal()">✕</button>
+    <button class="modal-close" onclick="closeTransferModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 data-i18n="transferTitle">نقل مخزون بين المخازن</h2>
     <div id="trEditingBanner"></div>
     <div class="form-grid">
@@ -747,8 +747,8 @@
     <div class="form-actions"><button class="btn btn-teal" onclick="addTransferRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="trTable"></table>
     <div class="form-actions">
-      <button id="transferPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildTransferPrintHtml())">👁 <span data-i18n="previewBtn">معاينة</span></button>
-      <button id="transferPrintBtn" class="btn btn-ghost" onclick="printTransferAndClear()">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button id="transferPreviewBtn" class="btn btn-ghost" onclick="previewPrint(buildTransferPrintHtml())"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> <span data-i18n="previewBtn">معاينة</span></button>
+      <button id="transferPrintBtn" class="btn btn-ghost" onclick="printTransferAndClear()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
       <button id="transferCommitBtn" class="btn btn-amber" onclick="commitTransfer()" data-i18n="confirmSaveBtn">تأكيد وحفظ</button>
       <button class="btn btn-danger" onclick="newTransferTable()" data-i18n="newTableBtn">جدول جديد</button>
     </div>
@@ -758,13 +758,13 @@
 <!-- PRINT PREVIEW MODAL -->
 <div class="overlay" id="previewOverlay">
   <div class="modal portrait preview-modal">
-    <button class="modal-close" onclick="closePreview()">✕</button>
+    <button class="modal-close" onclick="closePreview()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <h2 style="font-size:14px;color:var(--ink-soft);" data-i18n="printPreviewTitle">معاينة الطباعة</h2>
     <div class="print-page-wrap">
       <div id="previewBody" class="print-page"></div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-amber" onclick="doPrint(currentPreviewHtml)">🖨 <span data-i18n="printBtn">طباعة</span></button>
+      <button class="btn btn-amber" onclick="doPrint(currentPreviewHtml)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span data-i18n="printBtn">طباعة</span></button>
       <button class="btn btn-ghost" onclick="closePreview()" data-i18n="close">إغلاق</button>
     </div>
   </div>
@@ -924,7 +924,7 @@ const I18N = {
     noBalanceShort: `لا يوجد رصيد`,
     noPackagingForItem: `لا توجد تعبئات لهذا الصنف`,
     noPackagings: `لا توجد تعبئات`,
-    noPendingApprovals: `لا توجد أذونات معلّقة حاليًا 👍`,
+    noPendingApprovals: `لا توجد أذونات معلّقة حاليًا`,
     noRows: `لا توجد صفوف`,
     noSavedNotesYet: `لا توجد أذون محفوظة بعد`,
     numberLabel: `رقم`,
@@ -945,10 +945,10 @@ const I18N = {
     lessThanMonth: `أقل من شهر`,
     monthUnit: `شهر`,
     statusGood: `صلاحية جيدة`,
-    noExpiryAlerts: `لا توجد أصناف قريبة من الانتهاء حاليًا 👍`,
+    noExpiryAlerts: `لا توجد أصناف قريبة من الانتهاء حاليًا`,
     expiryLabel: `صلاحية`,
     balanceLabel: `الرصيد`,
-    noLowStockItems: `لا توجد أصناف تحت حد الطلب حاليًا 👍`,
+    noLowStockItems: `لا توجد أصناف تحت حد الطلب حاليًا`,
     statusOutOfStock: `نفد من المخزن`,
     statusAtReorderLevel: `وصل لحد الطلب`,
     defaultParenthetical: `(افتراضي)`,
@@ -979,11 +979,11 @@ const I18N = {
     statQtyLbl: `إجمالي الرصيد (كل المخازن)`,
     statExpiredLbl: `باتشات منتهية وبها رصيد`,
     statSoonLbl: `تنتهي خلال 6 أشهر`,
-    reorderLevelHeading: `📦 حد الطلب`,
+    reorderLevelHeading: `حد الطلب`,
     viewLowStockItems: `عرض الأصناف الناقصة`,
-    pendingApprovalsHeading: `⏳ الأذونات المعلّقة`,
+    pendingApprovalsHeading: `الأذونات المعلّقة`,
     reviewApprovals: `مراجعة الأذونات`,
-    expiryAlertsHeading: `⚠️ تنبيهات الصلاحية — صرف هذه الأصناف أولاً`,
+    expiryAlertsHeading: `تنبيهات الصلاحية — صرف هذه الأصناف أولاً`,
     sortedByNearestExpiry: `مرتبة من الأقرب انتهاءً`,
     searchItemPlaceholder: `بحث عن صنف...`,
     manualReorderBtn: `ترتيب يدوي`,
@@ -1040,11 +1040,11 @@ const I18N = {
     chooseImageBtn: `اختر صورة`,
     batchesDataHeading: `بيانات الباتشات (التعبئة وتاريخ الصلاحية)`,
     saveChangesBtn: `حفظ التعديلات`,
-    lowStockItemsHeading: `📦 أصناف وصلت لحد الطلب`,
+    lowStockItemsHeading: `أصناف وصلت لحد الطلب`,
     lowStockReportDesc: `الأصناف اللي رصيدها الحالي (كل المخازن) وصل لحد الطلب المحدد لها، أو نزل لـ 20 أو أقل، أو نفد تمامًا — في حالة عدم تحديد حد طلب مخصص للصنف.`,
     reorderLevel: `حد الطلب`,
     close: `إغلاق`,
-    pendingApprovalsTitle: `⏳ الأذونات المعلّقة — بانتظار المراجعة`,
+    pendingApprovalsTitle: `الأذونات المعلّقة — بانتظار المراجعة`,
     pendingApprovalsDesc: `الأذونات دي متحفوظة بس لسه ما أثّرتش على المخزون. راجعها، وعدّل عليها لو محتاج، ثم اعتمدها أو ارفضها.`,
     openingBalancesTitle: `أرصدة بداية المدة`,
     openingBalancesDesc: `حدّد الكمية الفعلية لكل صنف/تعبئة/تاريخ صلاحية في كل مخزن، ثم اضغط حفظ.`,
@@ -1069,17 +1069,17 @@ const I18N = {
     savedNotesTitle: `الأذون المحفوظة`,
     savedNotesDesc: `تقدر تطبع أي إذن قديم مرة أخرى، أو تعدّله (سيتم عكس تأثيره على المخزون وتحميله للتعديل ثم تأكيده من جديد).`,
     usersDesc: `إضافة وحذف مستخدمين، وتحديد صلاحياتهم.`,
-    addNewUserHeading: `+ إضافة مستخدم جديد`,
+    addNewUserHeading: `إضافة مستخدم جديد`,
     username: `اسم المستخدم`,
     password: `كلمة المرور`,
     role: `الصلاحية`,
     roleUser: `مستخدم`,
     roleAdmin: `أدمن`,
     add: `إضافة`,
-    recoveryCodeHeading: `🔑 رمز استرجاع حساب المدير`,
+    recoveryCodeHeading: `رمز استرجاع حساب المدير`,
     recoveryCodeDesc: `الرمز ده هو الوحيد اللي بيسمح بعمل "نسيت بيانات الدخول" — احتفظ بيه في مكان آمن بره التطبيق. أي حد يعرف الرمز يقدر يمسح كل الحسابات، فاحفظه كويس.`,
     generateCodeBtn: `توليد / عرض رمز جديد`,
-    wipeDataHeading: `🗑 حذف البيانات المسجلة`,
+    wipeDataHeading: `حذف البيانات المسجلة`,
     wipeDataSettingsDesc: `حذف نهائي لبيانات النظام المسجلة. تقدر تستثني أي قسم من الحذف قبل التنفيذ.`,
     wipeWarnBox: `تحذير: الحذف نهائي ومفيش طريقة للتراجع عنه بعد التنفيذ. علّم على أي قسم عايز تستثنيه من الحذف (يفضل محفوظ زي ما هو)، وأي قسم من غير علامة هيتحذف نهائيًا.`,
     keepWarehouses: `الاحتفاظ بالمخازن`,
@@ -1180,9 +1180,9 @@ const I18N = {
     errCannotDeleteItemWithLog: `لا يمكن حذف هذا الصنف لأن عليه حركات مسجلة في السجل.`,
     errCannotDeleteOwnAccount: `لا يمكنك حذف حسابك الحالي وأنت مسجل دخول به`,
     errNoPackagingDefined: `هذا الصنف لا يحتوي على تعبئات معرّفة — استخدم "تسجيل دخول" من نافذة الصنف لإضافة تعبئة جديدة`,
-    errPartialSaveFailed: `⚠️ تعذر حفظ بعض التعديلات — تأكد من الاتصال بالإنترنت وكرر العملية`,
-    errPrintFailed: `⚠️ تعذرت الطباعة — جرّب افتح رابط الموقع في تبويب مستقل وحاول تاني`,
-    errFirebaseNotSetup: `⚠️ لسه معملتش إعداد قاعدة البيانات (Firebase) — راجع تعليمات الإعداد`,
+    errPartialSaveFailed: `تعذر حفظ بعض التعديلات — تأكد من الاتصال بالإنترنت وكرر العملية`,
+    errPrintFailed: `تعذرت الطباعة — جرّب افتح رابط الموقع في تبويب مستقل وحاول تاني`,
+    errFirebaseNotSetup: `لسه معملتش إعداد قاعدة البيانات (Firebase) — راجع تعليمات الإعداد`,
     confirmDeleteNotePrefix: `حذف الإذن رقم `,
     confirmDeleteNoteSuffix: `؟ سيتم عكس تأثيره على المخزون ولا يمكن التراجع.`,
     confirmDeleteItemPrefix: `حذف الصنف "`,
@@ -1293,7 +1293,7 @@ const I18N = {
     noBalanceShort: `No balance`,
     noPackagingForItem: `No packaging for this item`,
     noPackagings: `No packaging`,
-    noPendingApprovals: `No pending approvals right now 👍`,
+    noPendingApprovals: `No pending approvals right now`,
     noRows: `No rows`,
     noSavedNotesYet: `No saved vouchers yet`,
     numberLabel: `#`,
@@ -1314,10 +1314,10 @@ const I18N = {
     lessThanMonth: `less than a month`,
     monthUnit: `month(s)`,
     statusGood: `Good`,
-    noExpiryAlerts: `No items nearing expiry right now 👍`,
+    noExpiryAlerts: `No items nearing expiry right now`,
     expiryLabel: `Expiry`,
     balanceLabel: `Balance`,
-    noLowStockItems: `No items under the reorder level right now 👍`,
+    noLowStockItems: `No items under the reorder level right now`,
     statusOutOfStock: `Out of stock`,
     statusAtReorderLevel: `At reorder level`,
     defaultParenthetical: `(default)`,
@@ -1348,11 +1348,11 @@ const I18N = {
     statQtyLbl: `Total Balance (all warehouses)`,
     statExpiredLbl: `Expired batches with balance`,
     statSoonLbl: `Expiring within 6 months`,
-    reorderLevelHeading: `📦 Reorder Level`,
+    reorderLevelHeading: `Reorder Level`,
     viewLowStockItems: `View low-stock items`,
-    pendingApprovalsHeading: `⏳ Pending Approvals`,
+    pendingApprovalsHeading: `Pending Approvals`,
     reviewApprovals: `Review approvals`,
-    expiryAlertsHeading: `⚠️ Expiry alerts — issue these items first`,
+    expiryAlertsHeading: `Expiry alerts — issue these items first`,
     sortedByNearestExpiry: `Sorted by nearest expiry`,
     searchItemPlaceholder: `Search for an item...`,
     manualReorderBtn: `Manual order`,
@@ -1409,11 +1409,11 @@ const I18N = {
     chooseImageBtn: `Choose Image`,
     batchesDataHeading: `Batch Data (packaging & expiry date)`,
     saveChangesBtn: `Save Changes`,
-    lowStockItemsHeading: `📦 Items at Reorder Level`,
+    lowStockItemsHeading: `Items at Reorder Level`,
     lowStockReportDesc: `Items whose current balance (all warehouses) has reached their reorder level, or dropped to 20 or less, or run out entirely — when no custom reorder level is set.`,
     reorderLevel: `Reorder Level`,
     close: `Close`,
-    pendingApprovalsTitle: `⏳ Pending Approvals — awaiting review`,
+    pendingApprovalsTitle: `Pending Approvals — awaiting review`,
     pendingApprovalsDesc: `These vouchers are saved but have not yet affected stock. Review them, edit if needed, then approve or reject.`,
     openingBalancesTitle: `Opening Balances`,
     openingBalancesDesc: `Set the actual quantity for each item/packaging/expiry date in each warehouse, then click save.`,
@@ -1438,17 +1438,17 @@ const I18N = {
     savedNotesTitle: `Saved Vouchers`,
     savedNotesDesc: `You can reprint any old voucher, or edit it (its effect on stock will be reversed, then loaded for editing and re-confirmation).`,
     usersDesc: `Add and remove users, and set their permissions.`,
-    addNewUserHeading: `+ Add New User`,
+    addNewUserHeading: `Add New User`,
     username: `Username`,
     password: `Password`,
     role: `Role`,
     roleUser: `User`,
     roleAdmin: `Admin`,
     add: `Add`,
-    recoveryCodeHeading: `🔑 Admin Recovery Code`,
+    recoveryCodeHeading: `Admin Recovery Code`,
     recoveryCodeDesc: `This code is the only way to do "forgot login" — keep it somewhere safe outside the app. Anyone who knows it can wipe all accounts, so guard it well.`,
     generateCodeBtn: `Generate / Show New Code`,
-    wipeDataHeading: `🗑 Delete Recorded Data`,
+    wipeDataHeading: `Delete Recorded Data`,
     wipeDataSettingsDesc: `Permanently deletes recorded system data. You can exclude any section from deletion before running it.`,
     wipeWarnBox: `Warning: deletion is permanent and cannot be undone. Check any section you want to exclude from deletion (kept as-is); any unchecked section will be permanently deleted.`,
     keepWarehouses: `Keep warehouses`,
@@ -1549,9 +1549,9 @@ const I18N = {
     errCannotDeleteItemWithLog: `Cannot delete this item because it has recorded log transactions.`,
     errCannotDeleteOwnAccount: `You cannot delete your own account while logged in`,
     errNoPackagingDefined: `This item has no defined packaging — use the item window to add new packaging`,
-    errPartialSaveFailed: `⚠️ Some changes failed to save — check your internet connection and try again`,
-    errPrintFailed: `⚠️ Printing failed — try opening the site link in a separate tab and try again`,
-    errFirebaseNotSetup: `⚠️ Database (Firebase) is not set up yet — check the setup instructions`,
+    errPartialSaveFailed: `Some changes failed to save — check your internet connection and try again`,
+    errPrintFailed: `Printing failed — try opening the site link in a separate tab and try again`,
+    errFirebaseNotSetup: `Database (Firebase) is not set up yet — check the setup instructions`,
     confirmDeleteNotePrefix: `Delete voucher #`,
     confirmDeleteNoteSuffix: `? Its effect on stock will be reversed, and this cannot be undone.`,
     confirmDeleteItemPrefix: `Delete item "`,
@@ -2398,7 +2398,7 @@ function renderUsersList(){
     <div class="wh-row">
       <span class="wname">${u.username} <span class="badge ${u.role==='admin'?'safe':'dead'}">${u.role==='admin'?t('roleAdmin'):t('roleUser')}</span></span>
       <div class="wactions">
-        ${u.role!=='admin' ? `<button class="btn btn-ghost btn-sm" onclick="openPermissionsModal('${u.username}')">🔧 ${t('permissionsTitle')}</button>` : ''}
+        ${u.role!=='admin' ? `<button class="btn btn-ghost btn-sm" onclick="openPermissionsModal('${u.username}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> ${t('permissionsTitle')}</button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="changeUserPassword('${u.username}')">${t('changePasswordBtn')}</button>
         <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.username}')">${t('deleteBtn')}</button>
       </div>
@@ -2980,7 +2980,7 @@ function renderEditItemBatchesTable(item){
   const rows = visible.map(b=>`<tr>
     <td><input data-batch="${b.id}" data-field="packaging" value="${(b.packaging||'').replace(/"/g,'&quot;')}"></td>
     <td><input data-batch="${b.id}" data-field="expiry" value="${(b.expiry||'').replace(/"/g,'&quot;')}" placeholder="MM/YYYY"></td>
-    <td class="rm" onclick="removeEditItemBatchRow('${b.id}')">✕</td>
+    <td class="rm" onclick="removeEditItemBatchRow('${b.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td>
   </tr>`).join('');
   document.getElementById('editItemBatchesTable').innerHTML = head + (rows || `<tr><td colspan="3" style="text-align:center;color:var(--ink-soft);">${t('noBatchesForItem')}</td></tr>`);
 }
@@ -3257,10 +3257,10 @@ function updateEditingBanner(which){
   const el = document.getElementById(ids[which]);
   const btn = document.getElementById(btnIds[which]);
   const approving = !!(editingNoteMeta && editingNoteMeta.approving);
-  if(btn) btn.textContent = approving ? '✔ '+t('confirmApproveBtn') : t('confirmSaveBtn');
+  if(btn) btn.innerHTML = approving ? '<svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> '+t('confirmApproveBtn') : t('confirmSaveBtn');
   if(!el) return;
   el.innerHTML = approving
-    ? `<div class="warn-box">⏳ ${t('reviewingPendingNotePrefix')}${editingNoteMeta.serial}${t('reviewingPendingNoteSuffix')}</div>`
+    ? `<div class="warn-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-inline-end:3px;"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>${t('reviewingPendingNotePrefix')}${editingNoteMeta.serial}${t('reviewingPendingNoteSuffix')}</div>`
     : (editingNoteMeta ? `<div class="warn-box">${t('editingSavedNotePrefix')}${editingNoteMeta.serial}${t('editingSavedNoteSuffix')}</div>` : '');
 }
 function addBulkInRow(){
@@ -3289,7 +3289,7 @@ function renderBulkInTable(){
     <td><select onchange="updateBulkInRow(${i},'packaging',this.value)" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${itemPackagingOptions(r.itemId, r.packaging)}</select></td>
     <td><input type="number" step="0.01" value="${r.qty}" onchange="updateBulkInRow(${i},'qty',this.value)" style="width:72px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
     <td><input value="${(r.expiry||'').replace(/"/g,'&quot;')}" placeholder="MM/YYYY" onchange="updateBulkInRow(${i},'expiry',this.value)" style="width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
-    <td>${r.whLabel}</td><td class="rm" onclick="removeBulkInRow(${i})">✕</td></tr>`).join('');
+    <td>${r.whLabel}</td><td class="rm" onclick="removeBulkInRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`).join('');
   document.getElementById('biTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
 }
 function updateBulkInRow(i, field, value){
@@ -3424,7 +3424,7 @@ function renderBulkOutTable(){
   const rows = bulkOutRows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td>
     <td><select onchange="updateBulkOutRow(${i},'packaging',this.value)" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${itemPackagingOptions(r.itemId, r.packaging)}</select></td>
     <td><input type="number" step="0.01" value="${r.qty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:72px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
-    <td>${r.expiry||''}</td><td>${r.whLabel}</td><td class="rm" onclick="removeBulkOutRow(${i})">✕</td></tr>`).join('');
+    <td>${r.expiry||''}</td><td>${r.whLabel}</td><td class="rm" onclick="removeBulkOutRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`).join('');
   document.getElementById('boTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
 }
 function updateBulkOutRow(i, field, value){
@@ -3601,8 +3601,8 @@ function renderPendingApprovalsList(){
         <div class="item-meta">${t('byLabel')}: ${n.user} · ${fmtTime(n.createdAt)} · ${n.rows.length} ${t('itemUnit')} · ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}</div>
       </div>
       <div class="wactions">
-        <button class="btn btn-teal btn-sm" onclick="openApprovalNote('${n.id}')">✎ ${t('reviewApproveBtn')}</button>
-        <button class="btn btn-danger btn-sm" onclick="rejectPendingNote('${n.id}')">✕ ${t('rejectBtn')}</button>
+        <button class="btn btn-teal btn-sm" onclick="openApprovalNote('${n.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('reviewApproveBtn')}</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectPendingNote('${n.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> ${t('rejectBtn')}</button>
       </div>
     </div>`;
   }).join('');
@@ -3711,9 +3711,9 @@ function renderSavedNotesList(){
       <span class="tag ${n.type}">${typeLabel[n.type]||n.type}</span>
       <span class="wname">${t('numberLabel')} ${n.serial} — ${n.rows.length} ${t('itemUnit')} — ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(n.createdAt)}${n.updatedAt && n.updatedAt!==n.createdAt ? ' ('+t('lastEditLabel')+': '+fmtTime(n.updatedAt)+')' : ''}</span></span>
       <div class="wactions">
-        ${hasPerm(permMod,'print') ? `<button class="btn btn-ghost btn-sm" onclick="previewPrint(buildSavedNotePrintHtml('${n.id}'))">👁 ${t('previewBtn')}</button>
-        <button class="btn btn-ghost btn-sm" onclick="doPrint(buildSavedNotePrintHtml('${n.id}'))">🖨 ${t('printBtn')}</button>` : ''}
-        ${hasPerm(permMod,'edit') ? `<button class="btn btn-ghost btn-sm" onclick="editSavedNote('${n.id}')">✎ ${t('editBtn')}</button>` : ''}
+        ${hasPerm(permMod,'print') ? `<button class="btn btn-ghost btn-sm" onclick="previewPrint(buildSavedNotePrintHtml('${n.id}'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> ${t('previewBtn')}</button>
+        <button class="btn btn-ghost btn-sm" onclick="doPrint(buildSavedNotePrintHtml('${n.id}'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> ${t('printBtn')}</button>` : ''}
+        ${hasPerm(permMod,'edit') ? `<button class="btn btn-ghost btn-sm" onclick="editSavedNote('${n.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('editBtn')}</button>` : ''}
         ${hasPerm(permMod,'delete') ? `<button class="btn btn-danger btn-sm" onclick="deleteSavedNote('${n.id}')">${t('deleteBtn')}</button>` : ''}
       </div>
     </div>`;
@@ -3766,7 +3766,7 @@ function renderWarehousesList(){
     <div class="wh-row">
       <span class="wname">${whName(id)}</span>
       <div class="wactions">
-        ${hasPerm('warehouses','edit') ? `<button class="btn btn-ghost btn-sm" onclick="renameWarehouse('${id}')">✎ ${t('renameBtn')}</button>` : ''}
+        ${hasPerm('warehouses','edit') ? `<button class="btn btn-ghost btn-sm" onclick="renameWarehouse('${id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('renameBtn')}</button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="openWhContents('${id}')">${t('viewContentsBtn')}</button>
         ${hasPerm('warehouses','delete') ? `<button class="btn btn-danger btn-sm" onclick="deleteWarehouse('${id}')">${t('deleteBtn')}</button>` : ''}
       </div>
@@ -3912,7 +3912,7 @@ function renderTransferTable(){
   const rows = transferRows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${r.fromLabel}</td><td>${r.toLabel}</td>
     <td><select onchange="updateTransferRow(${i},'packaging',this.value)" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${itemPackagingOptions(r.itemId, r.packaging)}</select></td>
     <td><input type="number" step="0.01" value="${r.qty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:72px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
-    <td>${r.expiry||''}</td><td class="rm" onclick="removeTransferRow(${i})">✕</td></tr>`).join('');
+    <td>${r.expiry||''}</td><td class="rm" onclick="removeTransferRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`).join('');
   document.getElementById('trTable').innerHTML = head + (rows || `<tr><td colspan="8" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
 }
 function clearTransferRows(){ transferRows=[]; renderTransferTable(); }
