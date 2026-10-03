@@ -653,13 +653,13 @@
     <h2 data-i18n="bulkInTitle">إذن إضافة</h2>
     <div id="biEditingBanner"></div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" data-i18n-placeholder="supplierName" placeholder="اسم المورد"></div>
-      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم"></div>
+      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')"></div>
+      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
-      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bi')"></div>
-      <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="biUnit" onchange="updateQtyAvailableHint('bi')"></select></div>
-      <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY"></div>
-      <div><label data-i18n="warehouse">المخزن</label><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')"></select></div>
+      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
+      <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
+      <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
+      <div><label data-i18n="warehouse">المخزن</label><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkInRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="biTable"></table>
@@ -680,12 +680,12 @@
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"></div>
-      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم"></div>
+      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')"></div>
+      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
-      <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bo')"></div>
-      <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="boUnit" onchange="updateQtyAvailableHint('bo')"></select></div>
-      <div><label data-i18n="warehouse">المخزن</label><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')"></select></div>
+      <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
+      <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="boUnit" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boUnit')"></select></div>
+      <div><label data-i18n="warehouse">المخزن</label><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkOutRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="boTable"></table>
@@ -911,11 +911,11 @@
     <div id="trEditingBanner"></div>
     <div class="form-grid">
       <div class="full item-combo"><label data-i18n="item">الصنف</label><input id="trItemSearch" autocomplete="off" oninput="filterItemSelect('tr')" onfocus="openItemCombo('tr')" onkeydown="onItemComboKeydown(event,'tr')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..." style="margin-bottom:6px;"><select id="trItem" onchange="onTransferItemChange()" style="display:none;"></select><div class="item-combo-list" id="trItemList" onmousedown="onItemComboMouseDown(event,'tr')"></div></div>
-      <div><label data-i18n="fromWarehouse">من مخزن</label><select id="trFrom" onchange="onTransferWhChange()"></select></div>
-      <div><label data-i18n="toWarehouse">إلى مخزن</label><select id="trTo"></select></div>
-      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('tr')"></div>
-      <div id="trUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="trUnit" onchange="updateQtyAvailableHint('tr')"></select></div>
-      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="trRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم"></div>
+      <div><label data-i18n="fromWarehouse">من مخزن</label><select id="trFrom" onchange="onTransferWhChange()" onkeydown="onNoteFieldKeydown(event,'tr','trFrom')"></select></div>
+      <div><label data-i18n="toWarehouse">إلى مخزن</label><select id="trTo" onkeydown="onNoteFieldKeydown(event,'tr','trTo')"></select></div>
+      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trQty')"></div>
+      <div id="trUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="trUnit" onchange="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trUnit')"></select></div>
+      <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="trRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'tr','trRecipientName')"></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addTransferRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="trTable"></table>
@@ -4404,7 +4404,8 @@ function onItemComboMouseDown(ev, prefix){
   pickItemComboById(prefix, opt.dataset.id);
 }
 // Arrow keys move the highlight through the open list; Enter picks whichever row is highlighted
-// (defaulting to the first match if the person hasn't arrowed yet).
+// (defaulting to the first match if the person hasn't arrowed yet), then moves on to the next
+// field in the note form — same as Enter does everywhere else in these forms (see below).
 function onItemComboKeydown(ev, prefix){
   const listEl = document.getElementById(prefix+'ItemList');
   if(!listEl) return;
@@ -4417,16 +4418,57 @@ function onItemComboKeydown(ev, prefix){
     ev.preventDefault();
     moveItemComboActive(prefix, -1);
   } else if(ev.key==='Enter'){
-    if(!listEl.classList.contains('open')) return;
-    const opts = listEl.querySelectorAll('.item-combo-opt');
-    const idx = itemComboActiveIndex[prefix]>=0 ? itemComboActiveIndex[prefix] : 0;
-    if(opts[idx]){
-      ev.preventDefault();
-      pickItemComboById(prefix, opts[idx].dataset.id);
+    ev.preventDefault();
+    if(listEl.classList.contains('open')){
+      const opts = listEl.querySelectorAll('.item-combo-opt');
+      const idx = itemComboActiveIndex[prefix]>=0 ? itemComboActiveIndex[prefix] : 0;
+      if(opts[idx]) pickItemComboById(prefix, opts[idx].dataset.id);
     }
+    focusNextNoteField(prefix, prefix+'ItemSearch');
   }
 }
 document.addEventListener('mousedown', e=>{ if(!e.target.closest('.item-combo')) closeAllItemCombos(); });
+
+/* ============ ENTER-TO-NEXT-FIELD IN NOTE FORMS (bulk in / bulk out / transfer) ============ */
+// Lets the person move through a note's fields with Enter instead of the mouse. Each list is the
+// full tab order for that form; a field hidden at the moment (e.g. the unit dropdown, only shown
+// for items with two units) is skipped automatically. Enter on the last field adds the row, the
+// same as clicking "أضف للجدول", then sends focus back to the item field so the next row can
+// start right away.
+const NOTE_FIELD_ORDER = {
+  bi: ['biSupplierName','biRecipientName','biItemSearch','biQty','biUnit','biExpiry','biWarehouse'],
+  bo: ['boLocationName','boRecipientName','boItemSearch','boQty','boUnit','boWarehouse'],
+  tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trRecipientName']
+};
+const NOTE_ADD_ROW_FN = { bi: 'addBulkInRow', bo: 'addBulkOutRow', tr: 'addTransferRow' };
+function isNoteFieldUsable(el){
+  return !!el && el.offsetParent!==null && !el.disabled;
+}
+function focusNoteField(el){
+  if(!el) return;
+  el.focus();
+  if(typeof el.select==='function' && (el.tagName==='INPUT')) el.select();
+}
+function focusNextNoteField(prefix, currentId){
+  const order = NOTE_FIELD_ORDER[prefix];
+  if(!order) return;
+  const startIdx = order.indexOf(currentId);
+  for(let j=startIdx+1; j<order.length; j++){
+    const el = document.getElementById(order[j]);
+    if(isNoteFieldUsable(el)){ focusNoteField(el); return; }
+  }
+  // Reached the end of the form: add the row (same as the "أضف للجدول" button), then jump back
+  // to the first field so the person can start typing the next row immediately.
+  const addFnName = NOTE_ADD_ROW_FN[prefix];
+  if(addFnName && typeof window[addFnName]==='function') window[addFnName]();
+  const firstUsable = order.map(id=>document.getElementById(id)).find(isNoteFieldUsable);
+  focusNoteField(firstUsable);
+}
+function onNoteFieldKeydown(ev, prefix, currentId){
+  if(ev.key!=='Enter') return;
+  ev.preventDefault();
+  focusNextNoteField(prefix, currentId);
+}
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAllItemCombos(); });
 function filterItemSelect(prefix){
   const sel = document.getElementById(prefix+'Item');
