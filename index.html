@@ -3685,18 +3685,14 @@ function itemWhTotal(item, wh){
   if(!item || !wh) return 0;
   return item.batches.reduce((s,b)=>s+((b.balances&&b.balances[wh])||0), 0);
 }
-// "Available: N Carton" (whole units) when the larger unit is chosen, or the plain base-unit
-// count (e.g. "Available: 48 Pack") otherwise — shown above a quantity field so the person can
-// see what's on hand, in whichever unit they're about to type a quantity in.
+// "Available: N Carton and M Pack" — always shows the full mixed breakdown (same split used
+// everywhere else, e.g. fmtQty), regardless of which unit the person is about to type a
+// quantity in. Previously, picking the larger unit floored to whole cartons and silently
+// dropped any leftover loose packs instead of showing the true available amount.
 function availableQtyHintText(item, wh, unitChoice){
   if(!item || !wh) return '';
   const totalBase = itemWhTotal(item, wh);
-  if(itemHasUnits(item) && unitChoice==='u1'){
-    const count = Math.floor((totalBase+1e-9)/item.unitRatio);
-    return `${t('availableQtyLabel')}: ${count>0 ? plainQty(count)+' '+item.unit1Name : t('outOfStockLabel')}`;
-  }
-  const label = itemHasUnits(item) ? item.unit2Name : '';
-  return `${t('availableQtyLabel')}: ${totalBase>0 ? plainQty(totalBase)+(label?(' '+label):'') : t('outOfStockLabel')}`;
+  return `${t('availableQtyLabel')}: ${totalQtyDisplay(item, totalBase)}`;
 }
 const QTY_HINT_CONFIG = {
   bi: {item:'biItem', unit:'biUnit', wh:'biWarehouse', hint:'biQtyHint', search:'biItemSearch'},
