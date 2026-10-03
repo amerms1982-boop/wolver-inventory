@@ -30,7 +30,16 @@
   body{margin:0;background:
       linear-gradient(180deg, rgba(10,10,14,.22) 0%, rgba(10,10,14,.38) 40%, rgba(20,18,14,.55) 100%),
       var(--bg-image) center 28%/cover fixed no-repeat;
-    color:var(--ink);font-family:'IBM Plex Sans Arabic', sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+    color:var(--ink);font-family:'IBM Plex Sans Arabic', sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;
+    /* Both Arabic webfonts used in this app (IBM Plex Sans Arabic and Cairo) define a "locl"
+       OpenType substitution that swaps plain Western digits (0-9) for Arabic-Indic digit glyphs
+       whenever the text's language is Arabic — even though the underlying characters never
+       change. That's why digits kept showing as Arabic-Indic in plain table/label text (which
+       inherits lang="ar" from <html>) even after every number was formatted/typed as Western
+       digits. font-feature-settings is inherited, so disabling "locl" here turns that
+       substitution off for the whole page in one place, instead of patching lang="en" onto every
+       element that happens to display a number. */
+    font-feature-settings:"locl" 0;}
   h1,h2,h3,.display{font-family:'Cairo', sans-serif; font-weight:800; letter-spacing:.2px;}
   .app{max-width:1180px;margin:0 auto;padding:20px 20px 80px;}
 
