@@ -1580,9 +1580,6 @@ const I18N = {
     recoverFromLogDesc: `دي أذون أثرها على الأرصدة مسجل في سجل العمليات، لكن مستند الإذن نفسه مفقود (غالبًا بسبب عطل وقت الحفظ). استرجاعها بيضيف نسخة توثيقية للإذن في القائمة من غير ما يغيّر أي رصيد حالي، لأن التأثير ده مسجل بالفعل.`,
     noOrphanLogGroups: `لا توجد أذون مفقودة في السجل حاليًا`,
     recoverBtn: `استرجاع`,
-    confirmRecoverBtn: `تأكيد الاسترجاع`,
-    recoverSelectDesc: `كل الأصناف دي موجودة في السجل، لكن مش بالضرورة كل أرصدتها اتسجلت فعليًا. علّم فقط على الصنف اللي رصيده الحالي (الظاهر تحته) لسه مش متضمن الكمية دي — وسيبه من غير تعليم لو شايف إن رصيده بالفعل متحدث.`,
-    currentBalanceLabel: `الرصيد الحالي`,
     msgNoteRecoveredPrefix: `تم استرجاع الإذن رقم `,
     msgNoteRecoveredSuffix: ` من السجل كنسخة توثيقية، بدون أي تغيير إضافي على الأرصدة.`,
     recoveredFromLogTag: `مسترجع من السجل`,
@@ -2023,9 +2020,6 @@ const I18N = {
     recoverFromLogDesc: `These are vouchers whose effect on balances is recorded in the activity log, but whose own document is missing (usually from a save failure). Recovering one adds a documentation copy of the voucher to the list without changing any current balance, since that effect is already recorded.`,
     noOrphanLogGroups: `No missing vouchers found in the log`,
     recoverBtn: `Recover`,
-    confirmRecoverBtn: `Confirm recovery`,
-    recoverSelectDesc: `All these items are in the log, but their balances weren't necessarily all saved. Check only the items whose current balance (shown below each one) doesn't already include this quantity — leave unchecked any item whose balance is already up to date.`,
-    currentBalanceLabel: `Current balance`,
     msgNoteRecoveredPrefix: `Voucher #`,
     msgNoteRecoveredSuffix: ` was recovered from the log as a documentation copy, with no further change to balances.`,
     recoveredFromLogTag: `Recovered from log`,
@@ -5299,13 +5293,11 @@ function buildNoteFromLogGroup(group){
   return note;
 }
 function openRecoverNotesModal(){
-  recoverPreviewNote = null;
   renderRecoverNotesList();
   document.getElementById('recoverNotesOverlay').classList.add('active');
 }
 function closeRecoverNotesModal(){ document.getElementById('recoverNotesOverlay').classList.remove('active'); }
 function renderRecoverNotesList(){
-  recoverPreviewNote = null;
   const el = document.getElementById('recoverNotesList');
   const groups = findOrphanNoteGroups();
   if(!groups.length){ el.innerHTML = `<div class="empty-note">${t('noOrphanLogGroups')}</div>`; return; }
@@ -5316,74 +5308,22 @@ function renderRecoverNotesList(){
       <span class="tag ${g.type}">${typeLabel[g.type]||g.type}</span>
       <span class="wname">${t('numberLabel')} ${g.serial} — ${itemCount} ${t('itemUnit')}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(g.entries[0].ts)}</span></span>
       <div class="wactions">
-        <button class="btn btn-amber btn-sm" onclick="openRecoverPreview('${g.type}', ${g.serial})">${t('recoverBtn')}</button>
+        <button class="btn btn-amber btn-sm" onclick="recoverNoteFromLog('${g.type}', ${g.serial})">${t('recoverBtn')}</button>
       </div>
     </div>`;
   }).join('');
 }
-// Second step: not every line item's balance necessarily made it to the server (the old
-// persist() wrote items one at a time, so some could succeed while others failed) — but every
-// line item DOES show up in the log, since the log was always written as one full snapshot.
-// So before touching anything, show each reconstructed row next to the item's CURRENT balance
-// and let the admin decide, per row, whether that quantity still needs to be added.
-let recoverPreviewNote = null;
-function openRecoverPreview(type, serial){
+async function recoverNoteFromLog(type, serial){
   const group = findOrphanNoteGroups().find(g=>g.type===type && g.serial===serial);
   if(!group) return;
-  recoverPreviewNote = buildNoteFromLogGroup(group);
-  renderRecoverPreview();
-}
-function renderRecoverPreview(){
-  const el = document.getElementById('recoverNotesList');
-  const note = recoverPreviewNote;
-  if(!note){ renderRecoverNotesList(); return; }
-  const rowsHtml = note.rows.map((r,i)=>{
-    const item = STATE.items.find(x=>x.id===r.itemId);
-    const current = itemWhTotal(item, r.wh);
-    return `<label class="wh-row" style="cursor:pointer;">
-      <input type="checkbox" id="recRow${i}" style="width:17px;height:17px;flex:none;margin-inline-end:10px;">
-      <span class="wname">${r.itemName} — ${rowQtyDisplay(r)} — ${r.whLabel}<br><span style="font-size:11px;color:var(--ink-soft);">${t('currentBalanceLabel')}: ${totalQtyDisplay(item, current)}</span></span>
-    </label>`;
-  }).join('');
-  el.innerHTML = `<div class="item-meta">${t('recoverSelectDesc')}</div>${rowsHtml}
-    <div class="form-actions" style="margin-top:14px;">
-      <button class="btn btn-ghost btn-sm" onclick="renderRecoverNotesList()">${t('back')}</button>
-      <button class="btn btn-amber btn-sm" onclick="confirmRecoverNoteFromLog()">${t('confirmRecoverBtn')}</button>
-    </div>`;
-}
-async function confirmRecoverNoteFromLog(){
-  const note = recoverPreviewNote;
-  if(!note) return;
-  const appliedAllocations = [];
-  note.rows.forEach((r,i)=>{
-    const cb = document.getElementById('recRow'+i);
-    if(!cb || !cb.checked) return;
-    const item = STATE.items.find(x=>x.id===r.itemId);
-    if(!item) return;
-    let batch = item.batches.find(b=>!b.expiry);
-    if(!batch){
-      const balances={}; warehouseIds().forEach(w=>balances[w]=0);
-      batch = {id:item.id+'-b'+(item.batches.length+1)+'-'+Date.now(), expiry:null, balances};
-      item.batches.push(batch);
-    }
-    batch.balances[r.wh] = Math.round(((batch.balances[r.wh]||0) + r.qty)*100)/100;
-    appliedAllocations.push({itemId:item.id, batchId:batch.id, wh:r.wh, delta:r.qty});
-  });
-  note.appliedAllocations = appliedAllocations;
+  const note = buildNoteFromLogGroup(group);
   STATE.notes.unshift(note);
   const ok = await persist();
   if(ok){
-    showToast(t('msgNoteRecoveredPrefix')+note.serial+t('msgNoteRecoveredSuffix'));
-    recoverPreviewNote = null;
+    showToast(t('msgNoteRecoveredPrefix')+serial+t('msgNoteRecoveredSuffix'));
     renderRecoverNotesList();
     renderSavedNotesList();
-    renderDashboard(); renderItems();
   } else {
-    appliedAllocations.forEach(a=>{
-      const item = STATE.items.find(i=>i.id===a.itemId);
-      const batch = item && item.batches.find(b=>b.id===a.batchId);
-      if(batch) batch.balances[a.wh] = Math.round(((batch.balances[a.wh]||0) - a.delta)*100)/100;
-    });
     STATE.notes = STATE.notes.filter(n=>n.id!==note.id);
     showToast(t('errSaveRetry'));
   }
