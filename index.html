@@ -1653,6 +1653,7 @@ const I18N = {
     errUsernameExists: `اسم المستخدم موجود مسبقًا`,
     errEnterItemName: `اكتب اسم الصنف`,
     errTableEmpty: `الجدول فاضي`,
+    msgSaveInProgress: `جاري الحفظ، لحظة واحدة...`,
     errUserNotFound: `المستخدم غير موجود بالفعل`,
     errDeleteRetry: `تعذر الحذف، حاول مرة أخرى`,
     errRejectRetry: `تعذر الرفض، حاول مرة أخرى`,
@@ -2082,6 +2083,7 @@ const I18N = {
     errUsernameExists: `Username already exists`,
     errEnterItemName: `Enter the item name`,
     errTableEmpty: `The table is empty`,
+    msgSaveInProgress: `Saving, one moment...`,
     errUserNotFound: `User no longer exists`,
     errDeleteRetry: `Delete failed, try again`,
     errRejectRetry: `Reject failed, try again`,
@@ -2671,6 +2673,12 @@ let editingNoteMeta = null;
 // while the same permit window stays open, keep updating that one note/serial instead of creating a new
 // permit each time. Reset to null whenever that modal is opened fresh, closed, or "new table" is clicked.
 let liveNoteSession = {bi:null, bo:null, tr:null};
+// Guards against a second "تأكيد وحفظ" click landing WHILE the previous one is still mid-save
+// (its persist() hasn't resolved yet). Without this, the second click sees editingNoteMeta already
+// cleared and liveNoteSession not yet set, so it falls through to "brand new note" logic and the
+// same permit gets saved twice under two different numbers. The commit button is disabled for the
+// same reason, belt-and-suspenders.
+let noteCommitInFlight = {bi:false, bo:false, tr:false};
 // Undoes a live-session note's previously-applied balance deltas and removes its old log entries, so the
 // full current row set can be re-applied cleanly under the same id/serial. Returns what's needed to put
 // everything back if the new save then fails.
@@ -4489,6 +4497,8 @@ function onBiItemChange(){
 }
 function openBulkIn(){
   liveNoteSession.bi = null;
+  noteCommitInFlight.bi = false;
+  const biCommitBtn = document.getElementById('bulkInCommitBtn'); if(biCommitBtn) biCommitBtn.disabled = false;
   document.getElementById('biItemSearch').value = '';
   document.getElementById('biItem').innerHTML = itemOptionsHtml();
   document.getElementById('biWarehouse').innerHTML = whOptionsHtml(warehouseIds()[0]);
@@ -4577,6 +4587,11 @@ function printBulkInAndClear(){
 }
 async function commitBulkIn(){
   if(!bulkInRows.length){ showToast(t('errTableEmpty')); return; }
+  if(noteCommitInFlight.bi){ showToast(t('msgSaveInProgress')); return; }
+  noteCommitInFlight.bi = true;
+  const commitBtn = document.getElementById('bulkInCommitBtn');
+  if(commitBtn) commitBtn.disabled = true;
+  try{
   const supplier = document.getElementById('biSupplierName').value.trim();
   const recipient = document.getElementById('biRecipientName').value.trim();
   const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
@@ -4658,11 +4673,17 @@ async function commitBulkIn(){
   }
   updateEditingBanner('bi');
   renderDashboard(); renderItems();
+  } finally {
+    noteCommitInFlight.bi = false;
+    if(commitBtn) commitBtn.disabled = false;
+  }
 }
 
 /* ============ BULK OUT (إذن صرف) ============ */
 function openBulkOut(){
   liveNoteSession.bo = null;
+  noteCommitInFlight.bo = false;
+  const boCommitBtn = document.getElementById('bulkOutCommitBtn'); if(boCommitBtn) boCommitBtn.disabled = false;
   document.getElementById('boItemSearch').value = '';
   document.getElementById('boItem').innerHTML = itemOptionsHtml();
   document.getElementById('boWarehouse').innerHTML = whOptionsHtml(warehouseIds()[0]);
@@ -4751,6 +4772,11 @@ function printBulkOutAndClear(){
 }
 async function commitBulkOut(){
   if(!bulkOutRows.length){ showToast(t('errTableEmpty')); return; }
+  if(noteCommitInFlight.bo){ showToast(t('msgSaveInProgress')); return; }
+  noteCommitInFlight.bo = true;
+  const commitBtn = document.getElementById('bulkOutCommitBtn');
+  if(commitBtn) commitBtn.disabled = true;
+  try{
   const location = document.getElementById('boLocationName').value.trim();
   const recipient = document.getElementById('boRecipientName').value.trim();
   const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
@@ -4831,6 +4857,10 @@ async function commitBulkOut(){
   }
   updateEditingBanner('bo');
   renderDashboard(); renderItems();
+  } finally {
+    noteCommitInFlight.bo = false;
+    if(commitBtn) commitBtn.disabled = false;
+  }
 }
 
 /* ============ SAVED NOTES (تعديل/طباعة الأذون المحفوظة) ============ */
@@ -5201,6 +5231,8 @@ function buildWhContentsPrintHtml(){
 let transferRows = [];
 function openTransferModal(){
   liveNoteSession.tr = null;
+  noteCommitInFlight.tr = false;
+  const trCommitBtn = document.getElementById('transferCommitBtn'); if(trCommitBtn) trCommitBtn.disabled = false;
   document.getElementById('trItemSearch').value = '';
   document.getElementById('trItem').innerHTML = itemOptionsHtml();
   onTransferItemChange();
@@ -5290,6 +5322,11 @@ function printTransferAndClear(){
 }
 async function commitTransfer(){
   if(!transferRows.length){ showToast(t('errTableEmpty')); return; }
+  if(noteCommitInFlight.tr){ showToast(t('msgSaveInProgress')); return; }
+  noteCommitInFlight.tr = true;
+  const commitBtn = document.getElementById('transferCommitBtn');
+  if(commitBtn) commitBtn.disabled = true;
+  try{
   const recipient = document.getElementById('trRecipientName').value.trim();
   const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
   const continuing = !editingNoteMeta && !!liveNoteSession.tr;
@@ -5377,6 +5414,10 @@ async function commitTransfer(){
   }
   updateEditingBanner('tr');
   renderDashboard(); renderItems();
+  } finally {
+    noteCommitInFlight.tr = false;
+    if(commitBtn) commitBtn.disabled = false;
+  }
 }
 
 /* ============ INIT ============ */
