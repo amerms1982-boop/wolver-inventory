@@ -1581,7 +1581,7 @@ const I18N = {
     noOrphanLogGroups: `لا توجد أذون مفقودة في السجل حاليًا`,
     recoverBtn: `استرجاع`,
     confirmRecoverBtn: `تأكيد الاسترجاع`,
-    recoverSelectDesc: `كل الأصناف دي موجودة في السجل، لكن مش بالضرورة كل أرصدتها اتسجلت فعليًا. علّم فقط على الصنف اللي رصيده الحالي (الظاهر تحته) لسه مش متضمن الكمية دي — وسيبه من غير تعليم لو شايف إن رصيده بالفعل متحدث.`,
+    recoverSelectDesc: `كل الأصناف دي موجودة في السجل، لكن مش بالضرورة كل أرصدتها اتسجلت فعليًا. علّم فقط على الصنف اللي رصيده الحالي (الظاهر تحته) لسه مش متضمن الكمية دي — وسيبه من غير تعليم لو شايف إن رصيده بالفعل متحدث. تاريخ الصلاحية مش محفوظ في السجل، فاكتبه يدويًا لكل صنف لو كنت حددته وقت الإدخال.`,
     currentBalanceLabel: `الرصيد الحالي`,
     msgNoteRecoveredPrefix: `تم استرجاع الإذن رقم `,
     msgNoteRecoveredSuffix: ` من السجل كنسخة توثيقية، بدون أي تغيير إضافي على الأرصدة.`,
@@ -2024,7 +2024,7 @@ const I18N = {
     noOrphanLogGroups: `No missing vouchers found in the log`,
     recoverBtn: `Recover`,
     confirmRecoverBtn: `Confirm recovery`,
-    recoverSelectDesc: `All these items are in the log, but their balances weren't necessarily all saved. Check only the items whose current balance (shown below each one) doesn't already include this quantity — leave unchecked any item whose balance is already up to date.`,
+    recoverSelectDesc: `All these items are in the log, but their balances weren't necessarily all saved. Check only the items whose current balance (shown below each one) doesn't already include this quantity — leave unchecked any item whose balance is already up to date. The expiry date isn't kept in the log, so re-enter it per item if one was set originally.`,
     currentBalanceLabel: `Current balance`,
     msgNoteRecoveredPrefix: `Voucher #`,
     msgNoteRecoveredSuffix: ` was recovered from the log as a documentation copy, with no further change to balances.`,
@@ -5340,10 +5340,13 @@ function renderRecoverPreview(){
   const rowsHtml = note.rows.map((r,i)=>{
     const item = STATE.items.find(x=>x.id===r.itemId);
     const current = itemWhTotal(item, r.wh);
-    return `<label class="wh-row" style="cursor:pointer;">
-      <input type="checkbox" id="recRow${i}" style="width:17px;height:17px;flex:none;margin-inline-end:10px;">
-      <span class="wname">${r.itemName} — ${rowQtyDisplay(r)} — ${r.whLabel}<br><span style="font-size:11px;color:var(--ink-soft);">${t('currentBalanceLabel')}: ${totalQtyDisplay(item, current)}</span></span>
-    </label>`;
+    return `<div class="wh-row">
+      <label style="display:flex;align-items:center;cursor:pointer;flex:1;">
+        <input type="checkbox" id="recRow${i}" style="width:17px;height:17px;flex:none;margin-inline-end:10px;">
+        <span class="wname">${r.itemName} — ${rowQtyDisplay(r)} — ${r.whLabel}<br><span style="font-size:11px;color:var(--ink-soft);">${t('currentBalanceLabel')}: ${totalQtyDisplay(item, current)}</span></span>
+      </label>
+      <input id="recExpiry${i}" placeholder="${t('expiryDate')} (MM/YYYY)" style="width:110px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">
+    </div>`;
   }).join('');
   el.innerHTML = `<div class="item-meta">${t('recoverSelectDesc')}</div>${rowsHtml}
     <div class="form-actions" style="margin-top:14px;">
@@ -5356,14 +5359,21 @@ async function confirmRecoverNoteFromLog(){
   if(!note) return;
   const appliedAllocations = [];
   note.rows.forEach((r,i)=>{
+    // The expiry date itself isn't recoverable from the log (it was never logged as text),
+    // so it's re-entered here by whoever is doing the recovery — captured on every row
+    // (for the reprinted note), but it only affects stock when that row's balance is also
+    // being re-applied below.
+    const expiryEl = document.getElementById('recExpiry'+i);
+    const expiry = expiryEl ? (expiryEl.value.trim() || null) : null;
+    r.expiry = expiry;
     const cb = document.getElementById('recRow'+i);
     if(!cb || !cb.checked) return;
     const item = STATE.items.find(x=>x.id===r.itemId);
     if(!item) return;
-    let batch = item.batches.find(b=>!b.expiry);
+    let batch = item.batches.find(b=>(b.expiry||'')===(expiry||''));
     if(!batch){
       const balances={}; warehouseIds().forEach(w=>balances[w]=0);
-      batch = {id:item.id+'-b'+(item.batches.length+1)+'-'+Date.now(), expiry:null, balances};
+      batch = {id:item.id+'-b'+(item.batches.length+1)+'-'+Date.now(), expiry, balances};
       item.batches.push(batch);
     }
     batch.balances[r.wh] = Math.round(((batch.balances[r.wh]||0) + r.qty)*100)/100;
