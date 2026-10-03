@@ -549,12 +549,12 @@
     <h2 data-i18n="addNewItemHeading">إضافة صنف جديد</h2>
     <div class="form-grid">
       <div class="full"><label data-i18n="itemNameLabel">اسم الصنف</label><input id="niName" data-i18n-placeholder="itemNameExamplePlaceholder" placeholder="مثال: WOLVER ..."></div>
-      <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="niReorderLevel" type="number" lang="en" step="0.01" min="0" data-i18n-placeholder="reorderLevelExamplePlaceholder" placeholder="مثال: 20 — سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
+      <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="niReorderLevel" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" min="0" data-i18n-placeholder="reorderLevelExamplePlaceholder" placeholder="مثال: 20 — سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
       <div class="section-head" style="margin-top:4px;margin-bottom:0;"><h2 style="font-size:13px;" data-i18n="unitsSectionHeading">وحدات القياس (اختياري)</h2></div>
       <div class="full item-meta" data-i18n="unitsSectionDesc" style="margin-top:0;">لو التعبئة دي بتتقسم لوحدات (مثلاً كرتونة فيها عبوات، أو كيس فيه قطع)، حدد اسم كل وحدة وعدد الوحدة الثانية داخل الأولى. تقدر بعد كده تدخل الكمية بأي وحدة من الاتنين.</div>
       <div><label data-i18n="unit1NameLabel">اسم الوحدة الأولى (الكبرى)</label><input id="niUnit1Name" data-i18n-placeholder="unit1Placeholder" placeholder="مثال: كرتونة"></div>
       <div><label data-i18n="unit2NameLabel">اسم الوحدة الثانية (الصغرى)</label><input id="niUnit2Name" data-i18n-placeholder="unit2Placeholder" placeholder="مثال: عبوة"></div>
-      <div class="full"><label data-i18n="unitRatioLabel">عدد الوحدة الثانية داخل الوحدة الأولى</label><input id="niUnitRatio" type="number" lang="en" step="1" min="2" data-i18n-placeholder="unitRatioPlaceholder" placeholder="مثال: 24"></div>
+      <div class="full"><label data-i18n="unitRatioLabel">عدد الوحدة الثانية داخل الوحدة الأولى</label><input id="niUnitRatio" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="1" min="2" data-i18n-placeholder="unitRatioPlaceholder" placeholder="مثال: 24"></div>
       <div class="full">
         <label data-i18n="itemImageOptionalLabel">صورة الصنف (اختياري)</label>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -578,12 +578,12 @@
     <h2 data-i18n="editItemHeading">تعديل الصنف</h2>
     <div class="form-grid">
       <div class="full"><label data-i18n="itemNameLabel">اسم الصنف</label><input id="editItemName"></div>
-      <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="editItemReorderLevel" type="number" lang="en" step="0.01" min="0" data-i18n-placeholder="reorderLevelDefaultPlaceholder" placeholder="سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
+      <div class="full"><label data-i18n="reorderLevelOptionalLabel">حد الطلب (اختياري)</label><input id="editItemReorderLevel" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" min="0" data-i18n-placeholder="reorderLevelDefaultPlaceholder" placeholder="سيبه فاضي لو عايز الحد الافتراضي (20)"></div>
       <div class="section-head" style="margin-top:4px;margin-bottom:0;"><h2 style="font-size:13px;" data-i18n="unitsSectionHeading">وحدات القياس (اختياري)</h2></div>
       <div class="full item-meta" data-i18n="unitsSectionDesc" style="margin-top:0;">لو التعبئة دي بتتقسم لوحدات (مثلاً كرتونة فيها عبوات، أو كيس فيه قطع)، حدد اسم كل وحدة وعدد الوحدة الثانية داخل الأولى. تقدر بعد كده تدخل الكمية بأي وحدة من الاتنين.</div>
       <div><label data-i18n="unit1NameLabel">اسم الوحدة الأولى (الكبرى)</label><input id="editItemUnit1Name" data-i18n-placeholder="unit1Placeholder" placeholder="مثال: كرتونة"></div>
       <div><label data-i18n="unit2NameLabel">اسم الوحدة الثانية (الصغرى)</label><input id="editItemUnit2Name" data-i18n-placeholder="unit2Placeholder" placeholder="مثال: عبوة"></div>
-      <div class="full"><label data-i18n="unitRatioLabel">عدد الوحدة الثانية داخل الوحدة الأولى</label><input id="editItemUnitRatio" type="number" lang="en" step="1" min="2" data-i18n-placeholder="unitRatioPlaceholder" placeholder="مثال: 24"></div>
+      <div class="full"><label data-i18n="unitRatioLabel">عدد الوحدة الثانية داخل الوحدة الأولى</label><input id="editItemUnitRatio" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="1" min="2" data-i18n-placeholder="unitRatioPlaceholder" placeholder="مثال: 24"></div>
       <div class="full">
         <label data-i18n="itemImageLabel">صورة الصنف</label>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -665,9 +665,9 @@
       <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
-      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
+      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
       <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
-      <div id="biQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="biQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bi','biQtyExtra')"></div>
+      <div id="biQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="biQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bi','biQtyExtra')"></div>
       <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
       <div><label data-i18n="warehouse">المخزن</label><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
     </div>
@@ -693,9 +693,9 @@
       <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
-      <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
+      <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
       <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="boUnit" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boUnit')"></select></div>
-      <div id="boQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="boQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bo','boQtyExtra')"></div>
+      <div id="boQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="boQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bo','boQtyExtra')"></div>
       <div><label data-i18n="warehouse">المخزن</label><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkOutRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
@@ -924,9 +924,9 @@
       <div class="full item-combo"><label data-i18n="item">الصنف</label><input id="trItemSearch" autocomplete="off" oninput="filterItemSelect('tr')" onfocus="openItemCombo('tr')" onkeydown="onItemComboKeydown(event,'tr')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..." style="margin-bottom:6px;"><select id="trItem" onchange="onTransferItemChange()" style="display:none;"></select><div class="item-combo-list" id="trItemList" onmousedown="onItemComboMouseDown(event,'tr')"></div></div>
       <div><label data-i18n="fromWarehouse">من مخزن</label><select id="trFrom" onchange="onTransferWhChange()" onkeydown="onNoteFieldKeydown(event,'tr','trFrom')"></select></div>
       <div><label data-i18n="toWarehouse">إلى مخزن</label><select id="trTo" onkeydown="onNoteFieldKeydown(event,'tr','trTo')"></select></div>
-      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trQty')"></div>
+      <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trQty')"></div>
       <div id="trUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="trUnit" onchange="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trUnit')"></select></div>
-      <div id="trQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="trQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'tr','trQtyExtra')"></div>
+      <div id="trQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="trQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'tr','trQtyExtra')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="trRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'tr','trRecipientName')"></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addTransferRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
@@ -2223,6 +2223,16 @@ function t(key){ return (I18N[LANG] && I18N[LANG][key]) || I18N.ar[key] || key; 
 // too similarly in this font (٢ and ٣ especially), so numbers use Latin digits with Arabic
 // grouping/decimal conventions instead.
 function appLocale(){ return LANG==='ar' ? 'ar-EG-u-nu-latn' : 'en-US'; }
+// Some keyboards (notably Arabic Windows layouts) send actual Arabic-Indic digit characters
+// (٠-٩) or Persian/Urdu ones (۰-۹) when the number row is pressed, not plain '0'-'9' — those
+// would silently fail parseFloat/parseInt downstream. All quantity/number text inputs normalize
+// through this as the person types, so whatever they see is always what gets parsed.
+function toLatinDigits(s){
+  return String(s==null?'':s).replace(/[٠-٩۰-۹]/g, d=>{
+    const code = d.charCodeAt(0);
+    return String(code>=0x06F0 ? code-0x06F0 : code-0x0660);
+  });
+}
 /* Transaction-log entries mix translated labels with free-typed data (item/warehouse names,
    numbers) and were saved to Firestore pre-translated in whatever language was active at the
    time. To show old AND new log rows correctly in whichever language is being viewed now, we
@@ -4360,7 +4370,7 @@ function openOpeningBalances(){
   orderedItems().forEach(item=>{
     const unitTitle = itemHasUnits(item) ? ` title="${t('colQty')}: ${item.unit2Name}"` : '';
     item.batches.forEach(b=>{
-      const cells = whCols.map(w=>`<td><input type="number" lang="en" step="0.01" data-item="${item.id}" data-batch="${b.id}" data-wh="${w}" value="${b.balances[w]||0}"${unitTitle}></td>`).join('');
+      const cells = whCols.map(w=>`<td><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" data-item="${item.id}" data-batch="${b.id}" data-wh="${w}" value="${b.balances[w]||0}"${unitTitle}></td>`).join('');
       const nameCell = itemHasUnits(item) ? `${item.name} <span style="font-size:10px;color:var(--ink-soft);">(${t('colQty')}: ${item.unit2Name})</span>` : item.name;
       rows += `<tr><td>${nameCell}</td><td>${b.expiry||t('statusUnspecified')}</td>${cells}</tr>`;
     });
@@ -4648,7 +4658,7 @@ function renderBulkInTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateBulkInRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkInRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkInRow',i,item,r)}</td>
+    <td style="white-space:nowrap;"><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${r.enteredQty}" onchange="updateBulkInRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkInRow',i,item,r)}</td>
     <td><input value="${(r.expiry||'').replace(/"/g,'&quot;')}" placeholder="MM/YYYY" onchange="updateBulkInRow(${i},'expiry',this.value)" style="width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
     <td><select onchange="updateBulkInRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkInRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
@@ -4663,7 +4673,7 @@ function rowBaseQty(item, row){
 // already added, not just at entry time.
 function extraQtyCellHtml(updateFnName, i, item, row){
   if(!itemHasUnits(item) || row.unitChoice!=='u1') return '';
-  return `<input type="number" lang="en" step="0.01" value="${row.extraQty||0}" onchange="${updateFnName}(${i},'extraQty',this.value)" placeholder="+ ${item.unit2Name}" title="${t('extraPacksLabel')}" style="width:52px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;margin-inline-start:4px;">`;
+  return `<input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${row.extraQty||0}" onchange="${updateFnName}(${i},'extraQty',this.value)" placeholder="+ ${item.unit2Name}" title="${t('extraPacksLabel')}" style="width:52px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;margin-inline-start:4px;">`;
 }
 function updateBulkInRow(i, field, value){
   const row = bulkInRows[i];
@@ -4839,7 +4849,7 @@ function renderBulkOutTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateBulkOutRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkOutRow',i,item,r)}</td>
+    <td style="white-space:nowrap;"><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${r.enteredQty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkOutRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td><select onchange="updateBulkOutRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkOutRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
   document.getElementById('boTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
@@ -5403,7 +5413,7 @@ function renderTransferTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateTransferRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td><td>${r.fromLabel}</td><td>${r.toLabel}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateTransferRow',i,item,r)}</td>
+    <td style="white-space:nowrap;"><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${r.enteredQty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateTransferRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td class="rm" onclick="removeTransferRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
   document.getElementById('trTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
