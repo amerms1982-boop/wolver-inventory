@@ -39,7 +39,14 @@
        digits. font-feature-settings is inherited, so disabling "locl" here turns that
        substitution off for the whole page in one place, instead of patching lang="en" onto every
        element that happens to display a number. */
-    font-feature-settings:"locl" 0;}
+    font-feature-settings:"locl" 0;
+    /* In this app's fonts a bare "0" can look close to other digits at small sizes (reported:
+       read as "5" in a "0 batch" label) — a slashed zero, when the font provides one, is the
+       standard fix for that ambiguity. Harmless no-op if the active font has no slashed-zero
+       glyph. The clearer fix for the specific case that was reported is the wording change next
+       to it (zero batches now reads as a sentence, not a digit), but this helps everywhere else
+       a bare 0 still appears. */
+    font-variant-numeric:slashed-zero;}
   h1,h2,h3,.display{font-family:'Cairo', sans-serif; font-weight:800; letter-spacing:.2px;}
   .app{max-width:1180px;margin:0 auto;padding:20px 20px 80px;}
 
@@ -4002,7 +4009,7 @@ function renderItems(){
         ${thumb}
         <div class="body">
           <div class="name">${it.name}</div>
-          <div class="sub"><span>${it.batches.length} ${t('batchUnit')}</span><span style="font-size:16px;font-weight:800;color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;">${t('totalLabel')}: ${totalQtyDisplay(it, itemTotal(it))}</span></div>
+          <div class="sub"><span>${it.batches.length>0 ? it.batches.length+' '+t('batchUnit') : t('noBatchesForItem')}</span><span style="font-size:16px;font-weight:800;color:var(--ink);font-family:'IBM Plex Sans Arabic',sans-serif;">${t('totalLabel')}: ${totalQtyDisplay(it, itemTotal(it))}</span></div>
           <div class="queue">${chips || '<span class="chip empty"></span>'}</div>
         </div>
       </div>`;
