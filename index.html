@@ -658,6 +658,7 @@
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
       <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
+      <div id="biQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="biQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bi','biQtyExtra')"></div>
       <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
       <div><label data-i18n="warehouse">المخزن</label><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
     </div>
@@ -685,6 +686,7 @@
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
       <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="boUnit" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boUnit')"></select></div>
+      <div id="boQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="boQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bo','boQtyExtra')"></div>
       <div><label data-i18n="warehouse">المخزن</label><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkOutRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
@@ -915,6 +917,7 @@
       <div><label data-i18n="toWarehouse">إلى مخزن</label><select id="trTo" onkeydown="onNoteFieldKeydown(event,'tr','trTo')"></select></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="number" lang="en" step="0.01" onfocus="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trQty')"></div>
       <div id="trUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="trUnit" onchange="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trUnit')"></select></div>
+      <div id="trQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="trQtyExtra" type="number" lang="en" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'tr','trQtyExtra')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="trRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'tr','trRecipientName')"></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addTransferRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
@@ -1654,6 +1657,7 @@ const I18N = {
     errEnterItemName: `اكتب اسم الصنف`,
     errTableEmpty: `الجدول فاضي`,
     msgSaveInProgress: `جاري الحفظ، لحظة واحدة...`,
+    extraPacksLabel: `+ وحدات مفردة إضافية (اختياري)`,
     errUserNotFound: `المستخدم غير موجود بالفعل`,
     errDeleteRetry: `تعذر الحذف، حاول مرة أخرى`,
     errRejectRetry: `تعذر الرفض، حاول مرة أخرى`,
@@ -2084,6 +2088,7 @@ const I18N = {
     errEnterItemName: `Enter the item name`,
     errTableEmpty: `The table is empty`,
     msgSaveInProgress: `Saving, one moment...`,
+    extraPacksLabel: `+ extra single units (optional)`,
     errUserNotFound: `User no longer exists`,
     errDeleteRetry: `Delete failed, try again`,
     errRejectRetry: `Reject failed, try again`,
@@ -3703,10 +3708,28 @@ function availableQtyHintText(item, wh, unitChoice){
   return `${t('availableQtyLabel')}: ${totalQtyDisplay(item, totalBase)}`;
 }
 const QTY_HINT_CONFIG = {
-  bi: {item:'biItem', unit:'biUnit', wh:'biWarehouse', hint:'biQtyHint', search:'biItemSearch'},
-  bo: {item:'boItem', unit:'boUnit', wh:'boWarehouse', hint:'boQtyHint', search:'boItemSearch'},
-  tr: {item:'trItem', unit:'trUnit', wh:'trFrom', hint:'trQtyHint', search:'trItemSearch'}
+  bi: {item:'biItem', unit:'biUnit', wh:'biWarehouse', hint:'biQtyHint', search:'biItemSearch', extraWrap:'biQtyExtraWrap', extraInput:'biQtyExtra'},
+  bo: {item:'boItem', unit:'boUnit', wh:'boWarehouse', hint:'boQtyHint', search:'boItemSearch', extraWrap:'boQtyExtraWrap', extraInput:'boQtyExtra'},
+  tr: {item:'trItem', unit:'trUnit', wh:'trFrom', hint:'trQtyHint', search:'trItemSearch', extraWrap:'trQtyExtraWrap', extraInput:'trQtyExtra'}
 };
+// Shows/hides the "+ extra single units" field: only makes sense once an item with two units is
+// picked AND the larger unit (e.g. كرتونة) is the one selected to enter the main quantity in —
+// that's the one case where "10 cartons and also 5 loose packs" can't be said in a single number.
+function refreshQtyExtraField(prefix, item, unitChoice){
+  const cfg = QTY_HINT_CONFIG[prefix];
+  if(!cfg || !cfg.extraWrap) return;
+  const wrapEl = document.getElementById(cfg.extraWrap);
+  if(!wrapEl) return;
+  const show = itemHasUnits(item) && unitChoice==='u1';
+  wrapEl.style.display = show ? '' : 'none';
+  if(!show){
+    const inputEl = document.getElementById(cfg.extraInput);
+    if(inputEl) inputEl.value = '';
+  } else {
+    const inputEl = document.getElementById(cfg.extraInput);
+    if(inputEl) inputEl.placeholder = '0 '+item.unit2Name;
+  }
+}
 function updateQtyAvailableHint(prefix){
   const cfg = QTY_HINT_CONFIG[prefix];
   if(!cfg) return;
@@ -3716,7 +3739,7 @@ function updateQtyAvailableHint(prefix){
   // the underlying <select> defaults to some item — so an empty search box means "nothing chosen
   // yet" and the hint should stay blank rather than showing a default item's quantity.
   const searchEl = document.getElementById(cfg.search);
-  if(searchEl && !searchEl.value.trim()){ hintEl.textContent = ''; return; }
+  if(searchEl && !searchEl.value.trim()){ hintEl.textContent = ''; refreshQtyExtraField(prefix, null, 'u2'); return; }
   const itemEl = document.getElementById(cfg.item);
   const item = itemEl ? STATE.items.find(i=>i.id===itemEl.value) : null;
   const whEl = document.getElementById(cfg.wh);
@@ -3724,6 +3747,7 @@ function updateQtyAvailableHint(prefix){
   const unitEl = document.getElementById(cfg.unit);
   const unitChoice = (unitEl && itemHasUnits(item)) ? unitEl.value : 'u2';
   hintEl.textContent = availableQtyHintText(item, wh, unitChoice);
+  refreshQtyExtraField(prefix, item, unitChoice);
 }
 
 /* ============ REORDER LEVEL (حد الطلب) ============ */
@@ -4444,9 +4468,9 @@ document.addEventListener('mousedown', e=>{ if(!e.target.closest('.item-combo'))
 // same as clicking "أضف للجدول", then sends focus back to the item field so the next row can
 // start right away.
 const NOTE_FIELD_ORDER = {
-  bi: ['biSupplierName','biRecipientName','biItemSearch','biQty','biUnit','biExpiry','biWarehouse'],
-  bo: ['boLocationName','boRecipientName','boItemSearch','boQty','boUnit','boWarehouse'],
-  tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trRecipientName']
+  bi: ['biSupplierName','biRecipientName','biItemSearch','biQty','biUnit','biQtyExtra','biExpiry','biWarehouse'],
+  bo: ['boLocationName','boRecipientName','boItemSearch','boQty','boUnit','boQtyExtra','boWarehouse'],
+  tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trQtyExtra','trRecipientName']
 };
 const NOTE_ADD_ROW_FN = { bi: 'addBulkInRow', bo: 'addBulkOutRow', tr: 'addTransferRow' };
 function isNoteFieldUsable(el){
@@ -4502,7 +4526,7 @@ function openBulkIn(){
   document.getElementById('biItemSearch').value = '';
   document.getElementById('biItem').innerHTML = itemOptionsHtml();
   document.getElementById('biWarehouse').innerHTML = whOptionsHtml(warehouseIds()[0]);
-  document.getElementById('biQty').value=''; document.getElementById('biExpiry').value='';
+  document.getElementById('biQty').value=''; document.getElementById('biExpiry').value=''; document.getElementById('biQtyExtra').value='';
   document.getElementById('biSupplierName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.supplier||'') : '';
   document.getElementById('biRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
   onBiItemChange();
@@ -4540,18 +4564,26 @@ function updateEditingBanner(which){
     el.innerHTML = '';
   }
 }
+// Reads the "+ extra single units" field (e.g. 5 loose packs on top of N cartons) — only
+// meaningful when the larger unit is what's selected for the main quantity; 0 otherwise.
+function readExtraQty(prefix, item, unitChoice){
+  if(!itemHasUnits(item) || unitChoice!=='u1') return 0;
+  const el = document.getElementById(QTY_HINT_CONFIG[prefix].extraInput);
+  return el ? (parseFloat(el.value)||0) : 0;
+}
 function addBulkInRow(){
   const itemId = document.getElementById('biItem').value;
   const item = STATE.items.find(i=>i.id===itemId);
   const enteredQty = parseFloat(document.getElementById('biQty').value);
   const unitChoice = itemHasUnits(item) ? document.getElementById('biUnit').value : 'u2';
+  const extraQty = readExtraQty('bi', item, unitChoice);
   const wh = document.getElementById('biWarehouse').value;
   if(!item){ showToast(t('errCompleteRowData')); return; }
   if(!enteredQty || enteredQty<=0){ showToast(t('errCompleteRowData')); return; }
-  const qty = toBaseQty(item, enteredQty, unitChoice);
+  const qty = toBaseQty(item, enteredQty, unitChoice) + extraQty;
   const expiry = document.getElementById('biExpiry').value.trim() || null;
-  bulkInRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, expiry, wh, whLabel:whName(wh)});
-  document.getElementById('biQty').value=''; document.getElementById('biExpiry').value='';
+  bulkInRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, extraQty, expiry, wh, whLabel:whName(wh)});
+  document.getElementById('biQty').value=''; document.getElementById('biExpiry').value=''; document.getElementById('biQtyExtra').value='';
   renderBulkInTable();
 }
 function removeBulkInRow(i){ bulkInRows.splice(i,1); renderBulkInTable(); }
@@ -4561,18 +4593,30 @@ function renderBulkInTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateBulkInRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkInRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}</td>
+    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkInRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkInRow',i,item,r)}</td>
     <td><input value="${(r.expiry||'').replace(/"/g,'&quot;')}" placeholder="MM/YYYY" onchange="updateBulkInRow(${i},'expiry',this.value)" style="width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
     <td><select onchange="updateBulkInRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkInRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
   document.getElementById('biTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
 }
+// Recomputes a row's base-unit qty from its entered amount, unit choice and any extra loose packs.
+function rowBaseQty(item, row){
+  return toBaseQty(item, row.enteredQty, row.unitChoice) + (row.unitChoice==='u1' ? (row.extraQty||0) : 0);
+}
+// The small "+ N packs" input shown next to a row's unit dropdown once it's set to the larger
+// unit — lets a mixed amount (e.g. 10 cartons and 5 loose packs) be corrected after the row was
+// already added, not just at entry time.
+function extraQtyCellHtml(updateFnName, i, item, row){
+  if(!itemHasUnits(item) || row.unitChoice!=='u1') return '';
+  return `<input type="number" lang="en" step="0.01" value="${row.extraQty||0}" onchange="${updateFnName}(${i},'extraQty',this.value)" placeholder="+ ${item.unit2Name}" title="${t('extraPacksLabel')}" style="width:52px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;margin-inline-start:4px;">`;
+}
 function updateBulkInRow(i, field, value){
   const row = bulkInRows[i];
   if(!row) return;
   const item = STATE.items.find(x=>x.id===row.itemId);
-  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
-  else if(field==='unit'){ row.unitChoice = value; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
+  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
+  else if(field==='unit'){ row.unitChoice = value; if(value!=='u1') row.extraQty = 0; row.qty = rowBaseQty(item, row); }
+  else if(field==='extraQty'){ row.extraQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
   else if(field==='wh'){ row.wh = value; row.whLabel = whName(value); }
   else row[field] = value.trim();
 }
@@ -4688,7 +4732,7 @@ function openBulkOut(){
   document.getElementById('boItem').innerHTML = itemOptionsHtml();
   document.getElementById('boWarehouse').innerHTML = whOptionsHtml(warehouseIds()[0]);
   onBulkOutItemChange();
-  document.getElementById('boQty').value='';
+  document.getElementById('boQty').value=''; document.getElementById('boQtyExtra').value='';
   document.getElementById('boLocationName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.location||'') : '';
   document.getElementById('boRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
   renderBulkOutTable();
@@ -4718,9 +4762,10 @@ function addBulkOutRow(){
   const item = STATE.items.find(i=>i.id===itemId);
   const enteredQty = parseFloat(document.getElementById('boQty').value);
   const unitChoice = itemHasUnits(item) ? document.getElementById('boUnit').value : 'u2';
+  const extraQty = readExtraQty('bo', item, unitChoice);
   const wh = document.getElementById('boWarehouse').value;
   if(!item || !enteredQty || enteredQty<=0){ showToast(t('errCompleteRowData')); return; }
-  const qty = toBaseQty(item, enteredQty, unitChoice);
+  const qty = toBaseQty(item, enteredQty, unitChoice) + extraQty;
   const {alloc} = computeFefoAllocation(item, wh, qty, true);
   if(!alloc.length){
     const hasExpiredOnly = computeFefoAllocation(item, wh, qty, false).alloc.length > 0;
@@ -4728,8 +4773,8 @@ function addBulkOutRow(){
     return;
   }
   const expiry = formatFefoExpiryLabel(alloc);
-  bulkOutRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, wh, whLabel:whName(wh), expiry});
-  document.getElementById('boQty').value='';
+  bulkOutRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, extraQty, wh, whLabel:whName(wh), expiry});
+  document.getElementById('boQty').value=''; document.getElementById('boQtyExtra').value='';
   renderBulkOutTable();
 }
 function removeBulkOutRow(i){ bulkOutRows.splice(i,1); renderBulkOutTable(); }
@@ -4739,7 +4784,7 @@ function renderBulkOutTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateBulkOutRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}</td>
+    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkOutRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td><select onchange="updateBulkOutRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkOutRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
   document.getElementById('boTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
@@ -4748,8 +4793,9 @@ function updateBulkOutRow(i, field, value){
   const row = bulkOutRows[i];
   if(!row) return;
   const item = STATE.items.find(x=>x.id===row.itemId);
-  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
-  else if(field==='unit'){ row.unitChoice = value; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
+  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
+  else if(field==='unit'){ row.unitChoice = value; if(value!=='u1') row.extraQty = 0; row.qty = rowBaseQty(item, row); }
+  else if(field==='extraQty'){ row.extraQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
   else if(field==='wh'){ row.wh = value; row.whLabel = whName(value); }
   if(item){
     const {alloc} = computeFefoAllocation(item, row.wh, row.qty, true);
@@ -5000,7 +5046,9 @@ function rowQtyDisplay(r){
   if(r.unitChoice && r.enteredQty!=null){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const label = item ? qtyUnitLabel(item, r.unitChoice) : '';
-    return label ? `${plainQty(r.enteredQty)} ${label}` : plainQty(r.enteredQty);
+    const mainPart = label ? `${plainQty(r.enteredQty)} ${label}` : plainQty(r.enteredQty);
+    if(r.extraQty>0 && item) return `${mainPart} ${t('andWord')} ${plainQty(r.extraQty)} ${item.unit2Name}`;
+    return mainPart;
   }
   return plainQty(r.qty);
 }
@@ -5236,7 +5284,7 @@ function openTransferModal(){
   document.getElementById('trItemSearch').value = '';
   document.getElementById('trItem').innerHTML = itemOptionsHtml();
   onTransferItemChange();
-  document.getElementById('trQty').value='';
+  document.getElementById('trQty').value=''; document.getElementById('trQtyExtra').value='';
   document.getElementById('trRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='transfer' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
   renderTransferTable();
   updateEditingBanner('tr');
@@ -5269,14 +5317,15 @@ function addTransferRow(){
   const to = document.getElementById('trTo').value;
   const enteredQty = parseFloat(document.getElementById('trQty').value);
   const unitChoice = itemHasUnits(item) ? document.getElementById('trUnit').value : 'u2';
+  const extraQty = readExtraQty('tr', item, unitChoice);
   if(!item || !enteredQty || enteredQty<=0){ showToast(t('errSelectItemPkgQty')); return; }
   if(from===to){ showToast(t('errChooseDiffWarehouses')); return; }
-  const qty = toBaseQty(item, enteredQty, unitChoice);
+  const qty = toBaseQty(item, enteredQty, unitChoice) + extraQty;
   const {alloc} = computeFefoAllocation(item, from, qty);
   if(!alloc.length){ showToast(t('errNoBalanceForItemInWhPrefix')+whName(from)); return; }
   const expiry = formatFefoExpiryLabel(alloc);
-  transferRows.push({itemId:item.id, itemName:item.name, fromWh:from, fromLabel:whName(from), toWh:to, toLabel:whName(to), qty, enteredQty, unitChoice, expiry});
-  document.getElementById('trQty').value='';
+  transferRows.push({itemId:item.id, itemName:item.name, fromWh:from, fromLabel:whName(from), toWh:to, toLabel:whName(to), qty, enteredQty, unitChoice, extraQty, expiry});
+  document.getElementById('trQty').value=''; document.getElementById('trQtyExtra').value='';
   renderTransferTable();
 }
 function removeTransferRow(i){ transferRows.splice(i,1); renderTransferTable(); }
@@ -5284,8 +5333,9 @@ function updateTransferRow(i, field, value){
   const row = transferRows[i];
   if(!row) return;
   const item = STATE.items.find(x=>x.id===row.itemId);
-  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
-  else if(field==='unit'){ row.unitChoice = value; row.qty = toBaseQty(item, row.enteredQty, row.unitChoice); }
+  if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
+  else if(field==='unit'){ row.unitChoice = value; if(value!=='u1') row.extraQty = 0; row.qty = rowBaseQty(item, row); }
+  else if(field==='extraQty'){ row.extraQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
   if(item){
     const {alloc} = computeFefoAllocation(item, row.fromWh, row.qty);
     row.expiry = formatFefoExpiryLabel(alloc);
@@ -5298,7 +5348,7 @@ function renderTransferTable(){
     const item = STATE.items.find(x=>x.id===r.itemId);
     const unitCell = itemHasUnits(item) ? `<select onchange="updateTransferRow(${i},'unit',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:11.5px;margin-inline-start:4px;">${unitSelectHtml(item, r.unitChoice)}</select>` : '';
     return `<tr><td>${i+1}</td><td>${r.itemName}</td><td>${r.fromLabel}</td><td>${r.toLabel}</td>
-    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}</td>
+    <td style="white-space:nowrap;"><input type="number" lang="en" step="0.01" value="${r.enteredQty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateTransferRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td class="rm" onclick="removeTransferRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
   document.getElementById('trTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
