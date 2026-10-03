@@ -721,20 +721,9 @@
     <button class="modal-close" style="left:48px;font-size:13.5px;font-family:'Cairo';font-weight:700;display:inline-flex;align-items:center;gap:4px;" onclick="closeSavedNotes(); openNotesHub();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex:none;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span data-i18n="back">رجوع</span></button>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-left:96px;">
       <h2 id="notesTitle" style="margin:0;" data-i18n="savedNotesTitle">الأذون المحفوظة</h2>
-      <button id="recoverFromLogBtn" class="btn btn-ghost btn-sm" style="display:none;" onclick="openRecoverNotesModal()" data-i18n="recoverFromLogBtn">استرجاع إذن من السجل</button>
     </div>
     <div class="item-meta" data-i18n="savedNotesDesc">تقدر تطبع أي إذن قديم مرة أخرى، أو تعدّله (سيتم عكس تأثيره على المخزون وتحميله للتعديل ثم تأكيده من جديد).</div>
     <div id="notesList"></div>
-  </div>
-</div>
-
-<!-- RECOVER MISSING NOTES FROM LOG MODAL (admin only) -->
-<div class="overlay" id="recoverNotesOverlay">
-  <div class="modal">
-    <button class="modal-close" onclick="closeRecoverNotesModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <h2 data-i18n="recoverFromLogTitle">استرجاع أذون مفقودة من سجل العمليات</h2>
-    <div class="item-meta" data-i18n="recoverFromLogDesc">دي أذون أثرها على الأرصدة مسجل في سجل العمليات، لكن مستند الإذن نفسه مفقود (غالبًا بسبب عطل وقت الحفظ). استرجاعها بيضيف نسخة توثيقية للإذن في القائمة من غير ما يغيّر أي رصيد حالي، لأن التأثير ده مسجل بالفعل.</div>
-    <div id="recoverNotesList"></div>
   </div>
 </div>
 
@@ -1575,15 +1564,6 @@ const I18N = {
     back: `رجوع`,
     savedNotesTitle: `الأذون المحفوظة`,
     savedNotesDesc: `تقدر تطبع أي إذن قديم مرة أخرى، أو تعدّله (سيتم عكس تأثيره على المخزون وتحميله للتعديل ثم تأكيده من جديد).`,
-    recoverFromLogBtn: `استرجاع إذن من السجل`,
-    recoverFromLogTitle: `استرجاع أذون مفقودة من سجل العمليات`,
-    recoverFromLogDesc: `دي أذون أثرها على الأرصدة مسجل في سجل العمليات، لكن مستند الإذن نفسه مفقود (غالبًا بسبب عطل وقت الحفظ). استرجاعها بيضيف نسخة توثيقية للإذن في القائمة من غير ما يغيّر أي رصيد حالي، لأن التأثير ده مسجل بالفعل.`,
-    noOrphanLogGroups: `لا توجد أذون مفقودة في السجل حاليًا`,
-    recoverBtn: `استرجاع`,
-    msgNoteRecoveredPrefix: `تم استرجاع الإذن رقم `,
-    msgNoteRecoveredSuffix: ` من السجل كنسخة توثيقية، بدون أي تغيير إضافي على الأرصدة.`,
-    recoveredFromLogTag: `مسترجع من السجل`,
-    errCannotEditRecoveredNote: `هذا إذن مُسترجَع من سجل العمليات لأغراض التوثيق فقط، ولا يمكن تعديله من هنا. لو الكميات محتاجة تصحيح، عدّلها يدويًا من رصيد الصنف.`,
     usersDesc: `إضافة وحذف مستخدمين، وتحديد صلاحياتهم.`,
     addNewUserHeading: `إضافة مستخدم جديد`,
     username: `اسم المستخدم`,
@@ -2015,15 +1995,6 @@ const I18N = {
     back: `Back`,
     savedNotesTitle: `Saved Vouchers`,
     savedNotesDesc: `You can reprint any old voucher, or edit it (its effect on stock will be reversed, then loaded for editing and re-confirmation).`,
-    recoverFromLogBtn: `Recover voucher from log`,
-    recoverFromLogTitle: `Recover missing vouchers from the activity log`,
-    recoverFromLogDesc: `These are vouchers whose effect on balances is recorded in the activity log, but whose own document is missing (usually from a save failure). Recovering one adds a documentation copy of the voucher to the list without changing any current balance, since that effect is already recorded.`,
-    noOrphanLogGroups: `No missing vouchers found in the log`,
-    recoverBtn: `Recover`,
-    msgNoteRecoveredPrefix: `Voucher #`,
-    msgNoteRecoveredSuffix: ` was recovered from the log as a documentation copy, with no further change to balances.`,
-    recoveredFromLogTag: `Recovered from log`,
-    errCannotEditRecoveredNote: `This voucher was recovered from the activity log for documentation only and can't be edited here. If a quantity needs correcting, adjust the item's balance manually.`,
     usersDesc: `Add and remove users, and set their permissions.`,
     addNewUserHeading: `Add New User`,
     username: `Username`,
@@ -5016,7 +4987,6 @@ function cancelEditingNote(){
 async function editSavedNote(id){
   const note = STATE.notes.find(n=>n.id===id);
   if(!note) return;
-  if(note.recoveredFromLog){ showToast(t('errCannotEditRecoveredNote')); return; }
   if(note.type!=='opening'){
     reverseNote(note);
   }
@@ -5173,8 +5143,6 @@ function openSavedNotes(type){
   notesFilterType = type || null;
   const titles = {in:t('inNotes'), out:t('outNotes'), opening:t('openingNotesLabel')};
   document.getElementById('notesTitle').textContent = titles[type] || t('savedNotes');
-  const recoverBtn = document.getElementById('recoverFromLogBtn');
-  if(recoverBtn) recoverBtn.style.display = (currentUser && currentUser.role==='admin' && type!=='opening') ? 'inline-block' : 'none';
   renderSavedNotesList();
   document.getElementById('notesOverlay').classList.add('active');
 }
@@ -5196,137 +5164,17 @@ function renderSavedNotesList(){
     if(n.type==='out' && n.location) partyParts.push(`${t('locationClient')}: ${n.location}`);
     if(n.recipient) partyParts.push(`${t('recipientName')}: ${n.recipient}`);
     const partyLine = partyParts.length ? `<br><span style="font-size:11.5px;color:var(--ink);">${partyParts.join(' · ')}</span>` : '';
-    const recoveredTag = n.recoveredFromLog ? ` <span class="pill warn" title="${t('recoverFromLogDesc')}">${t('recoveredFromLogTag')}</span>` : '';
     return `<div class="wh-row">
       <span class="tag ${n.type}">${typeLabel[n.type]||n.type}</span>
-      <span class="wname">${t('numberLabel')} ${n.serial}${recoveredTag} — ${n.rows.length} ${t('itemUnit')} — ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}${partyLine}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(n.createdAt)}${n.updatedAt && n.updatedAt!==n.createdAt ? ' ('+t('lastEditLabel')+': '+fmtTime(n.updatedAt)+')' : ''}</span></span>
+      <span class="wname">${t('numberLabel')} ${n.serial} — ${n.rows.length} ${t('itemUnit')} — ${t('totalLabel')} ${total.toLocaleString(appLocale(),{maximumFractionDigits:1})}${partyLine}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(n.createdAt)}${n.updatedAt && n.updatedAt!==n.createdAt ? ' ('+t('lastEditLabel')+': '+fmtTime(n.updatedAt)+')' : ''}</span></span>
       <div class="wactions">
         ${hasPerm(permMod,'print') ? `<button class="btn btn-ghost btn-sm" onclick="previewPrint(buildSavedNotePrintHtml('${n.id}'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> ${t('previewBtn')}</button>
         <button class="btn btn-ghost btn-sm" onclick="doPrint(buildSavedNotePrintHtml('${n.id}'))"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> ${t('printBtn')}</button>` : ''}
-        ${(hasPerm(permMod,'edit') && !n.recoveredFromLog) ? `<button class="btn btn-ghost btn-sm" onclick="editSavedNote('${n.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('editBtn')}</button>` : ''}
+        ${hasPerm(permMod,'edit') ? `<button class="btn btn-ghost btn-sm" onclick="editSavedNote('${n.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('editBtn')}</button>` : ''}
         ${hasPerm(permMod,'delete') ? `<button class="btn btn-danger btn-sm" onclick="deleteSavedNote('${n.id}')">${t('deleteBtn')}</button>` : ''}
       </div>
     </div>`;
   }).join('');
-}
-
-/* ============ RECOVER MISSING NOTES FROM THE ACTIVITY LOG ============
-   Covers the specific corruption pattern the old non-atomic persist() could leave behind:
-   an item's balance update made it to the server (and so did its activity-log entries),
-   but the note document itself failed to save and is gone for good. Since the note text
-   never actually got written anywhere (no server copy, no local cache), it can't be restored
-   verbatim — but the activity-log entries for its line items usually did get written (the old
-   persist() always attempted the txlog sync even after an earlier failure), so a documentation
-   copy of the voucher can be rebuilt from them. Only 'in'/'out' are supported: transfer log
-   entries don't carry the voucher's serial number in their text, so there's nothing to group by. */
-function escapeRegExp(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-function extractSerialFromLocation(location){
-  const re = new RegExp(escapeRegExp(t('numberLabel'))+'\\s+(\\d+)');
-  const m = (location||'').match(re);
-  return m ? parseInt(m[1],10) : null;
-}
-function findOrphanNoteGroups(){
-  const groups = {};
-  (STATE.transactions||[]).forEach(tx=>{
-    if(tx.type!=='in' && tx.type!=='out') return;
-    const serial = extractSerialFromLocation(tx.location);
-    if(serial==null) return;
-    const key = tx.type+'|'+serial;
-    if(!groups[key]) groups[key] = {type:tx.type, serial, entries:[]};
-    groups[key].entries.push(tx);
-  });
-  const existing = new Set(STATE.notes.map(n=>n.type+'|'+n.serial));
-  return Object.values(groups)
-    .filter(g=>!existing.has(g.type+'|'+g.serial))
-    .sort((a,b)=> new Date(a.entries[0].ts) - new Date(b.entries[0].ts));
-}
-function buildNoteFromLogGroup(group){
-  const {type, serial, entries} = group;
-  const rowMap = {};
-  entries.forEach(tx=>{
-    const wh = tx.warehouseId;
-    const key = tx.itemId+'|'+wh;
-    if(!rowMap[key]) rowMap[key] = {itemId:tx.itemId, itemName:tx.itemName, wh, qty:0};
-    rowMap[key].qty = Math.round((rowMap[key].qty + (tx.qty||0))*100)/100;
-  });
-  const rows = Object.values(rowMap).map(r=>{
-    const item = STATE.items.find(i=>i.id===r.itemId);
-    let unitChoice='u2', enteredQty=r.qty, extraQty=0;
-    if(item && itemHasUnits(item)){
-      const ratio = item.unitRatio;
-      const u1 = Math.floor((r.qty+1e-9)/ratio);
-      let rem = Math.round((r.qty - u1*ratio)*100)/100;
-      if(rem<0) rem=0;
-      if(u1>0){ unitChoice='u1'; enteredQty=u1; extraQty=rem; }
-      else { unitChoice='u2'; enteredQty=rem; extraQty=0; }
-    }
-    return {itemId:r.itemId, itemName:r.itemName, qty:r.qty, enteredQty, unitChoice, extraQty, expiry:null, wh:r.wh, whLabel:whName(r.wh)};
-  });
-  let earliestTs=null, latestTs=null;
-  entries.forEach(tx=>{ if(!earliestTs || tx.ts<earliestTs) earliestTs=tx.ts; if(!latestTs || tx.ts>latestTs) latestTs=tx.ts; });
-  const note = {
-    id: 'note-recovered-'+type+'-'+serial+'-'+Date.now(),
-    serial, type,
-    createdAt: earliestTs || new Date().toISOString(),
-    updatedAt: latestTs || earliestTs || new Date().toISOString(),
-    user: entries[0].user || t('unknownUser'),
-    rows,
-    // Intentionally empty: the balances are already live on the server from the original
-    // commit, so this reconstruction must never be reversible via editSavedNote/deleteSavedNote
-    // (which replay appliedAllocations) — that would double-apply or wrongly undo real stock.
-    appliedAllocations: [],
-    txIds: entries.map(tx=>tx.id),
-    recoveredFromLog: true
-  };
-  if(type==='in'){
-    const sm = (entries[0].location||'').match(new RegExp(escapeRegExp(t('supplierName'))+':\\s*([^—]+?)\\s*—'));
-    note.supplier = sm ? sm[1].trim() : '';
-    note.recipient = '';
-  } else {
-    const loc = entries[0].location || '';
-    const parts = loc.split(' — ').map(s=>s.trim()).filter(Boolean);
-    // parts[0] is the "<title> <numberLabel> <serial>" prefix, the last part is the warehouse
-    // label — anything in between is the free-text location/client field.
-    note.location = parts.length>2 ? parts.slice(1,-1).join(' — ') : '';
-    note.recipient = '';
-  }
-  return note;
-}
-function openRecoverNotesModal(){
-  renderRecoverNotesList();
-  document.getElementById('recoverNotesOverlay').classList.add('active');
-}
-function closeRecoverNotesModal(){ document.getElementById('recoverNotesOverlay').classList.remove('active'); }
-function renderRecoverNotesList(){
-  const el = document.getElementById('recoverNotesList');
-  const groups = findOrphanNoteGroups();
-  if(!groups.length){ el.innerHTML = `<div class="empty-note">${t('noOrphanLogGroups')}</div>`; return; }
-  const typeLabel = {in:t('txIn'), out:t('txOut')};
-  el.innerHTML = groups.map(g=>{
-    const itemCount = new Set(g.entries.map(tx=>tx.itemId)).size;
-    return `<div class="wh-row">
-      <span class="tag ${g.type}">${typeLabel[g.type]||g.type}</span>
-      <span class="wname">${t('numberLabel')} ${g.serial} — ${itemCount} ${t('itemUnit')}<br><span style="font-size:11px;color:var(--ink-soft);">${fmtTime(g.entries[0].ts)}</span></span>
-      <div class="wactions">
-        <button class="btn btn-amber btn-sm" onclick="recoverNoteFromLog('${g.type}', ${g.serial})">${t('recoverBtn')}</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-async function recoverNoteFromLog(type, serial){
-  const group = findOrphanNoteGroups().find(g=>g.type===type && g.serial===serial);
-  if(!group) return;
-  const note = buildNoteFromLogGroup(group);
-  STATE.notes.unshift(note);
-  const ok = await persist();
-  if(ok){
-    showToast(t('msgNoteRecoveredPrefix')+serial+t('msgNoteRecoveredSuffix'));
-    renderRecoverNotesList();
-    renderSavedNotesList();
-  } else {
-    STATE.notes = STATE.notes.filter(n=>n.id!==note.id);
-    showToast(t('errSaveRetry'));
-  }
 }
 
 /* ============ PRINTING ============ */
