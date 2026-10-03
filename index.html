@@ -5306,9 +5306,9 @@ function openWhContents(id){
   document.getElementById('whContentsPrintActions').style.display = hasPerm('warehouses','print') ? '' : 'none';
   document.getElementById('whContentsTitle').textContent = t('contentsLabel') + ': ' + whName(id);
   const rows = [];
-  orderedItems().forEach(item=>item.batches.forEach(b=>{ const qty=b.balances[id]||0; if(qty>0) rows.push({name:item.name, expiry:b.expiry||t('statusUnspecified'), qty}); }));
+  orderedItems().forEach(item=>item.batches.forEach(b=>{ const qty=b.balances[id]||0; if(qty>0) rows.push({item, name:item.name, expiry:b.expiry||t('statusUnspecified'), qty}); }));
   const head = `<tr><th>${t('item')}</th><th>${t('expiryDate')}</th><th>${t('colQty')}</th></tr>`;
-  const body = rows.map(r=>`<tr><td>${r.name}</td><td>${r.expiry}</td><td>${r.qty}</td></tr>`).join('');
+  const body = rows.map(r=>`<tr><td>${r.name}</td><td>${r.expiry}</td><td>${fmtQty(r.item, r.qty)}</td></tr>`).join('');
   document.getElementById('whContentsTable').innerHTML = head + (body || `<tr><td colspan="3" style="text-align:center;color:var(--ink-soft);">${t('noBalanceInWh')}</td></tr>`);
   document.getElementById('whContentsTable').dataset.whId = id;
   document.getElementById('whContentsOverlay').classList.add('active');
