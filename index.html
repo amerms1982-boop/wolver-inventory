@@ -2322,6 +2322,23 @@ function toggleDD(ev, btn){
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.dd')) closeAllDD(); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAllDD(); });
+// Esc closes whichever modal window is currently open, the same as clicking its own X button —
+// reusing that button's own click handler (rather than just hiding the overlay) so any side
+// effects it runs (resetting a form, cancelling an in-progress edit, etc.) still happen.
+// Overlays share one z-index and are appended in source order, so when more than one is open at
+// once (e.g. a confirm dialog on top of a saved-notes list) the LAST active one in the DOM is
+// the topmost one visually — exactly the one Esc should close.
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape') return;
+  const actives = document.querySelectorAll('.overlay.active');
+  if(!actives.length) return;
+  const top = actives[actives.length-1];
+  if(top.id==='confirmOverlay'){ resolveConfirm(false); return; }
+  if(top.id==='promptOverlay'){ resolvePrompt(false); return; }
+  if(top.id==='imageZoomOverlay'){ closeImageZoom(); return; }
+  const closeBtn = top.querySelector('.modal-close');
+  if(closeBtn) closeBtn.click();
+});
 function rerenderCurrentUI(){
   // Re-render whatever is currently visible so dynamically-built strings update immediately.
   try{
