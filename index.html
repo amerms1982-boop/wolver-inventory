@@ -2871,10 +2871,15 @@ function ensureDefaults(){
     STATE.defaultWarehouseId = ids.length ? ids[0] : null;
   }
 }
-async function syncTransactionsToDb(db){
+function buildTxSyncPlan(){
+  // Pure planning: decides which txlog pages need to be set/deleted without
+  // performing any I/O, so its operations can be folded into the same atomic
+  // batch as the meta/items/notes writes in persist(). Returns {sets, deletes, txCount}.
   const already = SYNCED.txCount || 0;
   const total = STATE.transactions.length;
-  if(total === already) return true;
+  const sets = [];
+  const deletes = [];
+  if(total === already) return {sets, deletes, txCount: total};
   if(total > already){
     // Growing: only the pages after what's already saved need (re)writing.
     const firstPage = Math.floor(already/TX_PAGE_SIZE)+1;
@@ -2882,8 +2887,7 @@ async function syncTransactionsToDb(db){
     for(let p=firstPage; p<=lastPage; p++){
       const start=(p-1)*TX_PAGE_SIZE, end=p*TX_PAGE_SIZE;
       const entries = STATE.transactions.slice(start,end);
-      const ok = await writeWithRetry(()=>db.collection('txlog').doc('p'+p).set({entries}));
-      if(!ok) return false;
+      sets.push({page: p, entries});
     }
   } else {
     // Shrinking (e.g. clearing the log or a data wipe): rewrite every remaining
@@ -2894,15 +2898,33 @@ async function syncTransactionsToDb(db){
     for(let p=1; p<=newLastPage; p++){
       const start=(p-1)*TX_PAGE_SIZE, end=p*TX_PAGE_SIZE;
       const entries = STATE.transactions.slice(start,end);
-      const ok = await writeWithRetry(()=>db.collection('txlog').doc('p'+p).set({entries}));
-      if(!ok) return false;
+      sets.push({page: p, entries});
     }
     for(let p=newLastPage+1; p<=oldLastPage; p++){
-      const ok = await writeWithRetry(()=>db.collection('txlog').doc('p'+p).delete());
-      if(!ok) return false;
+      deletes.push({page: p});
     }
   }
-  SYNCED.txCount = total;
+  return {sets, deletes, txCount: total};
+}
+async function commitOpsInChunks(db, ops){
+  // Firestore write batches cap at 500 operations; chunk conservatively at 450
+  // to leave headroom. All chunks must succeed for the overall commit to count,
+  // since a note save and its matching balance/txlog changes must land together
+  // or not at all — never partially, which is what used to cause a balance
+  // update to persist with no corresponding note.
+  if(ops.length === 0) return true;
+  for(let i=0; i<ops.length; i+=450){
+    const chunk = ops.slice(i, i+450);
+    const ok = await writeWithRetry(async ()=>{
+      const batch = db.batch();
+      for(const op of chunk){
+        if(op.type === 'set') batch.set(op.ref, op.data);
+        else batch.delete(op.ref);
+      }
+      await batch.commit();
+    });
+    if(!ok) return false;
+  }
   return true;
 }
 async function persist(){
@@ -2911,44 +2933,68 @@ async function persist(){
     showToast(t('errFirebaseNotSetup'));
     return false;
   }
-  let allOk = true;
+  // Build the full set of pending writes/deletes BEFORE touching the network,
+  // then commit them all atomically (in one or more all-or-nothing batches).
+  // This guarantees an item-balance change and its note (and txlog entries)
+  // can never succeed or fail independently of each other.
+  const ops = [];
   const newMeta = metaBody();
-  if(!SYNCED.meta || !deepEqualJson(newMeta, SYNCED.meta)){
-    const ok = await writeWithRetry(()=>db.collection('meta').doc('main').set(newMeta));
-    if(ok) SYNCED.meta = JSON.parse(JSON.stringify(newMeta)); else allOk = false;
-  }
+  const metaChanged = !SYNCED.meta || !deepEqualJson(newMeta, SYNCED.meta);
+  if(metaChanged) ops.push({type: 'set', ref: db.collection('meta').doc('main'), data: newMeta});
+
   const currentIds = new Set();
+  const changedItems = [];
   for(const item of STATE.items){
     currentIds.add(item.id);
     if(!deepEqualJson(item, SYNCED.items[item.id])){
-      const ok = await writeWithRetry(()=>db.collection('items').doc(item.id).set(item));
-      if(ok) SYNCED.items[item.id] = JSON.parse(JSON.stringify(item)); else allOk = false;
+      changedItems.push(item);
+      ops.push({type: 'set', ref: db.collection('items').doc(item.id), data: item});
     }
   }
+  const deletedItemIds = [];
   for(const id of Object.keys(SYNCED.items)){
     if(!currentIds.has(id)){
-      const ok = await writeWithRetry(()=>db.collection('items').doc(id).delete());
-      if(ok) delete SYNCED.items[id]; else allOk = false;
+      deletedItemIds.push(id);
+      ops.push({type: 'delete', ref: db.collection('items').doc(id)});
     }
   }
+
   const currentNoteIds = new Set();
+  const changedNotes = [];
   for(const note of STATE.notes){
     currentNoteIds.add(note.id);
     if(!deepEqualJson(note, SYNCED.notes[note.id])){
-      const ok = await writeWithRetry(()=>db.collection('notes').doc(note.id).set(note));
-      if(ok) SYNCED.notes[note.id] = JSON.parse(JSON.stringify(note)); else allOk = false;
+      changedNotes.push(note);
+      ops.push({type: 'set', ref: db.collection('notes').doc(note.id), data: note});
     }
   }
+  const deletedNoteIds = [];
   for(const id of Object.keys(SYNCED.notes)){
     if(!currentNoteIds.has(id)){
-      const ok = await writeWithRetry(()=>db.collection('notes').doc(id).delete());
-      if(ok) delete SYNCED.notes[id]; else allOk = false;
+      deletedNoteIds.push(id);
+      ops.push({type: 'delete', ref: db.collection('notes').doc(id)});
     }
   }
-  const txOk = await syncTransactionsToDb(db);
-  if(!txOk) allOk = false;
-  if(!allOk) showToast(t('errPartialSaveFailed'));
-  return allOk;
+
+  const txPlan = buildTxSyncPlan();
+  for(const s of txPlan.sets) ops.push({type: 'set', ref: db.collection('txlog').doc('p'+s.page), data: {entries: s.entries}});
+  for(const d of txPlan.deletes) ops.push({type: 'delete', ref: db.collection('txlog').doc('p'+d.page)});
+
+  const ok = await commitOpsInChunks(db, ops);
+  if(!ok){
+    showToast(t('errPartialSaveFailed'));
+    return false;
+  }
+  // Only now, after a confirmed successful commit of every op, update the
+  // local SYNCED snapshot — so it can never drift from what's actually on
+  // the server.
+  if(metaChanged) SYNCED.meta = JSON.parse(JSON.stringify(newMeta));
+  for(const item of changedItems) SYNCED.items[item.id] = JSON.parse(JSON.stringify(item));
+  for(const id of deletedItemIds) delete SYNCED.items[id];
+  for(const note of changedNotes) SYNCED.notes[note.id] = JSON.parse(JSON.stringify(note));
+  for(const id of deletedNoteIds) delete SYNCED.notes[id];
+  SYNCED.txCount = txPlan.txCount;
+  return true;
 }
 
 /* ============ ONE-TIME MIGRATIONS ============ */
