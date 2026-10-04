@@ -1437,6 +1437,40 @@ function sessionUser(){
   const m = (STATE.users||[]).find(x=>x.username===d.u);
   return (m && m.pw && m.pw.hash.slice(0,24)===d.k) ? m : null;
 }
+// الجلسة بتفضل متاحة طول ما التاب مفتوح — لكن بعض المتصفحات (كروم مثلًا) بترجّع نفس sessionStorage
+// لو استرجعت التابات بعد قفل/كريـش غير متوقع (زي انقطاع الكهرباء)، فبترجّع تسجيل الدخول من غير
+// كلمة مرور حتى لو عدّى وقت طويل. عشان كده بنسجّل "آخر نشاط" ولو عدّى عليه أكتر من الحد المسموح
+// (حتى لو الجلسة نفسها لسه موجودة) بنعتبرها منتهية ونرجّع لشاشة تسجيل الدخول.
+const SESSION_LAST_ACTIVITY_KEY = 'wolverSessionLastActivity';
+const SESSION_IDLE_TIMEOUT_MS = 30*60*1000; // 30 دقيقة من غير أي نشاط
+function touchSessionActivity(){
+  try{ sessionStorage.setItem(SESSION_LAST_ACTIVITY_KEY, String(Date.now())); }catch(e){}
+}
+function sessionIdleExpired(){
+  let raw = null; try{ raw = sessionStorage.getItem(SESSION_LAST_ACTIVITY_KEY); }catch(e){}
+  const last = raw ? parseInt(raw,10) : NaN;
+  if(!last || isNaN(last)) return true;
+  return (Date.now() - last) > SESSION_IDLE_TIMEOUT_MS;
+}
+let _lastActivityWriteAt = 0;
+function onUserActivityEvent(){
+  if(!currentUser) return;
+  const now = Date.now();
+  if(now - _lastActivityWriteAt < 30*1000) return; // تحديث كل 30 ثانية بحد أقصى، مش مع كل حركة
+  _lastActivityWriteAt = now;
+  touchSessionActivity();
+}
+function startIdleWatch(){
+  ['click','keydown','mousemove','touchstart'].forEach(evt=>{
+    document.addEventListener(evt, onUserActivityEvent, {passive:true});
+  });
+  setInterval(()=>{
+    if(currentUser && sessionIdleExpired()){
+      showToast(t('msgSessionIdleLogout'));
+      logout();
+    }
+  }, 60*1000);
+}
 
 const I18N = {
   ar: {
@@ -1816,6 +1850,7 @@ const I18N = {
     msgPasswordChanged: `تم تغيير كلمة المرور`,
     msgWipeSuccess: `تم تنفيذ الحذف بنجاح`,
     msgWipeSuccessLogout: `تم تنفيذ الحذف — جاري تسجيل الخروج`,
+    msgSessionIdleLogout: `تم تسجيل الخروج تلقائيًا لعدم النشاط لفترة طويلة`,
     msgItemDeleted: `تم حذف الصنف`,
     msgWhDeleted: `تم حذف المخزن`,
     msgUserDeleted: `تم حذف المستخدم`,
@@ -2316,6 +2351,7 @@ This will replace all current data with this older backup, and this restore itse
     msgPasswordChanged: `Password changed`,
     msgWipeSuccess: `Deletion completed successfully`,
     msgWipeSuccessLogout: `Deletion completed — logging out`,
+    msgSessionIdleLogout: `You were automatically logged out after a long period of inactivity`,
     msgItemDeleted: `Item deleted`,
     msgWhDeleted: `Warehouse deleted`,
     msgUserDeleted: `User deleted`,
@@ -3516,6 +3552,7 @@ async function enterSecureSession(){
   return true;
 }
 function enterApp(skipRecoveryCheck){
+  touchSessionActivity();
   document.getElementById('authGate').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('currentUserLabel').textContent = t('greetingHi') + ' ' + currentUser.username;
@@ -3538,7 +3575,7 @@ function enterApp(skipRecoveryCheck){
 }
 function logout(){
   currentUser = null; userName='';
-  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  try{ sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_LAST_ACTIVITY_KEY); }catch(e){}
   authSignOut();
   document.getElementById('mainApp').style.display='none';
   document.getElementById('authGate').style.display='flex';
@@ -6381,7 +6418,9 @@ async function init(){
     const fu = fbUser();
     if(fu && !fu.isAnonymous){
       AUTH_MODE = 'secure';
-      if(await enterSecureSession()) return;
+      // sessionIdleExpired() only gates this auto-resume path (restoring a session that was
+      // already open), never submitLogin()'s own call to enterSecureSession() for a fresh login.
+      if(!sessionIdleExpired() && await enterSecureSession()) return;
       await authSignOut();
     }
     AUTH_MODE = await detectAuthMode();
@@ -6403,15 +6442,16 @@ async function init(){
   }
   await runDataMigrations();
   const match = sessionUser();
-  if(match){
+  if(match && !sessionIdleExpired()){
     currentUser = match;
     userName = currentUser.username;
     enterApp();
     return;
   }
-  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+  try{ sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_LAST_ACTIVITY_KEY); }catch(e){}
   renderAuthGate();
 }
+startIdleWatch();
 init();
 </script>
 
