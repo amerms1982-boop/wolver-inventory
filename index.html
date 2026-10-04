@@ -1442,7 +1442,7 @@ function sessionUser(){
 // كلمة مرور حتى لو عدّى وقت طويل. عشان كده بنسجّل "آخر نشاط" ولو عدّى عليه أكتر من الحد المسموح
 // (حتى لو الجلسة نفسها لسه موجودة) بنعتبرها منتهية ونرجّع لشاشة تسجيل الدخول.
 const SESSION_LAST_ACTIVITY_KEY = 'wolverSessionLastActivity';
-const SESSION_IDLE_TIMEOUT_MS = 30*60*1000; // 30 دقيقة من غير أي نشاط
+const SESSION_IDLE_TIMEOUT_MS = 15*60*1000; // 15 دقيقة من غير أي نشاط
 function touchSessionActivity(){
   try{ sessionStorage.setItem(SESSION_LAST_ACTIVITY_KEY, String(Date.now())); }catch(e){}
 }
