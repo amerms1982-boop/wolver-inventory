@@ -212,9 +212,9 @@
   .tag{font-family:'Cairo';font-weight:700;font-size:11px;padding:3px 10px;border-radius:999px;letter-spacing:.3px;}
   .tag.in{background:var(--safe-bg);color:var(--safe);} .tag.out{background:var(--danger-bg);color:var(--danger);}
   .tag.transfer{background:var(--wh2-bg);color:var(--wh2);} .tag.opening{background:var(--blue-soft);color:var(--blue);}
-  .tag.item_create,.tag.wh_create{background:var(--safe-bg);color:var(--safe);}
-  .tag.item_edit,.tag.wh_edit{background:var(--blue-soft);color:var(--blue);}
-  .tag.item_delete,.tag.wh_delete,.tag.note_delete{background:var(--danger-bg);color:var(--danger);}
+  .tag.item_create,.tag.wh_create,.tag.contact_create{background:var(--safe-bg);color:var(--safe);}
+  .tag.item_edit,.tag.wh_edit,.tag.contact_edit{background:var(--blue-soft);color:var(--blue);}
+  .tag.item_delete,.tag.wh_delete,.tag.note_delete,.tag.contact_delete{background:var(--danger-bg);color:var(--danger);}
 
   .note-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px;}
   .note-table th{background:var(--canvas);text-align:right;padding:7px 8px;border:1px solid var(--line);font-size:11.5px;}
@@ -1538,6 +1538,10 @@ const I18N = {
     txWhCreate: `إنشاء مخزن`,
     txWhEdit: `تعديل مخزن`,
     txWhDelete: `حذف مخزن`,
+    txContactCreate: `إضافة شخص`,
+    txContactEdit: `تعديل شخص`,
+    txContactDelete: `حذف شخص`,
+    contactDataEdited: `تعديل بيانات الشخص`,
     txNoteDelete: `حذف إذن`,
     txNoteReject: `رفض إذن`,
     searchLogPlaceholder: `بحث بالصنف أو المكان...`,
@@ -1990,6 +1994,10 @@ const I18N = {
     txWhCreate: `Warehouse Created`,
     txWhEdit: `Warehouse Edited`,
     txWhDelete: `Warehouse Deleted`,
+    txContactCreate: `Contact Added`,
+    txContactEdit: `Contact Edited`,
+    txContactDelete: `Contact Deleted`,
+    contactDataEdited: `Contact data edited`,
     txNoteDelete: `Voucher Deleted`,
     txNoteReject: `Voucher Rejected`,
     searchLogPlaceholder: `Search by item or location...`,
@@ -4412,11 +4420,11 @@ function logTx(tx){
 }
 function removeTx(id){ STATE.transactions = STATE.transactions.filter(t=>t.id!==id); }
 function fmtTime(iso){ return new Date(iso).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); }
-const TX_LABEL = {in:'txIn', out:'txOut', transfer:'txTransfer', opening:'openingBalancesTitle', item_create:'txItemCreate', item_edit:'txItemEdit', item_delete:'txItemDelete', wh_create:'txWhCreate', wh_edit:'txWhEdit', wh_delete:'txWhDelete', note_delete:'txNoteDelete', note_reject:'txNoteReject'};
+const TX_LABEL = {in:'txIn', out:'txOut', transfer:'txTransfer', opening:'openingBalancesTitle', item_create:'txItemCreate', item_edit:'txItemEdit', item_delete:'txItemDelete', wh_create:'txWhCreate', wh_edit:'txWhEdit', wh_delete:'txWhDelete', note_delete:'txNoteDelete', note_reject:'txNoteReject', contact_create:'txContactCreate', contact_edit:'txContactEdit', contact_delete:'txContactDelete'};
 const LOG_GROUP_TYPES = {
-  create: ['item_create','wh_create'],
-  edit: ['item_edit','wh_edit'],
-  delete: ['item_delete','wh_delete','note_delete','note_reject'],
+  create: ['item_create','wh_create','contact_create'],
+  edit: ['item_edit','wh_edit','contact_edit'],
+  delete: ['item_delete','wh_delete','note_delete','note_reject','contact_delete'],
 };
 
 let currentHistoryItemId = null;
@@ -5492,15 +5500,20 @@ async function saveContact(){
   const isEdit = !!editingContactId;
   let prevSnapshot = null;
   let contact;
+  let oldName = null;
   if(isEdit){
     contact = STATE.contacts.find(c=>c.id===editingContactId);
     if(!contact) return;
     prevSnapshot = {...contact};
+    oldName = contact.name;
     contact.name = name; contact.type = type; contact.phone = phone; contact.address = address;
   } else {
     contact = {id:genContactId(), name, type, phone, address};
     STATE.contacts.push(contact);
   }
+  const tx = isEdit
+    ? logTx({itemId:null, itemName:name, type:'contact_edit', qty:'', location: oldName!==name ? (t('oldNameLabel')+': '+oldName) : t('contactDataEdited')})
+    : logTx({itemId:null, itemName:name, type:'contact_create', qty:'', location: t('msgContactAdded')});
   const ok = await persist();
   if(ok){
     closeContactForm();
@@ -5510,6 +5523,7 @@ async function saveContact(){
   } else {
     if(isEdit && prevSnapshot){ Object.assign(contact, prevSnapshot); }
     else { STATE.contacts = STATE.contacts.filter(c=>c.id!==contact.id); }
+    removeTx(tx.id);
     showToast(t('errDeleteRetry'));
   }
 }
@@ -5519,6 +5533,7 @@ async function deleteContact(id){
   if(!(await customConfirm(t('confirmDeleteContactPrefix')+contact.name+t('confirmDeleteContactSuffix')))) return;
   const idx = STATE.contacts.indexOf(contact);
   STATE.contacts.splice(idx,1);
+  const tx = logTx({itemId:null, itemName:contact.name, type:'contact_delete', qty:'', location: t('msgContactDeleted')});
   const ok = await persist();
   if(ok){
     renderContactsList();
@@ -5526,6 +5541,7 @@ async function deleteContact(id){
     showToast(t('msgContactDeleted'));
   } else {
     STATE.contacts.splice(idx,0,contact);
+    removeTx(tx.id);
     showToast(t('errDeleteRetry'));
   }
 }
