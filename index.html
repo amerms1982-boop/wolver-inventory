@@ -215,6 +215,7 @@
   .tag.item_create,.tag.wh_create,.tag.contact_create{background:var(--safe-bg);color:var(--safe);}
   .tag.item_edit,.tag.wh_edit,.tag.contact_edit{background:var(--blue-soft);color:var(--blue);}
   .tag.item_delete,.tag.wh_delete,.tag.note_delete,.tag.contact_delete{background:var(--danger-bg);color:var(--danger);}
+  .tag.data_restore{background:var(--warn-bg);color:var(--warn);}
 
   .note-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px;}
   .note-table th{background:var(--canvas);text-align:right;padding:7px 8px;border:1px solid var(--line);font-size:11.5px;}
@@ -419,6 +420,7 @@
       <div class="dd lang-dd"><button class="icon-btn dd-trigger" onclick="toggleDD(event,this)" type="button" aria-haspopup="true"><svg class="dd-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="lang-current-label">العربية</span><svg class="dd-caret" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4z" fill="currentColor"/></svg></button><div class="dd-menu" role="menu"><button class="dd-item" data-lang-opt="ar" onclick="setLanguage('ar')" type="button">العربية<svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="dd-item" data-lang-opt="en" onclick="setLanguage('en')" type="button" dir="ltr">English<svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button></div></div>
       <div class="dd theme-dd"><button class="icon-btn icon-only dd-trigger" onclick="toggleDD(event,this)" type="button" aria-haspopup="true" data-i18n-title="themeMenuTitle" title="المظهر"><svg class="dd-ico theme-ico-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="3.5"/><line x1="12" y1="20.5" x2="12" y2="22.5"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1.5" y1="12" x2="3.5" y2="12"/><line x1="20.5" y1="12" x2="22.5" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><svg class="dd-ico theme-ico-dark" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><div class="dd-menu" role="menu"><button class="dd-item" data-theme-opt="light" onclick="setTheme('light')" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="3.5"/><line x1="12" y1="20.5" x2="12" y2="22.5"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1.5" y1="12" x2="3.5" y2="12"/><line x1="20.5" y1="12" x2="22.5" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span data-i18n="themeLight">مظهر فاتح</span><svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="dd-item" data-theme-opt="dark" onclick="setTheme('dark')" type="button"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span data-i18n="themeDark">مظهر داكن</span><svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button></div></div>
       <button class="icon-btn icon-only" id="brandingSettingsBtn" onclick="openBrandingModal()" type="button" style="display:none;" data-i18n-title="brandingSettingsBtn" title="تخصيص الهوية"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button class="icon-btn icon-only" id="backupSettingsBtn" onclick="openBackupModal()" type="button" style="display:none;" data-i18n-title="backupSettingsBtn" title="النسخ الاحتياطي"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 0-3-3.85V11a5 5 0 0 0-9.9-1.09A4.5 4.5 0 0 0 7.5 18H19a4 4 0 0 0 2-3Z"/><polyline points="12 12 12 20"/><polyline points="9 17 12 20 15 17"/></svg></button>
       <div class="user-chip"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span id="currentUserLabel">-</span></div>
       <button class="icon-btn" onclick="logout()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> <span data-i18n="logout">خروج</span></button>
     </div>
@@ -498,6 +500,7 @@
         <option value="create" data-i18n="txCreate">إنشاء</option>
         <option value="edit" data-i18n="txEdit">تعديل</option>
         <option value="delete" data-i18n="txDelete">حذف</option>
+        <option value="data_restore" data-i18n="txDataRestore">استرجاع نسخة احتياطية</option>
       </select>
       <input id="logSearch" data-i18n-placeholder="searchLogPlaceholder" placeholder="بحث بالصنف أو المكان..." oninput="renderLog()">
     </div>
@@ -819,6 +822,53 @@
     <div class="form-actions bc-footer">
       <button class="btn btn-amber" onclick="saveBranding()" data-i18n="saveChangesBtn">حفظ التغييرات</button>
       <button type="button" class="btn btn-ghost" onclick="resetAllBranding()" data-i18n="brandingResetAllBtn">استرجاع كل الهوية للافتراضي</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP & RESTORE MODAL (admin only) -->
+<div class="overlay" id="backupOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBackupModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="display:flex;align-items:center;gap:7px;"><svg class="btn-ico" style="width:18px;height:18px;margin:0;flex:none;color:var(--brand);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 0-3-3.85V11a5 5 0 0 0-9.9-1.09A4.5 4.5 0 0 0 7.5 18H19a4 4 0 0 0 2-3Z"/><polyline points="12 12 12 20"/><polyline points="9 17 12 20 15 17"/></svg><span data-i18n="backupSettingsBtn">النسخ الاحتياطي</span></h2>
+    <div class="item-meta" data-i18n="backupIntroDesc">اختار مجلدًا على جهازك، والتطبيق هيحفظ فيه نسخة احتياطية من قاعدة البيانات تلقائيًا أول ما تفتح التطبيق كل يوم، وتقدر كمان تاخد نسخة فورًا دلوقتي في أي وقت.</div>
+
+    <div class="warn-box" id="backupFsUnsupportedNote" style="display:none;" data-i18n="backupFsUnsupportedNote">المتصفح ده مش بيدعم اختيار مجلد للحفظ التلقائي. تقدر برضه تعمل نسخة احتياطية وهتتحمّل كملف عادي في مجلد التحميلات، وترجع تستخدمها بعدين في الاستعادة من "اختيار ملف من جهازك" تحت.</div>
+
+    <div class="section-head" style="margin-top:14px;"><h2 style="font-size:14px;" data-i18n="backupFolderHeading">مجلد الحفظ التلقائي</h2></div>
+    <div class="item-meta" id="backupFolderStatus" data-i18n="backupFolderNotSet">لسه ماتم اختيار مجلد</div>
+    <div class="warn-box" id="backupFolderPermWarn" style="display:none;" data-i18n="backupPermLostDesc">التطبيق مالوش إذن وصول للمجلد دلوقتي (ممكن يحصل بعد إعادة فتح المتصفح). أكّد الإذن تاني عشان يرجع الحفظ التلقائي يعمل.</div>
+    <div class="form-actions">
+      <button class="btn btn-ghost btn-sm" id="backupPickFolderBtn" onclick="pickBackupFolder()" type="button" data-i18n="backupPickFolderBtn">اختيار مجلد الحفظ</button>
+      <button class="btn btn-ghost btn-sm" id="backupReconfirmBtn" onclick="reconfirmBackupAccess()" type="button" data-i18n="backupReconfirmBtn">تأكيد الوصول للمجلد</button>
+    </div>
+
+    <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupNowHeading">نسخة احتياطية فورية</h2></div>
+    <div class="item-meta"><span data-i18n="backupLastAutoPrefix">آخر نسخة احتياطية: </span><span id="backupLastAutoLabel" data-i18n="backupNeverYet">لسه محصلتش</span></div>
+    <div class="form-actions"><button class="btn btn-amber" onclick="backupNow()" type="button" data-i18n="backupNowBtn">احفظ نسخة احتياطية الآن</button></div>
+
+    <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupRecentHeading">آخر النسخ المحفوظة في المجلد</h2></div>
+    <div id="backupRecentList"></div>
+
+    <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupRestoreFileHeading">استرجاع من ملف على جهازك</h2></div>
+    <div class="item-meta" data-i18n="backupRestoreFileDesc">تقدر ترجع أي نسخة احتياطية (.json) محفوظة في أي مكان على جهازك أو فلاشة، حتى لو مش في المجلد المختار.</div>
+    <div class="form-actions">
+      <input type="file" id="restoreFileInput" class="file-input-hidden" accept="application/json,.json" onchange="onRestoreFileSelected(event)">
+      <label for="restoreFileInput" class="btn btn-ghost file-picker-btn" data-i18n="backupChooseFileBtn">اختيار ملف من جهازك</label>
+    </div>
+  </div>
+</div>
+
+<!-- RESTORE PASSWORD CONFIRM MODAL -->
+<div class="overlay" id="restorePasswordOverlay">
+  <div class="modal small">
+    <h2 data-i18n="confirmAdminIdentity">تأكيد هوية الأدمن</h2>
+    <div class="item-meta" data-i18n="restorePasswordDesc">اكتب كلمة مرور حساب الأدمن الحالي لإتمام عملية استرجاع النسخة الاحتياطية.</div>
+    <div class="form-grid"><div class="full"><label data-i18n="password">كلمة المرور</label><div class="pw-wrap"><input id="restorePasswordInput" type="password"><button type="button" class="pw-toggle" onclick="togglePw('restorePasswordInput', this)"></button></div></div></div>
+    <div class="warn-box" id="restorePasswordError" style="display:none;"></div>
+    <div class="form-actions">
+      <button class="btn btn-danger" onclick="confirmRestorePassword()" data-i18n="confirmRestoreBtn">تأكيد والاسترجاع</button>
+      <button class="btn btn-ghost" onclick="cancelRestorePassword()" data-i18n="cancel">إلغاء</button>
     </div>
   </div>
 </div>
@@ -1638,6 +1688,48 @@ const I18N = {
     keepLog: `الاحتفاظ بسجل كل الحركات`,
     keepNotes: `الاحتفاظ بالأذونات المحفوظة (إضافة / صرف / تحويل)`,
     keepContacts: `الاحتفاظ بالأشخاص (الموردين والعملاء)`,
+    backupSettingsBtn: `النسخ الاحتياطي`,
+    backupIntroDesc: `اختار مجلدًا على جهازك، والتطبيق هيحفظ فيه نسخة احتياطية من قاعدة البيانات تلقائيًا أول ما تفتح التطبيق كل يوم، وتقدر كمان تاخد نسخة فورًا دلوقتي في أي وقت.`,
+    backupFsUnsupportedNote: `المتصفح ده مش بيدعم اختيار مجلد للحفظ التلقائي. تقدر برضه تعمل نسخة احتياطية وهتتحمّل كملف عادي في مجلد التحميلات، وترجع تستخدمها بعدين في الاستعادة من "اختيار ملف من جهازك" تحت.`,
+    backupFolderHeading: `مجلد الحفظ التلقائي`,
+    backupFolderNotSet: `لسه ماتم اختيار مجلد`,
+    backupFolderSetPrefix: `المجلد المختار: `,
+    backupPermLostDesc: `التطبيق مالوش إذن وصول للمجلد دلوقتي (ممكن يحصل بعد إعادة فتح المتصفح). أكّد الإذن تاني عشان يرجع الحفظ التلقائي يعمل.`,
+    backupPickFolderBtn: `اختيار مجلد الحفظ`,
+    backupChangeFolderBtn: `تغيير المجلد`,
+    backupReconfirmBtn: `تأكيد الوصول للمجلد`,
+    backupNowHeading: `نسخة احتياطية فورية`,
+    backupLastAutoPrefix: `آخر نسخة احتياطية: `,
+    backupNeverYet: `لسه محصلتش`,
+    backupNowBtn: `احفظ نسخة احتياطية الآن`,
+    backupRecentHeading: `آخر النسخ المحفوظة في المجلد`,
+    backupNoneYet: `لسه مفيش نسخ محفوظة`,
+    backupFolderListUnavailable: `مش متاح عرض النسخ دلوقتي (اختار مجلد أو أكّد الإذن أولًا) — تقدر برضه تسترجع من ملف عن طريق "اختيار ملف من جهازك" تحت.`,
+    backupListFailed: `حصل خطأ في قراءة محتوى المجلد.`,
+    backupRestoreFileHeading: `استرجاع من ملف على جهازك`,
+    backupRestoreFileDesc: `تقدر ترجع أي نسخة احتياطية (.json) محفوظة في أي مكان على جهازك أو فلاشة، حتى لو مش في المجلد المختار.`,
+    backupChooseFileBtn: `اختيار ملف من جهازك`,
+    restoreBtn: `استرجاع`,
+    restorePasswordDesc: `اكتب كلمة مرور حساب الأدمن الحالي لإتمام عملية استرجاع النسخة الاحتياطية.`,
+    confirmRestoreBtn: `تأكيد والاسترجاع`,
+    confirmRestorePrefix: `هيتم استرجاع قاعدة البيانات (الأصناف، المخازن، الأذونات المحفوظة، الأشخاص، وسجل الحركات) من النسخة: `,
+    confirmRestoreSuffix: `
+
+ده هيستبدل كل البيانات الحالية بالنسخة القديمة دي، ومفيش طريقة للتراجع عن الاسترجاع نفسه (غير باسترجاع نسخة تانية). حسابات المستخدمين وكلمات المرور هتفضل كما هي ومش هتتأثر. متأكد عايز تكمل؟`,
+    errBackupFsNotSupported: `المتصفح ده مش بيدعم اختيار مجلد — تقدر تستخدم زرار "احفظ نسخة احتياطية الآن" وهتتحمّل كملف عادي.`,
+    errBackupPermissionDenied: `الإذن اللي اخترته مرفوض — جرب تاختار المجلد تاني أو تأكد الإذن.`,
+    errBackupFolderFailed: `حصل خطأ في اختيار المجلد. حاول تاني.`,
+    errBackupReadFailed: `حصل خطأ في قراءة ملف النسخة الاحتياطية.`,
+    errBackupFileInvalid: `الملف ده مش نسخة احتياطية صحيحة من وولفر.`,
+    errRestoreRetry: `فشل حفظ البيانات المسترجَعة — تحقق من اتصالك بالإنترنت وحاول تاني.`,
+    msgBackupSaved: `تم حفظ نسخة احتياطية في المجلد المختار`,
+    msgBackupDownloaded: `تم تحميل نسخة احتياطية كملف`,
+    msgBackupFolderSet: `تم اختيار المجلد بنجاح، وهيتحفظ فيه النسخ الاحتياطية تلقائيًا`,
+    msgBackupAccessRestored: `تم تأكيد الوصول للمجلد`,
+    msgRestoreSuccess: `تم استرجاع النسخة الاحتياطية بنجاح`,
+    msgDataRestored: `تم استرجاع قاعدة البيانات من نسخة احتياطية`,
+    txDataRestore: `استرجاع نسخة احتياطية`,
+    dataRestoreDefaultLabel: `نسخة احتياطية`,
     wipeFooterDesc: `لو حذفت المستخدمين، حساب المدير الأول (المؤسس) بيفضل موجود تلقائيًا إلا لو علّمت على حذفه كمان — وفي الحالة دي هيرجع التطبيق لشاشة إعداد حساب أدمن جديد من الأول، وهتخرج من حسابك الحالي تلقائيًا لو كان هو المتأثر.`,
     executeWipeBtn: `تنفيذ الحذف`,
     confirmAdminIdentity: `تأكيد هوية الأدمن`,
@@ -2096,6 +2188,48 @@ const I18N = {
     keepLog: `Keep the full transaction log`,
     keepNotes: `Keep saved vouchers (in / out / transfer)`,
     keepContacts: `Keep people (suppliers and customers)`,
+    backupSettingsBtn: `Backup & Restore`,
+    backupIntroDesc: `Pick a folder on your device, and the app will save a backup of the database there automatically the first time you open it each day. You can also take a backup right now at any time.`,
+    backupFsUnsupportedNote: `This browser doesn't support picking a folder for automatic saving. You can still take a backup — it will download as a regular file to your Downloads folder, and you can restore from it later using "Choose a file from your device" below.`,
+    backupFolderHeading: `Automatic backup folder`,
+    backupFolderNotSet: `No folder chosen yet`,
+    backupFolderSetPrefix: `Chosen folder: `,
+    backupPermLostDesc: `The app no longer has access to this folder right now (can happen after reopening the browser). Re-confirm access so automatic backups keep working.`,
+    backupPickFolderBtn: `Choose backup folder`,
+    backupChangeFolderBtn: `Change folder`,
+    backupReconfirmBtn: `Re-confirm folder access`,
+    backupNowHeading: `Instant backup`,
+    backupLastAutoPrefix: `Last backup: `,
+    backupNeverYet: `Not yet`,
+    backupNowBtn: `Save a backup now`,
+    backupRecentHeading: `Recent backups in the folder`,
+    backupNoneYet: `No backups saved yet`,
+    backupFolderListUnavailable: `The backup list isn't available right now (choose a folder or re-confirm access first) — you can still restore from a file using "Choose a file from your device" below.`,
+    backupListFailed: `There was an error reading the folder's contents.`,
+    backupRestoreFileHeading: `Restore from a file on your device`,
+    backupRestoreFileDesc: `You can restore any backup (.json) saved anywhere on your device or a USB drive, even if it's not in the chosen folder.`,
+    backupChooseFileBtn: `Choose a file from your device`,
+    restoreBtn: `Restore`,
+    restorePasswordDesc: `Enter the current admin account's password to complete the backup restore.`,
+    confirmRestoreBtn: `Confirm and restore`,
+    confirmRestorePrefix: `The database (items, warehouses, saved notes, contacts, and the transaction log) will be restored from: `,
+    confirmRestoreSuffix: `
+
+This will replace all current data with this older backup, and this restore itself can't be undone (only by restoring another backup). User accounts and passwords will stay as they are and won't be affected. Are you sure you want to continue?`,
+    errBackupFsNotSupported: `This browser doesn't support choosing a folder — you can use "Save a backup now" and it will download as a regular file.`,
+    errBackupPermissionDenied: `Access to the folder was denied — try choosing the folder again or re-confirming access.`,
+    errBackupFolderFailed: `There was an error choosing the folder. Try again.`,
+    errBackupReadFailed: `There was an error reading the backup file.`,
+    errBackupFileInvalid: `This file isn't a valid WOLVER backup.`,
+    errRestoreRetry: `Failed to save the restored data — check your internet connection and try again.`,
+    msgBackupSaved: `A backup was saved to the chosen folder`,
+    msgBackupDownloaded: `A backup file was downloaded`,
+    msgBackupFolderSet: `Folder chosen successfully — backups will be saved there automatically`,
+    msgBackupAccessRestored: `Folder access confirmed`,
+    msgRestoreSuccess: `The backup was restored successfully`,
+    msgDataRestored: `The database was restored from a backup`,
+    txDataRestore: `Backup Restored`,
+    dataRestoreDefaultLabel: `Backup`,
     wipeFooterDesc: `If you delete users, the founding admin account stays automatically unless you also check its deletion — in that case the app returns to the new-admin setup screen, and you'll be logged out automatically if it's your account.`,
     executeWipeBtn: `Execute Deletion`,
     confirmAdminIdentity: `Confirm Admin Identity`,
@@ -3388,11 +3522,13 @@ function enterApp(skipRecoveryCheck){
   document.getElementById('usersSettingsBtn').style.display = currentUser.role==='admin' ? 'inline-block' : 'none';
   document.getElementById('brandingSettingsBtn').style.display = currentUser.role==='admin' ? 'inline-block' : 'none';
   document.getElementById('logNavBtn').style.display = currentUser.role==='admin' ? 'inline-block' : 'none';
+  document.getElementById('backupSettingsBtn').style.display = currentUser.role==='admin' ? 'inline-block' : 'none';
   applyPermissions();
   syncItemSortMenu();
   syncItemViewMenu();
   refreshContactDatalists();
   renderDashboard(); renderItems(); renderLog();
+  initBackupFeature();
   if(!skipRecoveryCheck && currentUser.role==='admin' && !hasRecoveryCode()){
     setTimeout(async ()=>{
       const yes = await customConfirm(t('askCreateRecoveryCode'));
@@ -3736,6 +3872,342 @@ async function performWipeData(opts){
   if(document.getElementById('contactsOverlay').classList.contains('active')) renderContactsList();
 }
 
+/* ============ BACKUP & RESTORE (device-local, WOLVER only) ============ */
+// Design: the user picks a folder on their own device via the File System Access API.
+// The app keeps that folder's handle in IndexedDB (it survives reloads; FileSystemDirectoryHandle
+// is structured-clonable but can't live in localStorage). Once a folder is chosen, a backup is
+// written there automatically the first time the app is opened each day (silent — never prompts,
+// since there's no user gesture to justify a permission popup), and the admin can also trigger one
+// instantly at any time. The newest 10 backups are kept in the folder; older ones are pruned.
+// On a browser without the File System Access API (Firefox/Safari today), "backup now" simply
+// downloads the file as a normal download, and restoring works from any such file.
+// Restore is deliberately limited to business data (items, warehouses, saved notes, contacts,
+// branding and the transaction log) — it never touches user accounts or passwords, so an admin can
+// never lock themselves out of their own app by restoring an old backup.
+const BACKUP_FS_SUPPORTED = typeof window.showDirectoryPicker === 'function';
+const BACKUP_RETENTION_COUNT = 10;
+const BACKUP_LAST_KEY = 'wolverLastBackupDate';
+const BACKUP_FILE_RE = /^wolver-backup-.*\.json$/i;
+const BACKUP_IDB_NAME = 'wolverBackupStore';
+const BACKUP_IDB_STORE = 'handles';
+let backupDirHandle = null;
+let backupFolderName = null;
+let pendingRestorePayload = null;
+let pendingRestoreLabel = '';
+
+function backupIdbOpen(){
+  return new Promise((resolve, reject)=>{
+    const req = indexedDB.open(BACKUP_IDB_NAME, 1);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore(BACKUP_IDB_STORE); };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+async function backupIdbSet(key, val){
+  try{
+    const db = await backupIdbOpen();
+    return await new Promise((resolve, reject)=>{
+      const tx = db.transaction(BACKUP_IDB_STORE, 'readwrite');
+      tx.objectStore(BACKUP_IDB_STORE).put(val, key);
+      tx.oncomplete = ()=>resolve(true);
+      tx.onerror = ()=>reject(tx.error);
+    });
+  }catch(e){ console.error('backupIdbSet failed', e); return false; }
+}
+async function backupIdbGet(key){
+  try{
+    const db = await backupIdbOpen();
+    return await new Promise((resolve, reject)=>{
+      const tx = db.transaction(BACKUP_IDB_STORE, 'readonly');
+      const req = tx.objectStore(BACKUP_IDB_STORE).get(key);
+      req.onsuccess = ()=>resolve(req.result || null);
+      req.onerror = ()=>reject(req.error);
+    });
+  }catch(e){ console.error('backupIdbGet failed', e); return null; }
+}
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function backupFileNameNow(){
+  const d = new Date();
+  const p = n=>String(n).padStart(2,'0');
+  return `wolver-backup-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}.json`;
+}
+function buildBackupPayload(){
+  // Exported for completeness (so a saved file is a full, human-inspectable snapshot), but
+  // performRestoreData() deliberately restores only the business-data subset of this — see the
+  // note above this section.
+  return {
+    app: 'wolver-inventory', schema: 1, exportedAt: new Date().toISOString(),
+    warehouses: STATE.warehouses, defaultWarehouseId: STATE.defaultWarehouseId, flags: STATE.flags,
+    items: JSON.parse(JSON.stringify(STATE.items)), itemsManuallyOrdered: STATE.itemsManuallyOrdered, itemSortMode: STATE.itemSortMode,
+    notes: STATE.notes, nextNoteSerial: STATE.nextNoteSerial,
+    contacts: STATE.contacts, transactions: STATE.transactions, branding: STATE.branding,
+    users: STATE.users
+  };
+}
+async function ensureBackupPermission(handle, requestIfNeeded){
+  if(!handle) return false;
+  try{
+    const opts = {mode:'readwrite'};
+    let perm = await handle.queryPermission(opts);
+    if(perm==='granted') return true;
+    if(perm==='prompt' && requestIfNeeded){
+      perm = await handle.requestPermission(opts);
+      return perm==='granted';
+    }
+    return false;
+  }catch(e){ return false; }
+}
+async function listRecentBackups(handle){
+  const names = [];
+  for await (const [name, entry] of handle.entries()){
+    if(entry.kind==='file' && BACKUP_FILE_RE.test(name)) names.push(name);
+  }
+  names.sort().reverse();
+  return names.slice(0, BACKUP_RETENTION_COUNT);
+}
+async function pruneOldBackups(handle){
+  const names = [];
+  for await (const [name, entry] of handle.entries()){
+    if(entry.kind==='file' && BACKUP_FILE_RE.test(name)) names.push(name);
+  }
+  names.sort();
+  const excess = names.length - BACKUP_RETENTION_COUNT;
+  if(excess>0){
+    for(const name of names.slice(0, excess)){
+      try{ await handle.removeEntry(name); }catch(e){}
+    }
+  }
+}
+async function writeBackupToFolder(handle, payload){
+  const name = backupFileNameNow();
+  const fileHandle = await handle.getFileHandle(name, {create:true});
+  const writable = await fileHandle.createWritable();
+  await writable.write(JSON.stringify(payload, null, 2));
+  await writable.close();
+  await pruneOldBackups(handle);
+  return name;
+}
+function downloadBackupBlob(payload, filename){
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+async function initBackupFeature(){
+  if(BACKUP_FS_SUPPORTED){
+    try{
+      const handle = await backupIdbGet('dir');
+      if(handle){ backupDirHandle = handle; backupFolderName = handle.name; }
+    }catch(e){ console.error(e); }
+  }
+  await autoDailyBackupCheck();
+}
+async function autoDailyBackupCheck(){
+  if(!BACKUP_FS_SUPPORTED || !backupDirHandle) return;
+  if(localStorage.getItem(BACKUP_LAST_KEY)===todayStr()) return;
+  const ok = await ensureBackupPermission(backupDirHandle, false); // no user gesture here — never prompt
+  if(!ok) return; // quietly skip; admin can re-confirm access from the backup screen
+  try{
+    await writeBackupToFolder(backupDirHandle, buildBackupPayload());
+    localStorage.setItem(BACKUP_LAST_KEY, todayStr());
+  }catch(e){ console.error('auto backup failed', e); }
+}
+async function pickBackupFolder(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  if(!BACKUP_FS_SUPPORTED){ showToast(t('errBackupFsNotSupported')); return; }
+  try{
+    const handle = await window.showDirectoryPicker({id:'wolver-backup', mode:'readwrite'});
+    const granted = await ensureBackupPermission(handle, true);
+    if(!granted){ showToast(t('errBackupPermissionDenied')); return; }
+    backupDirHandle = handle;
+    backupFolderName = handle.name;
+    await backupIdbSet('dir', handle);
+    showToast(t('msgBackupFolderSet'));
+    await refreshBackupModalUI();
+  }catch(e){
+    if(e && e.name==='AbortError') return;
+    console.error(e);
+    showToast(t('errBackupFolderFailed'));
+  }
+}
+async function reconfirmBackupAccess(){
+  if(!backupDirHandle) return;
+  const ok = await ensureBackupPermission(backupDirHandle, true);
+  showToast(ok ? t('msgBackupAccessRestored') : t('errBackupPermissionDenied'));
+  await refreshBackupModalUI();
+}
+async function backupNow(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  const payload = buildBackupPayload();
+  if(BACKUP_FS_SUPPORTED && backupDirHandle){
+    const ok = await ensureBackupPermission(backupDirHandle, true); // this is a click — a gesture is available
+    if(ok){
+      try{
+        const name = await writeBackupToFolder(backupDirHandle, payload);
+        localStorage.setItem(BACKUP_LAST_KEY, todayStr());
+        showToast(t('msgBackupSaved')+' ('+name+')');
+        await refreshBackupModalUI();
+        return;
+      }catch(e){ console.error(e); }
+    }
+  }
+  downloadBackupBlob(payload, backupFileNameNow());
+  localStorage.setItem(BACKUP_LAST_KEY, todayStr());
+  showToast(t('msgBackupDownloaded'));
+  await refreshBackupModalUI();
+}
+async function openBackupModal(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  document.getElementById('backupOverlay').classList.add('active');
+  await refreshBackupModalUI();
+}
+function closeBackupModal(){ document.getElementById('backupOverlay').classList.remove('active'); }
+async function refreshBackupModalUI(){
+  document.getElementById('backupFsUnsupportedNote').style.display = BACKUP_FS_SUPPORTED ? 'none' : 'block';
+  const pickBtn = document.getElementById('backupPickFolderBtn');
+  if(pickBtn){
+    pickBtn.textContent = backupDirHandle ? t('backupChangeFolderBtn') : t('backupPickFolderBtn');
+    pickBtn.style.display = BACKUP_FS_SUPPORTED ? 'inline-block' : 'none';
+  }
+  const statusEl = document.getElementById('backupFolderStatus');
+  if(statusEl) statusEl.textContent = backupDirHandle ? (t('backupFolderSetPrefix')+backupFolderName) : t('backupFolderNotSet');
+  let permOk = true;
+  if(backupDirHandle) permOk = await ensureBackupPermission(backupDirHandle, false);
+  const warnEl = document.getElementById('backupFolderPermWarn');
+  if(warnEl) warnEl.style.display = (backupDirHandle && !permOk) ? 'block' : 'none';
+  const reconfirmBtn = document.getElementById('backupReconfirmBtn');
+  if(reconfirmBtn) reconfirmBtn.style.display = (backupDirHandle && !permOk) ? 'inline-block' : 'none';
+  const lastEl = document.getElementById('backupLastAutoLabel');
+  if(lastEl){
+    const last = localStorage.getItem(BACKUP_LAST_KEY);
+    lastEl.textContent = last || t('backupNeverYet');
+  }
+  const listEl = document.getElementById('backupRecentList');
+  if(listEl){
+    if(backupDirHandle && permOk){
+      try{
+        const names = await listRecentBackups(backupDirHandle);
+        listEl.innerHTML = names.length ? names.map(n=>`
+          <div class="wh-row">
+            <span class="wname">${n}</span>
+            <div class="wactions"><button class="btn btn-ghost btn-sm" onclick="requestRestoreFromFolder('${n.replace(/'/g,"\\'")}')">${t('restoreBtn')}</button></div>
+          </div>`).join('') : `<div class="item-meta">${t('backupNoneYet')}</div>`;
+      }catch(e){ listEl.innerHTML = `<div class="item-meta">${t('backupListFailed')}</div>`; }
+    } else {
+      listEl.innerHTML = `<div class="item-meta">${t('backupFolderListUnavailable')}</div>`;
+    }
+  }
+}
+async function requestRestoreFromFolder(name){
+  if(!currentUser || currentUser.role!=='admin' || !backupDirHandle) return;
+  try{
+    const fh = await backupDirHandle.getFileHandle(name);
+    const file = await fh.getFile();
+    const payload = JSON.parse(await file.text());
+    await requestRestore(payload, name);
+  }catch(e){ console.error(e); showToast(t('errBackupReadFailed')); }
+}
+async function onRestoreFileSelected(event){
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  try{
+    const payload = JSON.parse(await file.text());
+    await requestRestore(payload, file.name);
+  }catch(e){ showToast(t('errBackupFileInvalid')); }
+}
+async function requestRestore(payload, label){
+  if(!currentUser || currentUser.role!=='admin') return;
+  if(!payload || typeof payload!=='object' || !Array.isArray(payload.items)){
+    showToast(t('errBackupFileInvalid'));
+    return;
+  }
+  const sure = await customConfirm(t('confirmRestorePrefix')+label+t('confirmRestoreSuffix'));
+  if(!sure) return;
+  pendingRestorePayload = payload;
+  pendingRestoreLabel = label;
+  document.getElementById('restorePasswordInput').value = '';
+  document.getElementById('restorePasswordError').style.display = 'none';
+  document.getElementById('backupOverlay').classList.remove('active');
+  document.getElementById('restorePasswordOverlay').classList.add('active');
+  setTimeout(()=>{ const el=document.getElementById('restorePasswordInput'); if(el) el.focus(); }, 60);
+}
+function cancelRestorePassword(){
+  document.getElementById('restorePasswordOverlay').classList.remove('active');
+  pendingRestorePayload = null; pendingRestoreLabel = '';
+}
+async function confirmRestorePassword(){
+  const pass = document.getElementById('restorePasswordInput').value;
+  const errEl = document.getElementById('restorePasswordError');
+  if(!currentUser){ errEl.textContent=t('errMustBeLoggedIn'); errEl.style.display='block'; return; }
+  await refreshUsersFromServer();
+  const freshUser = STATE.users.find(x=>x.username===currentUser.username && x.role==='admin');
+  const passOk = !!freshUser && (AUTH_MODE==='secure' ? await secureVerifyPassword(freshUser, pass) : await userPasswordMatches(freshUser, pass));
+  if(!passOk){
+    errEl.textContent = t('errWrongPassword');
+    errEl.style.display = 'block';
+    return;
+  }
+  currentUser = freshUser;
+  const payload = pendingRestorePayload;
+  const label = pendingRestoreLabel;
+  pendingRestorePayload = null; pendingRestoreLabel = '';
+  document.getElementById('restorePasswordOverlay').classList.remove('active');
+  await performRestoreData(payload, label);
+}
+async function performRestoreData(payload, label){
+  if(!payload) return;
+  const backup = {
+    warehouses: STATE.warehouses, defaultWarehouseId: STATE.defaultWarehouseId, flags: STATE.flags,
+    items: JSON.parse(JSON.stringify(STATE.items)), itemsManuallyOrdered: STATE.itemsManuallyOrdered, itemSortMode: STATE.itemSortMode,
+    notes: STATE.notes, nextNoteSerial: STATE.nextNoteSerial, contacts: STATE.contacts,
+    // Cloned (not just referenced) because logTx() below appends to STATE.transactions in place —
+    // if payload.transactions is absent, STATE.transactions gets reassigned to this very backup
+    // array, and an in-place append would otherwise leak into "backup" too, defeating rollback.
+    transactions: JSON.parse(JSON.stringify(STATE.transactions)), branding: STATE.branding
+  };
+  // Deliberately NOT touched by a restore: STATE.users, recoveryCode, recovery, recoverySet —
+  // so an admin can never lock themselves out of their own account by restoring an old backup.
+  STATE.warehouses = payload.warehouses || backup.warehouses;
+  STATE.defaultWarehouseId = payload.defaultWarehouseId!==undefined ? payload.defaultWarehouseId : backup.defaultWarehouseId;
+  STATE.flags = payload.flags || backup.flags;
+  STATE.items = Array.isArray(payload.items) ? payload.items : backup.items;
+  STATE.itemsManuallyOrdered = typeof payload.itemsManuallyOrdered==='boolean' ? payload.itemsManuallyOrdered : backup.itemsManuallyOrdered;
+  STATE.itemSortMode = payload.itemSortMode || backup.itemSortMode;
+  STATE.notes = Array.isArray(payload.notes) ? payload.notes : backup.notes;
+  STATE.nextNoteSerial = payload.nextNoteSerial || backup.nextNoteSerial;
+  STATE.contacts = Array.isArray(payload.contacts) ? payload.contacts : backup.contacts;
+  // Clone on the fallback path too — otherwise STATE.transactions and backup.transactions would
+  // be the exact same array object, and logTx()'s in-place append below would leak into "backup".
+  STATE.transactions = Array.isArray(payload.transactions) ? payload.transactions : JSON.parse(JSON.stringify(backup.transactions));
+  STATE.branding = payload.branding!==undefined ? payload.branding : backup.branding;
+  // Log the restore itself AFTER the transaction log has already been swapped to the restored
+  // one, so this entry sits on top of (never gets wiped out by) the history we just brought in.
+  logTx({itemId:null, itemName:label || t('dataRestoreDefaultLabel'), type:'data_restore', qty:'', location:t('msgDataRestored')});
+  const ok = await persist();
+  if(!ok){
+    // Restoring every field (transactions included) from `backup` naturally also removes the
+    // data_restore log entry we just added, since `backup.transactions` was captured before it.
+    STATE.warehouses = backup.warehouses; STATE.defaultWarehouseId = backup.defaultWarehouseId; STATE.flags = backup.flags;
+    STATE.items = backup.items; STATE.itemsManuallyOrdered = backup.itemsManuallyOrdered; STATE.itemSortMode = backup.itemSortMode;
+    STATE.notes = backup.notes; STATE.nextNoteSerial = backup.nextNoteSerial; STATE.contacts = backup.contacts;
+    STATE.transactions = backup.transactions; STATE.branding = backup.branding;
+    showToast(t('errRestoreRetry'));
+    return;
+  }
+  closeBackupModal();
+  showToast(t('msgRestoreSuccess'));
+  applyBranding();
+  renderDashboard(); renderItems(); renderLog();
+  refreshContactDatalists();
+  if(document.getElementById('contactsOverlay').classList.contains('active')) renderContactsList();
+}
 
 function switchView(v){
   document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
@@ -4432,7 +4904,7 @@ function logTx(tx){
 }
 function removeTx(id){ STATE.transactions = STATE.transactions.filter(t=>t.id!==id); }
 function fmtTime(iso){ return new Date(iso).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); }
-const TX_LABEL = {in:'txIn', out:'txOut', transfer:'txTransfer', opening:'openingBalancesTitle', item_create:'txItemCreate', item_edit:'txItemEdit', item_delete:'txItemDelete', wh_create:'txWhCreate', wh_edit:'txWhEdit', wh_delete:'txWhDelete', note_delete:'txNoteDelete', note_reject:'txNoteReject', contact_create:'txContactCreate', contact_edit:'txContactEdit', contact_delete:'txContactDelete'};
+const TX_LABEL = {in:'txIn', out:'txOut', transfer:'txTransfer', opening:'openingBalancesTitle', item_create:'txItemCreate', item_edit:'txItemEdit', item_delete:'txItemDelete', wh_create:'txWhCreate', wh_edit:'txWhEdit', wh_delete:'txWhDelete', note_delete:'txNoteDelete', note_reject:'txNoteReject', contact_create:'txContactCreate', contact_edit:'txContactEdit', contact_delete:'txContactDelete', data_restore:'txDataRestore'};
 const LOG_GROUP_TYPES = {
   create: ['item_create','wh_create','contact_create'],
   edit: ['item_edit','wh_edit','contact_edit'],
