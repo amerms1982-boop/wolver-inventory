@@ -837,6 +837,7 @@
       <label style="display:flex;align-items:center;gap:8px;padding:7px 0 9px 0;margin-inline-start:26px;border-bottom:1px solid var(--line);font-weight:600;font-size:12.5px;cursor:pointer;color:var(--ink-soft);"><input type="checkbox" id="wipeDeleteFounder"> <span data-i18n="deleteFounderToo">احذف حساب المدير الأول (المؤسس) كمان — مستثنى تلقائيًا لو مش متعلّم</span></label>
       <label style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepLog"> <span data-i18n="keepLog">الاحتفاظ بسجل كل الحركات</span></label>
       <label style="display:flex;align-items:center;gap:8px;padding:9px 0;font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepNotes"> <span data-i18n="keepNotes">الاحتفاظ بالأذونات المحفوظة (إضافة / صرف / تحويل)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--line);font-weight:700;font-size:13px;cursor:pointer;"><input type="checkbox" id="wipeKeepContacts"> <span data-i18n="keepContacts">الاحتفاظ بالأشخاص (الموردين والعملاء)</span></label>
     </div>
     <div class="item-meta" style="margin-top:6px;" data-i18n="wipeFooterDesc">لو حذفت المستخدمين، حساب المدير الأول (المؤسس) بيفضل موجود تلقائيًا إلا لو علّمت على حذفه كمان — وفي الحالة دي هيرجع التطبيق لشاشة إعداد حساب أدمن جديد من الأول، وهتخرج من حسابك الحالي تلقائيًا لو كان هو المتأثر.</div>
     <div class="form-actions">
@@ -1636,6 +1637,7 @@ const I18N = {
     deleteFounderToo: `احذف حساب المدير الأول (المؤسس) كمان — مستثنى تلقائيًا لو مش متعلّم`,
     keepLog: `الاحتفاظ بسجل كل الحركات`,
     keepNotes: `الاحتفاظ بالأذونات المحفوظة (إضافة / صرف / تحويل)`,
+    keepContacts: `الاحتفاظ بالأشخاص (الموردين والعملاء)`,
     wipeFooterDesc: `لو حذفت المستخدمين، حساب المدير الأول (المؤسس) بيفضل موجود تلقائيًا إلا لو علّمت على حذفه كمان — وفي الحالة دي هيرجع التطبيق لشاشة إعداد حساب أدمن جديد من الأول، وهتخرج من حسابك الحالي تلقائيًا لو كان هو المتأثر.`,
     executeWipeBtn: `تنفيذ الحذف`,
     confirmAdminIdentity: `تأكيد هوية الأدمن`,
@@ -1763,6 +1765,7 @@ const I18N = {
     wipeItemUsersExceptFounder: `كل المستخدمين ما عدا حساب المدير المؤسس (الحساب الأول) اللي هيفضل موجود`,
     wipeItemLog: `سجل كل الحركات`,
     wipeItemNotes: `كل الأذونات المحفوظة (إضافة / صرف / تحويل)`,
+    wipeItemContacts: `كل الأشخاص المسجلين (الموردين والعملاء)`,
     confirmWipePrefix: `هيتم حذف نهائيًا:
 - `,
     confirmWipeSuffix: `
@@ -2092,6 +2095,7 @@ const I18N = {
     deleteFounderToo: `Also delete the founding admin account — excluded automatically if unchecked`,
     keepLog: `Keep the full transaction log`,
     keepNotes: `Keep saved vouchers (in / out / transfer)`,
+    keepContacts: `Keep people (suppliers and customers)`,
     wipeFooterDesc: `If you delete users, the founding admin account stays automatically unless you also check its deletion — in that case the app returns to the new-admin setup screen, and you'll be logged out automatically if it's your account.`,
     executeWipeBtn: `Execute Deletion`,
     confirmAdminIdentity: `Confirm Admin Identity`,
@@ -2219,6 +2223,7 @@ const I18N = {
     wipeItemUsersExceptFounder: `All users except the founding admin account (the first account), which remains`,
     wipeItemLog: `The full transaction log`,
     wipeItemNotes: `All saved vouchers (in / out / transfer)`,
+    wipeItemContacts: `All registered people (suppliers and customers)`,
     confirmWipePrefix: `The following will be permanently deleted:
 - `,
     confirmWipeSuffix: `
@@ -3607,7 +3612,7 @@ function wireWipeCheckboxes(){
 }
 function openWipeData(){
   if(!currentUser || currentUser.role!=='admin') return;
-  ['wipeKeepWarehouses','wipeKeepItems','wipeKeepBalances','wipeKeepUsers','wipeDeleteFounder','wipeKeepLog','wipeKeepNotes'].forEach(id=>{
+  ['wipeKeepWarehouses','wipeKeepItems','wipeKeepBalances','wipeKeepUsers','wipeDeleteFounder','wipeKeepLog','wipeKeepNotes','wipeKeepContacts'].forEach(id=>{
     const el = document.getElementById(id); if(el) el.checked = false;
   });
   wireWipeCheckboxes();
@@ -3624,6 +3629,7 @@ async function requestWipeData(){
     deleteFounder: document.getElementById('wipeDeleteFounder').checked,
     keepLog: document.getElementById('wipeKeepLog').checked,
     keepNotes: document.getElementById('wipeKeepNotes').checked,
+    keepContacts: document.getElementById('wipeKeepContacts').checked,
   };
   const toDelete = [];
   if(!opts.keepWarehouses) toDelete.push(t('wipeItemWarehouses'));
@@ -3636,6 +3642,7 @@ async function requestWipeData(){
   }
   if(!opts.keepLog) toDelete.push(t('wipeItemLog'));
   if(!opts.keepNotes) toDelete.push(t('wipeItemNotes'));
+  if(!opts.keepContacts) toDelete.push(t('wipeItemContacts'));
   if(!toDelete.length){ showToast(t('errAllSectionsExcluded')); return; }
   const sure = await customConfirm(t('confirmWipePrefix')+toDelete.join('\n- ')+t('confirmWipeSuffix'));
   if(!sure) return;
@@ -3676,7 +3683,8 @@ async function performWipeData(opts){
     items: JSON.parse(JSON.stringify(STATE.items)),
     transactions: STATE.transactions,
     notes: STATE.notes, nextNoteSerial: STATE.nextNoteSerial, users: STATE.users,
-    recoveryCode: STATE.recoveryCode, recovery: STATE.recovery, itemsManuallyOrdered: STATE.itemsManuallyOrdered
+    recoveryCode: STATE.recoveryCode, recovery: STATE.recovery, itemsManuallyOrdered: STATE.itemsManuallyOrdered,
+    contacts: STATE.contacts
   };
   if(!opts.keepWarehouses){ STATE.warehouses = {w1:'المخزن الأول', w2:'المخزن الثاني'}; STATE.defaultWarehouseId = 'w1'; }
   if(!opts.keepItems){
@@ -3690,6 +3698,7 @@ async function performWipeData(opts){
   }
   if(!opts.keepLog) STATE.transactions = [];
   if(!opts.keepNotes){ STATE.notes = []; STATE.nextNoteSerial = {in:1, out:1, transfer:1, opening:1}; }
+  if(!opts.keepContacts) STATE.contacts = [];
   let wipingCurrentUser = false;
   if(!opts.keepUsers){
     const founder = STATE.users.find(u=>u.isFounder);
@@ -3706,6 +3715,7 @@ async function performWipeData(opts){
     STATE.warehouses = backup.warehouses; STATE.defaultWarehouseId = backup.defaultWarehouseId; STATE.items = backup.items; STATE.transactions = backup.transactions;
     STATE.notes = backup.notes; STATE.nextNoteSerial = backup.nextNoteSerial; STATE.users = backup.users;
     STATE.recoveryCode = backup.recoveryCode; STATE.recovery = backup.recovery; STATE.itemsManuallyOrdered = backup.itemsManuallyOrdered;
+    STATE.contacts = backup.contacts;
     showToast(t('errWipeRetry'));
     return;
   }
@@ -3722,6 +3732,8 @@ async function performWipeData(opts){
   closeUsersModal();
   showToast(t('msgWipeSuccess'));
   renderDashboard(); renderItems(); renderLog();
+  refreshContactDatalists();
+  if(document.getElementById('contactsOverlay').classList.contains('active')) renderContactsList();
 }
 
 
