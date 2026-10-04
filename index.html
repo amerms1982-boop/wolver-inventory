@@ -670,7 +670,7 @@
     <h2 data-i18n="bulkInTitle">إذن إضافة</h2>
     <div id="biEditingBanner"></div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" list="supplierContactsList" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')"><datalist id="supplierContactsList"></datalist></div>
+      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" list="supplierContactsList" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')" onblur="checkContactHint('bi')"><datalist id="supplierContactsList"></datalist><div id="biSupplierHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
@@ -698,7 +698,7 @@
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" list="customerContactsList" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')"><datalist id="customerContactsList"></datalist></div>
+      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" list="customerContactsList" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')" onblur="checkContactHint('bo')"><datalist id="customerContactsList"></datalist><div id="boLocationHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
@@ -1836,6 +1836,9 @@ const I18N = {
     confirmDeleteContactPrefix: `حذف "`,
     confirmDeleteContactSuffix: `"؟`,
     errContactNameRequired: `اسم الشخص مطلوب`,
+    contactNotFoundMsgSupplier: `هذا المورد غير مسجل في قائمة الأشخاص`,
+    contactNotFoundMsgCustomer: `هذا العميل غير مسجل في قائمة الأشخاص`,
+    defineContactBtn: `تعريف الشخص`,
   },
   en: {
     pageTitle: `WOLVER Inventory`,
@@ -2285,6 +2288,9 @@ This cannot be undone once executed. Are you sure?`,
     confirmDeleteContactPrefix: `Delete "`,
     confirmDeleteContactSuffix: `"?`,
     errContactNameRequired: `Contact name is required`,
+    contactNotFoundMsgSupplier: `This supplier isn't registered in the people list`,
+    contactNotFoundMsgCustomer: `This customer isn't registered in the people list`,
+    defineContactBtn: `Define Person`,
   }
 };
 
@@ -4713,6 +4719,7 @@ function openBulkIn(){
   document.getElementById('biQty').value=''; document.getElementById('biExpiry').value=''; document.getElementById('biQtyExtra').value='';
   document.getElementById('biSupplierName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.supplier||'') : '';
   document.getElementById('biRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
+  checkContactHint('bi');
   onBiItemChange();
   renderBulkInTable();
   updateEditingBanner('bi');
@@ -4919,6 +4926,7 @@ function openBulkOut(){
   document.getElementById('boQty').value=''; document.getElementById('boQtyExtra').value='';
   document.getElementById('boLocationName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.location||'') : '';
   document.getElementById('boRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
+  checkContactHint('bo');
   renderBulkOutTable();
   updateEditingBanner('bo');
   document.getElementById('bulkOutOverlay').classList.add('active');
@@ -5526,6 +5534,37 @@ function refreshContactDatalists(){
   const customers = document.getElementById('customerContactsList');
   if(suppliers) suppliers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='supplier').map(c=>`<option value="${c.name}">`).join('');
   if(customers) customers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='customer').map(c=>`<option value="${c.name}">`).join('');
+  // Any note form currently open may have a name typed in that just stopped (or started) matching
+  // a contact, so re-run the "unknown name" check for both fields whenever the contacts list changes.
+  checkContactHint('bi');
+  checkContactHint('bo');
+}
+// Warns when the supplier name (Bulk In) or customer/location name (Bulk Out) typed into a note
+// doesn't match any saved contact of the matching type, with a button that opens the contact form
+// pre-filled with that name so the person can register them on the spot instead of leaving the note.
+function checkContactHint(prefix){
+  const inputId = prefix==='bi' ? 'biSupplierName' : 'boLocationName';
+  const hintId = prefix==='bi' ? 'biSupplierHint' : 'boLocationHint';
+  const type = prefix==='bi' ? 'supplier' : 'customer';
+  const input = document.getElementById(inputId);
+  const hint = document.getElementById(hintId);
+  if(!input || !hint) return;
+  const name = input.value.trim();
+  if(!name){ hint.innerHTML = ''; return; }
+  const exists = (STATE.contacts||[]).some(c=>c.type===type && c.name.trim()===name);
+  if(exists){ hint.innerHTML = ''; return; }
+  const msgKey = type==='supplier' ? 'contactNotFoundMsgSupplier' : 'contactNotFoundMsgCustomer';
+  hint.innerHTML = `<div class="warn-box" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span>${t(msgKey)}</span><button type="button" class="btn btn-ghost btn-sm" onclick="openContactFormFromHint('${prefix}','${type}')">${t('defineContactBtn')}</button></div>`;
+}
+// Opens the contact form on top of the still-open note modal, pre-filled with the name/type that
+// triggered the hint. Closing or saving the form returns to the note modal underneath unaffected;
+// a successful save re-runs checkContactHint() (via refreshContactDatalists) so the warning clears.
+function openContactFormFromHint(prefix, type){
+  const inputId = prefix==='bi' ? 'biSupplierName' : 'boLocationName';
+  const name = (document.getElementById(inputId).value || '').trim();
+  openContactForm();
+  document.getElementById('contactName').value = name;
+  document.getElementById('contactType').value = type;
 }
 function openWhContents(id){
   document.getElementById('whContentsPrintActions').style.display = hasPerm('warehouses','print') ? '' : 'none';
