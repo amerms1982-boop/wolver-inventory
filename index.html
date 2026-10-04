@@ -670,7 +670,7 @@
     <h2 data-i18n="bulkInTitle">إذن إضافة</h2>
     <div id="biEditingBanner"></div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" list="supplierContactsList" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')" onblur="checkContactHint('bi')"><datalist id="supplierContactsList"></datalist><div id="biSupplierHint"></div></div>
+      <div class="full item-combo"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" autocomplete="off" oninput="filterContactCombo('bi')" onfocus="openContactCombo('bi')" onkeydown="onContactComboKeydown(event,'bi')" onblur="checkContactHint('bi')" data-i18n-placeholder="supplierName" placeholder="اسم المورد"><div class="item-combo-list" id="biSupplierList" onmousedown="onContactComboMouseDown(event,'bi')"></div><div id="biSupplierHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
@@ -698,7 +698,7 @@
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" list="customerContactsList" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')" onblur="checkContactHint('bo')"><datalist id="customerContactsList"></datalist><div id="boLocationHint"></div></div>
+      <div class="full item-combo"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" autocomplete="off" oninput="filterContactCombo('bo')" onfocus="openContactCombo('bo')" onkeydown="onContactComboKeydown(event,'bo')" onblur="checkContactHint('bo')" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"><div class="item-combo-list" id="boLocationList" onmousedown="onContactComboMouseDown(event,'bo')"></div><div id="boLocationHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
@@ -5529,15 +5529,96 @@ async function deleteContact(id){
     showToast(t('errDeleteRetry'));
   }
 }
+// Keeps the two note forms' supplier/customer suggestion lists and "unknown name" hints in sync
+// with the contacts list, after every add/edit/delete and once on login. (Despite the name, this
+// no longer touches a native <datalist> — see the contact-combo block below — but every existing
+// call site still just wants "the contacts-dependent bits of the UI refreshed".)
 function refreshContactDatalists(){
-  const suppliers = document.getElementById('supplierContactsList');
-  const customers = document.getElementById('customerContactsList');
-  if(suppliers) suppliers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='supplier').map(c=>`<option value="${c.name}">`).join('');
-  if(customers) customers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='customer').map(c=>`<option value="${c.name}">`).join('');
-  // Any note form currently open may have a name typed in that just stopped (or started) matching
-  // a contact, so re-run the "unknown name" check for both fields whenever the contacts list changes.
-  checkContactHint('bi');
-  checkContactHint('bo');
+  ['bi','bo'].forEach(prefix=>{
+    const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+    if(listEl && listEl.classList.contains('open')) filterContactCombo(prefix);
+    checkContactHint(prefix);
+  });
+}
+/* ---- Supplier/customer name combo (same look-and-feel as the item search combo above: a plain
+   text field with a live, click-or-arrow-key filtered suggestion list, not a native <datalist>) ---- */
+const CONTACT_COMBO_INPUT_ID = {bi:'biSupplierName', bo:'boLocationName'};
+const CONTACT_COMBO_LIST_ID = {bi:'biSupplierList', bo:'boLocationList'};
+const CONTACT_TYPE_BY_PREFIX = {bi:'supplier', bo:'customer'};
+const contactComboActiveIndex = {bi:-1, bo:-1};
+function contactComboMatches(prefix){
+  const type = CONTACT_TYPE_BY_PREFIX[prefix];
+  const q = (document.getElementById(CONTACT_COMBO_INPUT_ID[prefix]).value||'').trim().toLowerCase();
+  return (STATE.contacts||[])
+    .filter(c=>c.type===type && (!q || c.name.toLowerCase().includes(q)))
+    .sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+}
+function renderContactComboList(prefix, contacts){
+  const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+  if(!listEl) return;
+  contactComboActiveIndex[prefix] = -1;
+  listEl.innerHTML = contacts.length
+    ? contacts.map(c=>`<div class="item-combo-opt" data-name="${c.name.replace(/"/g,'&quot;')}">${c.name}</div>`).join('')
+    : `<div class="item-combo-empty">${t('noResults')}</div>`;
+}
+function openContactCombo(prefix){
+  closeAllItemCombos(document.getElementById(CONTACT_COMBO_LIST_ID[prefix]));
+  renderContactComboList(prefix, contactComboMatches(prefix));
+  const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+  if(listEl) listEl.classList.add('open');
+}
+function filterContactCombo(prefix){
+  renderContactComboList(prefix, contactComboMatches(prefix));
+  const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+  if(listEl) listEl.classList.add('open');
+}
+function pickContactCombo(prefix, name){
+  const input = document.getElementById(CONTACT_COMBO_INPUT_ID[prefix]);
+  if(input) input.value = name;
+  closeAllItemCombos();
+  checkContactHint(prefix);
+}
+function onContactComboMouseDown(ev, prefix){
+  const opt = ev.target.closest('.item-combo-opt');
+  if(!opt) return;
+  ev.preventDefault(); // keep focus on the input instead of letting the click blur it first
+  pickContactCombo(prefix, opt.dataset.name);
+}
+// Moves the highlighted row in the open contact combo list by `delta` (wrapping both ends),
+// mirroring moveItemComboActive() above but against contactComboActiveIndex/its own list id.
+function moveContactComboActive(prefix, delta){
+  const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+  if(!listEl) return;
+  const opts = listEl.querySelectorAll('.item-combo-opt');
+  if(!opts.length){ contactComboActiveIndex[prefix] = -1; return; }
+  let idx = contactComboActiveIndex[prefix] + delta;
+  if(idx<0) idx = opts.length-1;
+  if(idx>=opts.length) idx = 0;
+  opts.forEach(o=>o.classList.remove('active'));
+  opts[idx].classList.add('active');
+  opts[idx].scrollIntoView({block:'nearest'});
+  contactComboActiveIndex[prefix] = idx;
+}
+function onContactComboKeydown(ev, prefix){
+  const listEl = document.getElementById(CONTACT_COMBO_LIST_ID[prefix]);
+  if(!listEl) return;
+  if(ev.key==='ArrowDown'){
+    ev.preventDefault();
+    if(!listEl.classList.contains('open')) openContactCombo(prefix);
+    moveContactComboActive(prefix, 1);
+  } else if(ev.key==='ArrowUp'){
+    if(!listEl.classList.contains('open')) return;
+    ev.preventDefault();
+    moveContactComboActive(prefix, -1);
+  } else if(ev.key==='Enter'){
+    ev.preventDefault();
+    if(listEl.classList.contains('open')){
+      const opts = listEl.querySelectorAll('.item-combo-opt');
+      const idx = contactComboActiveIndex[prefix]>=0 ? contactComboActiveIndex[prefix] : 0;
+      if(opts[idx] && opts[idx].dataset.name) pickContactCombo(prefix, opts[idx].dataset.name);
+    }
+    focusNextNoteField(prefix, CONTACT_COMBO_INPUT_ID[prefix]);
+  }
 }
 // Warns when the supplier name (Bulk In) or customer/location name (Bulk Out) typed into a note
 // doesn't match any saved contact of the matching type, with a button that opens the contact form
