@@ -426,6 +426,7 @@
 
   <div class="quick-actions">
     <button id="whBtn" onclick="openWarehousesModal()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> <span data-i18n="warehouses">المخازن</span></button>
+    <button id="contactsBtn" onclick="openContactsModal()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> <span data-i18n="contactsBtn">الأشخاص</span></button>
     <button id="bulkInBtn" onclick="openBulkIn()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="bulkInTitle">إذن إضافة</span></button>
     <button id="bulkOutBtn" onclick="openBulkOut()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="bulkOutTitle">إذن صرف</span></button>
     <button id="notesHubBtn" onclick="openNotesHub()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> <span data-i18n="savedNotes">الأذونات المحفوظة</span></button>
@@ -669,7 +670,7 @@
     <h2 data-i18n="bulkInTitle">إذن إضافة</h2>
     <div id="biEditingBanner"></div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')"></div>
+      <div class="full"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" list="supplierContactsList" data-i18n-placeholder="supplierName" placeholder="اسم المورد" onkeydown="onNoteFieldKeydown(event,'bi','biSupplierName')"><datalist id="supplierContactsList"></datalist></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
@@ -697,7 +698,7 @@
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
-      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')"></div>
+      <div class="full"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" list="customerContactsList" data-i18n-placeholder="locationClient" placeholder="المكان / العميل" onkeydown="onNoteFieldKeydown(event,'bo','boLocationName')"><datalist id="customerContactsList"></datalist></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
@@ -904,6 +905,36 @@
     <div class="form-actions">
       <button id="addWhBtn" class="btn btn-teal" onclick="addWarehouse()">+ <span data-i18n="addNewWarehouseBtn">إضافة مخزن جديد</span></button>
       <button id="transferBtn" class="btn btn-indigo" onclick="openTransferModal()"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> <span data-i18n="transferBetweenWh">تحويل بين المخازن</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACTS (PEOPLE) MODAL -->
+<div class="overlay" id="contactsOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeContactsModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 data-i18n="contactsTitle">الأشخاص</h2>
+    <div id="contactsList"></div>
+    <div class="form-actions">
+      <button id="addContactBtn" class="btn btn-teal" onclick="openContactForm()">+ <span data-i18n="addNewContactBtn">إضافة شخص جديد</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT FORM MODAL (add/edit) -->
+<div class="overlay" id="contactFormOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeContactForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 id="contactFormTitle" data-i18n="newContactTitle">إضافة شخص جديد</h2>
+    <div class="form-grid">
+      <div class="full"><label data-i18n="contactNameLabel">الاسم</label><input id="contactName" data-i18n-placeholder="contactNameLabel" placeholder="الاسم"></div>
+      <div><label data-i18n="contactTypeLabel">النوع</label><select id="contactType"><option value="supplier" data-i18n="contactTypeSupplier">مورد</option><option value="customer" data-i18n="contactTypeCustomer">عميل</option></select></div>
+      <div><label data-i18n="contactPhoneLabel">رقم التليفون</label><input id="contactPhone" type="text" inputmode="tel" data-i18n-placeholder="contactPhoneLabel" placeholder="رقم التليفون"></div>
+      <div class="full"><label data-i18n="contactAddressLabel">العنوان</label><input id="contactAddress" data-i18n-placeholder="contactAddressLabel" placeholder="العنوان"></div>
+    </div>
+    <div class="form-actions">
+      <button id="saveContactBtn" class="btn btn-success" onclick="saveContact()"><span data-i18n="save">حفظ</span></button>
+      <button class="btn btn-ghost" onclick="closeContactForm()"><span data-i18n="cancel">إلغاء</span></button>
     </div>
   </div>
 </div>
@@ -1787,6 +1818,24 @@ const I18N = {
     brandingSavedMsg: `تم حفظ الهوية الجديدة بنجاح`,
     brandingResetAllConfirm: `هل أنت متأكد من استرجاع كل عناصر الهوية (الخلفية، اللوجو، الأيقونة، الألوان، اسم التطبيق) للوضع الافتراضي؟`,
     errImageTooLarge: `تعذر معالجة الصورة، جرّب صورة تانية`,
+    contactsBtn: `الأشخاص`,
+    contactsTitle: `الأشخاص`,
+    addNewContactBtn: `إضافة شخص جديد`,
+    editContactTitle: `تعديل بيانات شخص`,
+    newContactTitle: `إضافة شخص جديد`,
+    contactNameLabel: `الاسم`,
+    contactTypeLabel: `النوع`,
+    contactTypeSupplier: `مورد`,
+    contactTypeCustomer: `عميل`,
+    contactPhoneLabel: `رقم التليفون`,
+    contactAddressLabel: `العنوان`,
+    contactEmptyMsg: `لا يوجد أشخاص مسجلين`,
+    msgContactAdded: `تمت إضافة الشخص`,
+    msgContactUpdated: `تم تحديث بيانات الشخص`,
+    msgContactDeleted: `تم حذف الشخص`,
+    confirmDeleteContactPrefix: `حذف "`,
+    confirmDeleteContactSuffix: `"؟`,
+    errContactNameRequired: `اسم الشخص مطلوب`,
   },
   en: {
     pageTitle: `WOLVER Inventory`,
@@ -2218,6 +2267,24 @@ This cannot be undone once executed. Are you sure?`,
     brandingSavedMsg: `Branding saved successfully`,
     brandingResetAllConfirm: `Are you sure you want to reset all branding (background, logo, icon, colors, app name) to default?`,
     errImageTooLarge: `Could not process this image, try another one`,
+    contactsBtn: `People`,
+    contactsTitle: `People`,
+    addNewContactBtn: `Add New Person`,
+    editContactTitle: `Edit Contact`,
+    newContactTitle: `Add New Contact`,
+    contactNameLabel: `Name`,
+    contactTypeLabel: `Type`,
+    contactTypeSupplier: `Supplier`,
+    contactTypeCustomer: `Customer`,
+    contactPhoneLabel: `Phone Number`,
+    contactAddressLabel: `Address`,
+    contactEmptyMsg: `No contacts yet`,
+    msgContactAdded: `Contact added`,
+    msgContactUpdated: `Contact updated`,
+    msgContactDeleted: `Contact deleted`,
+    confirmDeleteContactPrefix: `Delete "`,
+    confirmDeleteContactSuffix: `"?`,
+    errContactNameRequired: `Contact name is required`,
   }
 };
 
@@ -2660,6 +2727,7 @@ const PERMISSION_DEFS = {
   bulkIn: {label:'bulkInTitle', group:'notes', actions:{view:'actView', create:'actCreate', edit:'actEdit', delete:'actDelete', print:'actPrint'}},
   bulkOut: {label:'bulkOutTitle', group:'notes', actions:{view:'actView', create:'actCreate', edit:'actEdit', delete:'actDelete', print:'actPrint'}},
   transfer: {label:'transferTitle', group:'notes', actions:{view:'actView', create:'actCreate', edit:'actEdit', delete:'actDelete', print:'actPrint'}},
+  contacts: {label:'contactsTitle', actions:{view:'actView', create:'actCreate', edit:'actEdit', delete:'actDelete'}},
 };
 function defaultPermissions(){
   const p = {};
@@ -2691,6 +2759,7 @@ function applyPermissions(){
   const set = (id, ok)=>{ const el=document.getElementById(id); if(el) el.style.display = ok ? '' : 'none'; };
   set('itemsNavBtn', hasPerm('items','view'));
   set('whBtn', hasPerm('warehouses','view'));
+  set('contactsBtn', hasPerm('contacts','view'));
   set('bulkInBtn', hasPerm('bulkIn','create'));
   set('bulkOutBtn', hasPerm('bulkOut','create'));
   set('notesHubBtn', hasPerm('bulkIn','view') || hasPerm('bulkOut','view') || hasPerm('transfer','view'));
@@ -2821,6 +2890,7 @@ async function setDefaultWarehouse(id){
 }
 function whName(id){ return STATE.warehouses[id] || id; }
 function genWhId(){ return 'w'+Date.now()+Math.random().toString(36).slice(2,5); }
+function genContactId(){ return 'c'+Date.now()+Math.random().toString(36).slice(2,5); }
 function whOptionsHtml(selected, excludeId){
   return warehouseIds().filter(id=>id!==excludeId).map(id=>`<option value="${id}" ${id===selected?'selected':''}>${whName(id)}</option>`).join('');
 }
@@ -2836,10 +2906,11 @@ async function loadState(){
     const metaSnap = await db.collection('meta').doc('main').get();
     if(metaSnap.exists){
       const meta = metaSnap.data();
-      const [itemsSnap, notesSnap, txSnap] = await Promise.all([
+      const [itemsSnap, notesSnap, txSnap, contactsSnap] = await Promise.all([
         db.collection('items').get(),
         db.collection('notes').get(),
-        db.collection('txlog').get()
+        db.collection('txlog').get(),
+        db.collection('contacts').get()
       ]);
       const itemsById = {};
       itemsSnap.forEach(d=>{ itemsById[d.id] = d.data(); });
@@ -2854,6 +2925,8 @@ async function loadState(){
       pages.sort((a,b)=>(parseInt(a.id.slice(1),10)||0)-(parseInt(b.id.slice(1),10)||0));
       let transactions = [];
       pages.forEach(p=>{ transactions = transactions.concat((p.data.entries)||[]); });
+      const contacts = [];
+      contactsSnap.forEach(d=>contacts.push(d.data()));
       STATE = {
         warehouses: meta.warehouses || {w1:'المخزن الأول', w2:'المخزن الثاني'},
         defaultWarehouseId: meta.defaultWarehouseId || null,
@@ -2866,22 +2939,23 @@ async function loadState(){
         itemsManuallyOrdered: !!meta.itemsManuallyOrdered,
         itemSortMode: meta.itemSortMode || (meta.itemsManuallyOrdered ? 'manual' : 'name'),
         branding: meta.branding || null,
-        items, notes, transactions
+        items, notes, transactions, contacts
       };
       ensureDefaults();
       applyBranding();
       const itemsClone = {}; items.forEach(it=>{ itemsClone[it.id] = JSON.parse(JSON.stringify(it)); });
       const notesClone = {}; notes.forEach(n=>{ notesClone[n.id] = JSON.parse(JSON.stringify(n)); });
-      SYNCED = { meta: JSON.parse(JSON.stringify(metaBody())), items: itemsClone, notes: notesClone, txCount: transactions.length };
+      const contactsClone = {}; contacts.forEach(c=>{ contactsClone[c.id] = JSON.parse(JSON.stringify(c)); });
+      SYNCED = { meta: JSON.parse(JSON.stringify(metaBody())), items: itemsClone, notes: notesClone, contacts: contactsClone, txCount: transactions.length };
       return true;
     }
     // أول تشغيل — لسه مفيش بيانات محفوظة، ابدأ بالأصناف الافتراضية
     STATE = {
       warehouses:{w1:'المخزن الأول', w2:'المخزن الثاني'},
       items: SEED_ITEMS.map(it=>({id:it.id, name:it.name, batches:it.batches.map(b=>({...b, balances:{...b.balances}}))})),
-      transactions: [], flags:{}, notes:[], nextNoteSerial:{in:1, out:1, transfer:1, opening:1}, users:[], itemsManuallyOrdered:false, itemSortMode:'name', branding:null
+      transactions: [], flags:{}, notes:[], contacts:[], nextNoteSerial:{in:1, out:1, transfer:1, opening:1}, users:[], itemsManuallyOrdered:false, itemSortMode:'name', branding:null
     };
-    SYNCED = { meta:null, items:{}, notes:{}, txCount:0 };
+    SYNCED = { meta:null, items:{}, notes:{}, contacts:{}, txCount:0 };
     return await persist();
   }catch(e){
     console.error('loadState failed', e);
@@ -2913,6 +2987,7 @@ function ensureDefaults(){
     const ids = Object.keys(STATE.warehouses);
     STATE.defaultWarehouseId = ids.length ? ids[0] : null;
   }
+  if(!STATE.contacts) STATE.contacts = [];
 }
 function buildTxSyncPlan(){
   // Pure planning: decides which txlog pages need to be set/deleted without
@@ -3019,6 +3094,23 @@ async function persist(){
     }
   }
 
+  const currentContactIds = new Set();
+  const changedContacts = [];
+  for(const contact of (STATE.contacts||[])){
+    currentContactIds.add(contact.id);
+    if(!deepEqualJson(contact, SYNCED.contacts[contact.id])){
+      changedContacts.push(contact);
+      ops.push({type: 'set', ref: db.collection('contacts').doc(contact.id), data: contact});
+    }
+  }
+  const deletedContactIds = [];
+  for(const id of Object.keys(SYNCED.contacts)){
+    if(!currentContactIds.has(id)){
+      deletedContactIds.push(id);
+      ops.push({type: 'delete', ref: db.collection('contacts').doc(id)});
+    }
+  }
+
   const txPlan = buildTxSyncPlan();
   for(const s of txPlan.sets) ops.push({type: 'set', ref: db.collection('txlog').doc('p'+s.page), data: {entries: s.entries}});
   for(const d of txPlan.deletes) ops.push({type: 'delete', ref: db.collection('txlog').doc('p'+d.page)});
@@ -3036,6 +3128,8 @@ async function persist(){
   for(const id of deletedItemIds) delete SYNCED.items[id];
   for(const note of changedNotes) SYNCED.notes[note.id] = JSON.parse(JSON.stringify(note));
   for(const id of deletedNoteIds) delete SYNCED.notes[id];
+  for(const contact of changedContacts) SYNCED.contacts[contact.id] = JSON.parse(JSON.stringify(contact));
+  for(const id of deletedContactIds) delete SYNCED.contacts[id];
   SYNCED.txCount = txPlan.txCount;
   return true;
 }
@@ -3278,6 +3372,7 @@ function enterApp(skipRecoveryCheck){
   applyPermissions();
   syncItemSortMenu();
   syncItemViewMenu();
+  refreshContactDatalists();
   renderDashboard(); renderItems(); renderLog();
   if(!skipRecoveryCheck && currentUser.role==='admin' && !hasRecoveryCode()){
     setTimeout(async ()=>{
@@ -5344,6 +5439,93 @@ async function deleteWarehouse(id){
     });
     showToast(t('errDeleteRetry'));
   }
+}
+/* ============ CONTACTS (PEOPLE: SUPPLIERS/CUSTOMERS) ============ */
+let editingContactId = null;
+function openContactsModal(){ renderContactsList(); document.getElementById('contactsOverlay').classList.add('active'); }
+function closeContactsModal(){ document.getElementById('contactsOverlay').classList.remove('active'); }
+function contactTypeLabel(type){ return type==='customer' ? t('contactTypeCustomer') : t('contactTypeSupplier'); }
+function renderContactsList(){
+  const el = document.getElementById('contactsList');
+  const addBtn = document.getElementById('addContactBtn');
+  if(addBtn) addBtn.style.display = hasPerm('contacts','create') ? '' : 'none';
+  const contacts = (STATE.contacts||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  if(!contacts.length){
+    el.innerHTML = `<div class="item-meta" style="text-align:center;padding:12px 0;">${t('contactEmptyMsg')}</div>`;
+    return;
+  }
+  el.innerHTML = contacts.map(c=>`
+    <div class="wh-row">
+      <span class="wname">${c.name} <span class="badge">${contactTypeLabel(c.type)}</span>${c.phone ? ` · ${c.phone}` : ''}</span>
+      <div class="wactions">
+        ${hasPerm('contacts','edit') ? `<button class="btn btn-ghost btn-sm" onclick="openContactForm('${c.id}')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg> ${t('renameBtn')}</button>` : ''}
+        ${hasPerm('contacts','delete') ? `<button class="btn btn-danger btn-sm" onclick="deleteContact('${c.id}')">${t('deleteBtn')}</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+function openContactForm(id){
+  editingContactId = id || null;
+  const c = id ? (STATE.contacts||[]).find(x=>x.id===id) : null;
+  document.getElementById('contactFormTitle').textContent = c ? t('editContactTitle') : t('newContactTitle');
+  document.getElementById('contactName').value = c ? c.name : '';
+  document.getElementById('contactType').value = c ? c.type : 'supplier';
+  document.getElementById('contactPhone').value = c ? (c.phone||'') : '';
+  document.getElementById('contactAddress').value = c ? (c.address||'') : '';
+  document.getElementById('contactFormOverlay').classList.add('active');
+}
+function closeContactForm(){ document.getElementById('contactFormOverlay').classList.remove('active'); editingContactId = null; }
+async function saveContact(){
+  const name = document.getElementById('contactName').value.trim();
+  if(!name){ showToast(t('errContactNameRequired')); return; }
+  const type = document.getElementById('contactType').value === 'customer' ? 'customer' : 'supplier';
+  const phone = document.getElementById('contactPhone').value.trim();
+  const address = document.getElementById('contactAddress').value.trim();
+  STATE.contacts = STATE.contacts || [];
+  const isEdit = !!editingContactId;
+  let prevSnapshot = null;
+  let contact;
+  if(isEdit){
+    contact = STATE.contacts.find(c=>c.id===editingContactId);
+    if(!contact) return;
+    prevSnapshot = {...contact};
+    contact.name = name; contact.type = type; contact.phone = phone; contact.address = address;
+  } else {
+    contact = {id:genContactId(), name, type, phone, address};
+    STATE.contacts.push(contact);
+  }
+  const ok = await persist();
+  if(ok){
+    closeContactForm();
+    renderContactsList();
+    refreshContactDatalists();
+    showToast(isEdit ? t('msgContactUpdated') : t('msgContactAdded'));
+  } else {
+    if(isEdit && prevSnapshot){ Object.assign(contact, prevSnapshot); }
+    else { STATE.contacts = STATE.contacts.filter(c=>c.id!==contact.id); }
+    showToast(t('errDeleteRetry'));
+  }
+}
+async function deleteContact(id){
+  const contact = (STATE.contacts||[]).find(c=>c.id===id);
+  if(!contact) return;
+  if(!(await customConfirm(t('confirmDeleteContactPrefix')+contact.name+t('confirmDeleteContactSuffix')))) return;
+  const idx = STATE.contacts.indexOf(contact);
+  STATE.contacts.splice(idx,1);
+  const ok = await persist();
+  if(ok){
+    renderContactsList();
+    refreshContactDatalists();
+    showToast(t('msgContactDeleted'));
+  } else {
+    STATE.contacts.splice(idx,0,contact);
+    showToast(t('errDeleteRetry'));
+  }
+}
+function refreshContactDatalists(){
+  const suppliers = document.getElementById('supplierContactsList');
+  const customers = document.getElementById('customerContactsList');
+  if(suppliers) suppliers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='supplier').map(c=>`<option value="${c.name}">`).join('');
+  if(customers) customers.innerHTML = (STATE.contacts||[]).filter(c=>c.type==='customer').map(c=>`<option value="${c.name}">`).join('');
 }
 function openWhContents(id){
   document.getElementById('whContentsPrintActions').style.display = hasPerm('warehouses','print') ? '' : 'none';
