@@ -1654,14 +1654,14 @@ const I18N = {
     removeBatchRowTitle: `حذف هذه الدفعة`,
     errBatchAlreadyExists: `فيه دفعة بنفس تاريخ الصلاحية موجودة بالفعل`,
     unitsSectionHeading: `وحدات القياس (اختياري)`,
-    unitsSectionDesc: `لو الصنف ده بيتقسم لوحدات (مثلاً كرتونة فيها عبوات، أو كيس فيه قطع)، حدد اسم كل وحدة وعدد الوحدة الثانية داخل الأولى. تقدر بعد كده تدخل الكمية بأي وحدة من الاتنين.`,
+    unitsSectionDesc: `لو الصنف ده بيتقسم لوحدات (مثلاً كرتونة فيها عبوات، أو كيس فيه قطع)، حدد اسم كل وحدة وعدد الوحدة الثانية داخل الأولى. تقدر بعد كده تدخل الكمية بأي وحدة من الاتنين. ولو الصنف ليه وحدة عد واحدة بس من غير تقسيم (زي شوال، أو قطعة واحدة)، اكتب اسمها في خانة "اسم الوحدة الأولى" بس وسيب باقي الخانات فاضية.`,
     unit1NameLabel: `اسم الوحدة الأولى (الكبرى)`,
     unit2NameLabel: `اسم الوحدة الثانية (الصغرى)`,
     unitRatioLabel: `عدد الوحدة الثانية داخل الوحدة الأولى`,
     unit1Placeholder: `مثال: كرتونة`,
     unit2Placeholder: `مثال: عبوة`,
     unitRatioPlaceholder: `مثال: 24`,
-    errUnitsIncomplete: `لازم تحدد اسم الوحدتين والعدد مع بعض، أو تسيبهم فاضيين كلهم`,
+    errUnitsIncomplete: `لو هتحدد وحدتين لازم تحدد اسميهم والعدد مع بعض، أو حدد اسم وحدة واحدة بس من غير عدد، أو سيب الخانات كلها فاضية`,
     errUnitRatioInvalid: `عدد الوحدات لازم يكون رقم صحيح أكبر من 1`,
     enterByUnitLabel: `الوحدة`,
     availableQtyLabel: `الكمية المتاحة`,
@@ -2155,14 +2155,14 @@ const I18N = {
     removeBatchRowTitle: `Delete this batch`,
     errBatchAlreadyExists: `A batch with the same expiry date already exists`,
     unitsSectionHeading: `Units of Measure (optional)`,
-    unitsSectionDesc: `If this item splits into units (e.g. a carton of packs, or a bag of pieces), name each unit and how many of the second unit fit in the first. You can then enter quantity in either unit.`,
+    unitsSectionDesc: `If this item splits into units (e.g. a carton of packs, or a bag of pieces), name each unit and how many of the second unit fit in the first. You can then enter quantity in either unit. If the item just has one counting unit with no split (e.g. a sack, or a single-piece display stand), type its name in "First unit name" only and leave the rest blank.`,
     unit1NameLabel: `First (larger) unit name`,
     unit2NameLabel: `Second (smaller) unit name`,
     unitRatioLabel: `How many of the second unit per first unit`,
     unit1Placeholder: `e.g. Carton`,
     unit2Placeholder: `e.g. Pack`,
     unitRatioPlaceholder: `e.g. 24`,
-    errUnitsIncomplete: `Set both unit names and the ratio together, or leave all three empty`,
+    errUnitsIncomplete: `For two units, set both names and the ratio together; for one unit, set just its name with no ratio; or leave all three empty`,
     errUnitRatioInvalid: `The ratio must be a whole number greater than 1`,
     enterByUnitLabel: `Enter by unit`,
     availableQtyLabel: `Available`,
@@ -4354,6 +4354,11 @@ function orderedItems(list){
 
 /* ============ UNITS OF MEASURE (unit1 = larger, unit2 = smaller) ============ */
 function itemHasUnits(item){ return !!(item && item.unit1Name && item.unit2Name && typeof item.unitRatio==='number' && item.unitRatio>1); }
+// A simple named counting unit with no second tier/conversion (e.g. "شوال" for a sack, "قطعة" for
+// a single-piece display stand) — distinct from the dual-unit (carton/pack + ratio) system above.
+function itemSingleUnitName(item){ return (item && !itemHasUnits(item) && item.singleUnitName) ? item.singleUnitName : null; }
+// The label to show next to a plain (non-converted) quantity for this item, if any custom one is set.
+function itemBaseUnitLabel(item){ return itemHasUnits(item) ? item.unit2Name : itemSingleUnitName(item); }
 // Case/whitespace-insensitive name match, used to warn about duplicate item names.
 function findItemByName(name, excludeId){
   const norm = (name||'').trim().toLowerCase();
@@ -4367,6 +4372,9 @@ function readUnitsInput(u1Id, u2Id, ratioId){
   const ratioRaw = document.getElementById(ratioId).value.trim();
   const ratioNum = ratioRaw ? parseInt(ratioRaw,10) : NaN;
   if(!u1 && !u2 && !ratioRaw) return {ok:true, units:null};
+  // Exactly one name given, no ratio: a single counting unit with no second tier (e.g. a sack that
+  // has no sub-unit, or a display stand sold as one piece) — no conversion needed, just a label.
+  if(!ratioRaw && ((u1 && !u2) || (!u1 && u2))) return {ok:true, units:{singleUnitName:(u1||u2)}};
   if(!u1 || !u2 || !ratioRaw) return {ok:false, error:t('errUnitsIncomplete')};
   if(isNaN(ratioNum) || ratioNum<2) return {ok:false, error:t('errUnitRatioInvalid')};
   return {ok:true, units:{unit1Name:u1, unit2Name:u2, unitRatio:ratioNum}};
@@ -4376,7 +4384,10 @@ function plainQty(n){ return (n||0).toLocaleString(appLocale(),{maximumFractionD
 // Falls back to a plain number when the item has no units defined.
 function fmtQty(item, qtyBase){
   qtyBase = qtyBase||0;
-  if(!itemHasUnits(item)) return plainQty(qtyBase);
+  if(!itemHasUnits(item)){
+    const single = itemSingleUnitName(item);
+    return single ? `${plainQty(qtyBase)} ${single}` : plainQty(qtyBase);
+  }
   const ratio = item.unitRatio;
   const u1 = Math.floor((qtyBase+1e-9)/ratio);
   let rem = Math.round((qtyBase - u1*ratio)*100)/100;
@@ -4397,11 +4408,11 @@ function toBaseQty(item, enteredQty, unitChoice){
 }
 // Populates a unit <select> for an item: hidden/single option when the item has no units, otherwise u2 (default) + u1.
 function unitSelectHtml(item, selected){
-  if(!itemHasUnits(item)) return `<option value="u2">${t('colQty')}</option>`;
+  if(!itemHasUnits(item)) return `<option value="u2">${itemSingleUnitName(item) || t('colQty')}</option>`;
   return `<option value="u2" ${selected==='u1'?'':'selected'}>${item.unit2Name}</option><option value="u1" ${selected==='u1'?'selected':''}>${item.unit1Name}</option>`;
 }
 function qtyUnitLabel(item, unitChoice){
-  if(!itemHasUnits(item)) return '';
+  if(!itemHasUnits(item)) return itemSingleUnitName(item) || '';
   return unitChoice==='u1' ? item.unit1Name : item.unit2Name;
 }
 // Refreshes a form's unit <select> (and its wrapper's visibility) for the currently chosen item.
@@ -4751,7 +4762,7 @@ function openEditItem(){
   const item = STATE.items.find(i=>i.id===currentItemId);
   document.getElementById('editItemName').value = item.name;
   document.getElementById('editItemReorderLevel').value = hasCustomReorderLevel(item) ? item.reorderLevel : '';
-  document.getElementById('editItemUnit1Name').value = item.unit1Name || '';
+  document.getElementById('editItemUnit1Name').value = item.unit1Name || item.singleUnitName || '';
   document.getElementById('editItemUnit2Name').value = item.unit2Name || '';
   document.getElementById('editItemUnitRatio').value = item.unitRatio || '';
   editItemImageData = undefined;
@@ -4858,6 +4869,7 @@ async function saveEditItem(){
   const oldImage = item.image;
   const hadUnits = itemHasUnits(item);
   const oldUnit1Name = item.unit1Name, oldUnit2Name = item.unit2Name, oldUnitRatio = item.unitRatio;
+  const oldSingleUnitName = item.singleUnitName;
   const oldBatches = item.batches.map(b=>({...b, balances:{...b.balances}}));
 
   item.name = newName;
@@ -4867,8 +4879,11 @@ async function saveEditItem(){
   else delete item.reorderLevel;
   if(editItemImageData === null) delete item.image;
   else if(typeof editItemImageData === 'string') item.image = editItemImageData;
-  if(unitsResult.units){ item.unit1Name = unitsResult.units.unit1Name; item.unit2Name = unitsResult.units.unit2Name; item.unitRatio = unitsResult.units.unitRatio; }
-  else { delete item.unit1Name; delete item.unit2Name; delete item.unitRatio; }
+  delete item.unit1Name; delete item.unit2Name; delete item.unitRatio; delete item.singleUnitName;
+  if(unitsResult.units){
+    if(unitsResult.units.singleUnitName) item.singleUnitName = unitsResult.units.singleUnitName;
+    else { item.unit1Name = unitsResult.units.unit1Name; item.unit2Name = unitsResult.units.unit2Name; item.unitRatio = unitsResult.units.unitRatio; }
+  }
 
   document.querySelectorAll('#editItemBatchesTable input[data-batch]').forEach(inp=>{
     const b = item.batches.find(x=>x.id===inp.dataset.batch);
@@ -4905,7 +4920,9 @@ async function saveEditItem(){
     item.name = oldName;
     if(hadReorderLevel) item.reorderLevel = oldReorderLevel; else delete item.reorderLevel;
     if(hadImage) item.image = oldImage; else delete item.image;
-    if(hadUnits){ item.unit1Name=oldUnit1Name; item.unit2Name=oldUnit2Name; item.unitRatio=oldUnitRatio; } else { delete item.unit1Name; delete item.unit2Name; delete item.unitRatio; }
+    delete item.unit1Name; delete item.unit2Name; delete item.unitRatio; delete item.singleUnitName;
+    if(hadUnits){ item.unit1Name=oldUnit1Name; item.unit2Name=oldUnit2Name; item.unitRatio=oldUnitRatio; }
+    else if(oldSingleUnitName) item.singleUnitName = oldSingleUnitName;
     item.batches = oldBatches;
     removeTx(tx.id);
   }
@@ -5022,10 +5039,11 @@ function openOpeningBalances(){
   const whCols = warehouseIds();
   let rows = '';
   orderedItems().forEach(item=>{
-    const unitTitle = itemHasUnits(item) ? ` title="${t('colQty')}: ${item.unit2Name}"` : '';
+    const baseUnitLabel = itemBaseUnitLabel(item);
+    const unitTitle = baseUnitLabel ? ` title="${t('colQty')}: ${baseUnitLabel}"` : '';
     item.batches.forEach(b=>{
       const cells = whCols.map(w=>`<td><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" data-item="${item.id}" data-batch="${b.id}" data-wh="${w}" value="${b.balances[w]||0}"${unitTitle}></td>`).join('');
-      const nameCell = itemHasUnits(item) ? `${item.name} <span style="font-size:10px;color:var(--ink-soft);">(${t('colQty')}: ${item.unit2Name})</span>` : item.name;
+      const nameCell = baseUnitLabel ? `${item.name} <span style="font-size:10px;color:var(--ink-soft);">(${t('colQty')}: ${baseUnitLabel})</span>` : item.name;
       rows += `<tr><td>${nameCell}</td><td>${b.expiry||t('statusUnspecified')}</td>${cells}</tr>`;
     });
   });
