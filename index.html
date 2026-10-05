@@ -730,9 +730,9 @@
     <h2 data-i18n="savedNotes">الأذونات المحفوظة</h2>
     <div class="item-meta" data-i18n="chooseNoteType">اختر نوع الأذون اللي تريد تراجعه.</div>
     <div class="form-actions" style="flex-direction:column;align-items:stretch;">
-      <button id="notesHubBulkInBtn" class="btn btn-teal" onclick="closeNotesHub(); openSavedNotes('in')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="inNotes">أذون الإضافة</span></button>
-      <button id="notesHubBulkOutBtn" class="btn btn-teal" onclick="closeNotesHub(); openSavedNotes('out')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="outNotes">أذون الصرف</span></button>
-      <button id="notesHubTransferBtn" class="btn btn-indigo" onclick="closeNotesHub(); openSavedNotes('transfer')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> <span data-i18n="transferNotes">أذون التحويل</span></button>
+      <button id="notesHubBulkInBtn" class="btn btn-teal" onclick="openSavedNotes('in')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="inNotes">أذون الإضافة</span></button>
+      <button id="notesHubBulkOutBtn" class="btn btn-teal" onclick="openSavedNotes('out')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> <span data-i18n="outNotes">أذون الصرف</span></button>
+      <button id="notesHubTransferBtn" class="btn btn-indigo" onclick="openSavedNotes('transfer')"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg> <span data-i18n="transferNotes">أذون التحويل</span></button>
     </div>
   </div>
 </div>
@@ -740,7 +740,6 @@
 <!-- SAVED NOTES MODAL -->
 <div class="overlay" id="notesOverlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeSavedNotes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;display:block;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <button class="modal-close" style="left:48px;font-size:13.5px;font-family:'Cairo';font-weight:700;display:inline-flex;align-items:center;gap:4px;" onclick="closeSavedNotes(); openNotesHub();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex:none;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> <span data-i18n="back">رجوع</span></button>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-left:96px;">
       <h2 id="notesTitle" style="margin:0;" data-i18n="savedNotesTitle">الأذون المحفوظة</h2>
@@ -2587,23 +2586,36 @@ function toggleDD(ev, btn){
   dd.classList.toggle('open');
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.dd')) closeAllDD(); });
-// Esc closes whichever modal window is currently open, the same as clicking its own X button —
-// reusing that button's own click handler (rather than just hiding the overlay) so any side
-// effects it runs (resetting a form, cancelling an in-progress edit, etc.) still happen.
-// Overlays share one z-index and are appended in source order, so when more than one is open at
-// once (e.g. a confirm dialog on top of a saved-notes list) the LAST active one in the DOM is
-// the topmost one visually — exactly the one Esc should close.
+// Windows stack: each overlay remembers when it was opened, so the newest one is drawn on top and Esc closes
+// ONLY the topmost window (one window per press, in reverse order of opening).
+const overlayStack = [];
+function syncOverlayStack(){
+  document.querySelectorAll('.overlay').forEach(el=>{
+    const i = overlayStack.indexOf(el);
+    if(el.classList.contains('active')){ if(i<0) overlayStack.push(el); }
+    else if(i>=0){ overlayStack.splice(i,1); el.style.zIndex=''; }
+  });
+  overlayStack.forEach((el,i)=>{ el.style.zIndex = String(600+i); });
+}
+(function(){
+  const mo = new MutationObserver(syncOverlayStack);
+  document.querySelectorAll('.overlay').forEach(el=>mo.observe(el,{attributes:true,attributeFilter:['class']}));
+  syncOverlayStack();
+})();
+// Esc: first closes an open dropdown (header menu / combo list), then the topmost window only — reusing that
+// window's own close handler so side effects (resetting a form, cancelling an edit) still happen.
 document.addEventListener('keydown', e=>{
   if(e.key !== 'Escape') return;
-  // First Esc closes an open dropdown (header menu / item or contact combo list) only; the next Esc closes the window.
   if(document.querySelector('.dd.open')){ closeAllDD(); return; }
   if(document.querySelector('.item-combo-list.open')){ if(typeof closeAllItemCombos==='function') closeAllItemCombos(); return; }
+  syncOverlayStack();
   const actives = document.querySelectorAll('.overlay.active');
   if(!actives.length) return;
-  const top = actives[actives.length-1];
+  const top = overlayStack.length ? overlayStack[overlayStack.length-1] : actives[actives.length-1];
   if(top.id==='confirmOverlay'){ resolveConfirm(false); return; }
   if(top.id==='promptOverlay'){ resolvePrompt(false); return; }
   if(top.id==='imageZoomOverlay'){ closeImageZoom(); return; }
+  if(top.id==='notesOverlay'){ closeSavedNotes(); return; }
   const closeBtn = top.querySelector('.modal-close');
   if(closeBtn) closeBtn.click();
 });
