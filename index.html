@@ -2587,7 +2587,6 @@ function toggleDD(ev, btn){
   dd.classList.toggle('open');
 }
 document.addEventListener('click', e=>{ if(!e.target.closest('.dd')) closeAllDD(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAllDD(); });
 // Esc closes whichever modal window is currently open, the same as clicking its own X button —
 // reusing that button's own click handler (rather than just hiding the overlay) so any side
 // effects it runs (resetting a form, cancelling an in-progress edit, etc.) still happen.
@@ -2596,6 +2595,9 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAllDD(); });
 // the topmost one visually — exactly the one Esc should close.
 document.addEventListener('keydown', e=>{
   if(e.key !== 'Escape') return;
+  // First Esc closes an open dropdown (header menu / item or contact combo list) only; the next Esc closes the window.
+  if(document.querySelector('.dd.open')){ closeAllDD(); return; }
+  if(document.querySelector('.item-combo-list.open')){ if(typeof closeAllItemCombos==='function') closeAllItemCombos(); return; }
   const actives = document.querySelectorAll('.overlay.active');
   if(!actives.length) return;
   const top = actives[actives.length-1];
