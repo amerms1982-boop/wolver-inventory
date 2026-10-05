@@ -269,7 +269,7 @@
     font-family:'IBM Plex Sans Arabic', sans-serif;
   }
   .print-page h2{font-family:'Cairo';font-size:19px;margin:0 0 10px;color:#111;}
-  .print-page > div{font-size:13px;color:#333;margin-bottom:4px;}
+  .print-page > div{font-size:13px;color:#000;margin-bottom:4px;}
   .print-page table{width:100%;border-collapse:collapse;margin-top:16px;}
   .print-page table th{background:#F0F0F0;border:1px solid #999;padding:7px 8px;font-size:12.5px;color:#111;text-align:right;}
   .print-page table td{border:1px solid #BBB;padding:7px 8px;font-size:12.5px;color:#111;background:#fff;}
@@ -278,6 +278,9 @@
     body *{visibility:hidden;}
     #printArea, #printArea *{visibility:visible;}
     #printArea{position:absolute;top:0;left:0;width:100%;padding:20px;display:block !important;}
+    #printArea, #printArea *{color:#000 !important;opacity:1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    #printArea table th, #printArea table td{border-color:#000 !important;}
+    #printArea table th{background:#E8E8E8 !important;}
   }
   #printArea{display:none;}
 
