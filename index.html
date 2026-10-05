@@ -275,11 +275,11 @@
   .print-page table td{border:1px solid #BBB;padding:7px 8px;font-size:12.5px;color:#111;background:#fff;}
 
   @media print{
-    body *{visibility:hidden;}
-    #printArea, #printArea *{visibility:visible;}
-    #printArea{position:absolute;top:0;left:0;width:100%;padding:20px;display:block !important;}
+    html, body{background:#fff !important;height:auto !important;min-height:0 !important;overflow:visible !important;margin:0 !important;padding:0 !important;}
+    body > *:not(#printArea){display:none !important;}
+    #printArea{position:static;width:100%;padding:20px;display:block !important;background:#fff !important;}
     #printArea, #printArea *{color:#000 !important;opacity:1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    #printArea table th, #printArea table td{border-color:#000 !important;}
+    #printArea table th, #printArea table td{border-color:#000 !important;background:#fff !important;}
     #printArea table th{background:#E8E8E8 !important;}
   }
   #printArea{display:none;}
