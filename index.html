@@ -679,11 +679,11 @@
       <div class="full item-combo"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" autocomplete="off" oninput="filterContactCombo('bi')" onfocus="openContactCombo('bi')" onkeydown="onContactComboKeydown(event,'bi')" onblur="checkContactHint('bi')" data-i18n-placeholder="supplierName" placeholder="اسم المورد"><div class="item-combo-list" id="biSupplierList" onmousedown="onContactComboMouseDown(event,'bi')"></div><div id="biSupplierHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
+      <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
       <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
       <div id="biQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="biQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bi','biQtyExtra')"></div>
       <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
-      <div><label data-i18n="warehouse">المخزن</label><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkInRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="biTable"></table>
@@ -707,10 +707,10 @@
       <div class="full item-combo"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" autocomplete="off" oninput="filterContactCombo('bo')" onfocus="openContactCombo('bo')" onkeydown="onContactComboKeydown(event,'bo')" onblur="checkContactHint('bo')" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"><div class="item-combo-list" id="boLocationList" onmousedown="onContactComboMouseDown(event,'bo')"></div><div id="boLocationHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
+      <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
       <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><select id="boUnit" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boUnit')"></select></div>
       <div id="boQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="boQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bo','boQtyExtra')"></div>
-      <div><label data-i18n="warehouse">المخزن</label><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkOutRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="boTable"></table>
@@ -5222,8 +5222,8 @@ document.addEventListener('mousedown', e=>{ if(!e.target.closest('.item-combo'))
 // same as clicking "أضف للجدول", then sends focus back to the item field so the next row can
 // start right away.
 const NOTE_FIELD_ORDER = {
-  bi: ['biSupplierName','biRecipientName','biItemSearch','biQty','biUnit','biQtyExtra','biExpiry','biWarehouse'],
-  bo: ['boLocationName','boRecipientName','boItemSearch','boQty','boUnit','boQtyExtra','boWarehouse'],
+  bi: ['biSupplierName','biRecipientName','biItemSearch','biWarehouse','biQty','biUnit','biQtyExtra','biExpiry'],
+  bo: ['boLocationName','boRecipientName','boItemSearch','boWarehouse','boQty','boUnit','boQtyExtra'],
   tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trQtyExtra','trRecipientName']
 };
 const NOTE_ADD_ROW_FN = { bi: 'addBulkInRow', bo: 'addBulkOutRow', tr: 'addTransferRow' };
