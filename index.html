@@ -438,6 +438,11 @@
     .stats{gap:10px;}
     .topbar{flex-wrap:wrap;}
   }
+  /* item field: arrow button to open the full list */
+  .combo-field{position:relative;}
+  .combo-field input{padding-inline-end:38px !important;}
+  .combo-toggle{position:absolute;top:0;bottom:0;inset-inline-end:0;width:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--ink-soft);cursor:pointer;border-radius:8px;}
+  .combo-toggle:hover{color:var(--ink);background:rgba(128,128,128,.12);}
 </style>
 </head>
 <body>
@@ -716,7 +721,7 @@
     <div class="form-grid">
       <div class="full item-combo"><label data-i18n="supplierName">اسم المورد</label><input id="biSupplierName" autocomplete="off" oninput="filterContactCombo('bi')" onfocus="openContactCombo('bi')" onkeydown="onContactComboKeydown(event,'bi')" onblur="checkContactHint('bi')" data-i18n-placeholder="supplierName" placeholder="اسم المورد"><div class="item-combo-list" id="biSupplierList" onmousedown="onContactComboMouseDown(event,'bi')"></div><div id="biSupplierHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
-      <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onfocus="openItemCombo('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
+      <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><div class="combo-field"><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleItemCombo('bi')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
       <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:21px;"></div><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
@@ -744,7 +749,7 @@
     <div class="form-grid">
       <div class="full item-combo"><label data-i18n="locationClient">المكان / العميل</label><input id="boLocationName" autocomplete="off" oninput="filterContactCombo('bo')" onfocus="openContactCombo('bo')" onkeydown="onContactComboKeydown(event,'bo')" onblur="checkContactHint('bo')" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"><div class="item-combo-list" id="boLocationList" onmousedown="onContactComboMouseDown(event,'bo')"></div><div id="boLocationHint"></div></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
-      <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onfocus="openItemCombo('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
+      <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><div class="combo-field"><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleItemCombo('bo')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
       <div><label data-i18n="qtyRequested">الكمية المطلوبة</label><div class="item-meta" id="boQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="boQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boQty')"></div>
       <div id="boUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:21px;"></div><select id="boUnit" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boUnit')"></select></div>
@@ -1050,7 +1055,7 @@
     <h2 data-i18n="transferTitle">نقل مخزون بين المخازن</h2>
     <div id="trEditingBanner"></div>
     <div class="form-grid">
-      <div class="full item-combo"><label data-i18n="item">الصنف</label><input id="trItemSearch" autocomplete="off" oninput="filterItemSelect('tr')" onfocus="openItemCombo('tr')" onkeydown="onItemComboKeydown(event,'tr')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..." style="margin-bottom:6px;"><select id="trItem" onchange="onTransferItemChange()" style="display:none;"></select><div class="item-combo-list" id="trItemList" onmousedown="onItemComboMouseDown(event,'tr')"></div></div>
+      <div class="full item-combo"><label data-i18n="item">الصنف</label><div class="combo-field"><input id="trItemSearch" autocomplete="off" oninput="filterItemSelect('tr')" onkeydown="onItemComboKeydown(event,'tr')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..." style="margin-bottom:6px;"><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleItemCombo('tr')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><select id="trItem" onchange="onTransferItemChange()" style="display:none;"></select><div class="item-combo-list" id="trItemList" onmousedown="onItemComboMouseDown(event,'tr')"></div></div>
       <div><label data-i18n="fromWarehouse">من مخزن</label><select id="trFrom" onchange="onTransferWhChange()" onkeydown="onNoteFieldKeydown(event,'tr','trFrom')"></select></div>
       <div><label data-i18n="toWarehouse">إلى مخزن</label><select id="trTo" onkeydown="onNoteFieldKeydown(event,'tr','trTo')"></select></div>
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="trQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="trQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('tr')" onkeydown="onNoteFieldKeydown(event,'tr','trQty')"></div>
@@ -5208,6 +5213,18 @@ function openItemCombo(prefix){
   const listEl = document.getElementById(prefix+'ItemList');
   if(listEl) listEl.classList.add('open');
 }
+// The arrow button next to the item field opens/closes the full list; the list no longer pops open by itself on focus.
+function toggleItemCombo(prefix){
+  const listEl = document.getElementById(prefix+'ItemList');
+  if(listEl && listEl.classList.contains('open')) closeAllItemCombos();
+  else openItemCombo(prefix);
+}
+// After a row is added to the table, the cursor goes straight back to the item field (works on phones too).
+function focusItemFieldAfterAdd(prefix){
+  closeAllItemCombos();
+  const el = document.getElementById(prefix+'ItemSearch');
+  if(el && el.offsetParent!==null && !el.disabled){ el.focus(); if(typeof el.select==='function') el.select(); }
+}
 function closeAllItemCombos(except){
   document.querySelectorAll('.item-combo-list.open').forEach(l=>{ if(l!==except) l.classList.remove('open'); });
 }
@@ -5394,6 +5411,7 @@ function addBulkInRow(){
   bulkInRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, extraQty, expiry, wh, whLabel:whName(wh)});
   document.getElementById('biQty').value=''; document.getElementById('biExpiry').value=''; document.getElementById('biQtyExtra').value='';
   renderBulkInTable();
+  focusItemFieldAfterAdd('bi');
 }
 function removeBulkInRow(i){ bulkInRows.splice(i,1); renderBulkInTable(); }
 function renderBulkInTable(){
@@ -5592,6 +5610,7 @@ function addBulkOutRow(){
   bulkOutRows.push({itemId, itemName:item.name, qty, enteredQty, unitChoice, extraQty, wh, whLabel:whName(wh), expiry});
   document.getElementById('boQty').value=''; document.getElementById('boQtyExtra').value='';
   renderBulkOutTable();
+  focusItemFieldAfterAdd('bo');
 }
 function removeBulkOutRow(i){ bulkOutRows.splice(i,1); renderBulkOutTable(); }
 function renderBulkOutTable(){
@@ -6351,6 +6370,7 @@ function addTransferRow(){
   transferRows.push({itemId:item.id, itemName:item.name, fromWh:from, fromLabel:whName(from), toWh:to, toLabel:whName(to), qty, enteredQty, unitChoice, extraQty, expiry});
   document.getElementById('trQty').value=''; document.getElementById('trQtyExtra').value='';
   renderTransferTable();
+  focusItemFieldAfterAdd('tr');
 }
 function removeTransferRow(i){ transferRows.splice(i,1); renderTransferTable(); }
 function updateTransferRow(i, field, value){
