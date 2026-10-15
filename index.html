@@ -756,7 +756,8 @@
     <div id="boEditingBanner"></div>
     <div class="item-meta" data-i18n="fefoAutoDesc">يتم تحديد الباتشات تلقائيًا (FEFO) عند التأكيد، مع استبعاد الباتشات المنتهية الصلاحية.</div>
     <div class="form-grid">
-      <div class="full item-combo"><label data-i18n="locationClient">المكان / العميل</label><div class="combo-field"><input id="boLocationName" autocomplete="off" oninput="filterContactCombo('bo')" onkeydown="onContactComboKeydown(event,'bo')" onblur="checkContactHint('bo')" data-i18n-placeholder="locationClient" placeholder="المكان / العميل"><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleContactCombo('bo')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><div class="item-combo-list" id="boLocationList" onmousedown="onContactComboMouseDown(event,'bo')"></div><div id="boLocationHint"></div></div>
+      <div class="full item-combo"><label data-i18n="customerLabel">العميل</label><div class="combo-field"><input id="boLocationName" autocomplete="off" oninput="filterContactCombo('bo')" onkeydown="onContactComboKeydown(event,'bo')" onblur="checkContactHint('bo')" data-i18n-placeholder="customerLabel" placeholder="العميل"><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleContactCombo('bo')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><div class="item-combo-list" id="boLocationList" onmousedown="onContactComboMouseDown(event,'bo')"></div><div id="boLocationHint"></div></div>
+      <div class="full"><label data-i18n="contactAddressLabel">العنوان</label><input id="boAddress" autocomplete="off" data-i18n-placeholder="contactAddressLabel" placeholder="العنوان" onkeydown="onNoteFieldKeydown(event,'bo','boAddress')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="boRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bo','boRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><div class="combo-field"><input id="boItemSearch" autocomplete="off" oninput="filterItemSelect('bo')" onkeydown="onItemComboKeydown(event,'bo')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleItemCombo('bo')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><select id="boItem" style="display:none;"></select><div class="item-combo-list" id="boItemList" onmousedown="onItemComboMouseDown(event,'bo')"></div></div>
       <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="boWarehouse" onchange="updateQtyAvailableHint('bo')" onkeydown="onNoteFieldKeydown(event,'bo','boWarehouse')"></select></div>
@@ -1749,6 +1750,7 @@ const I18N = {
     errOnlyExpiredInWhPrefix: `الرصيد المتاح من الصنف ده في `,
     errOnlyExpiredInWhSuffix: ` كله منتهي الصلاحية، ومينفعش يتصرف`,
     locationClient: `المكان / العميل`,
+    customerLabel: `العميل`,
     qtyRequested: `الكمية المطلوبة`,
     chooseNoteType: `اختر نوع الأذون اللي تريد تراجعه.`,
     inNotes: `أذون الإضافة`,
@@ -2253,6 +2255,7 @@ const I18N = {
     errOnlyExpiredInWhPrefix: `All available stock of this item in `,
     errOnlyExpiredInWhSuffix: ` is expired and cannot be issued`,
     locationClient: `Location / Customer`,
+    customerLabel: `Customer`,
     qtyRequested: `Requested Quantity`,
     chooseNoteType: `Choose the voucher type you want to review.`,
     inNotes: `Stock-In Vouchers`,
@@ -5301,7 +5304,7 @@ document.addEventListener('mousedown', e=>{ if(!e.target.closest('.item-combo'))
 // start right away.
 const NOTE_FIELD_ORDER = {
   bi: ['biSupplierName','biRecipientName','biItemSearch','biWarehouse','biQty','biUnit','biQtyExtra','biExpiry'],
-  bo: ['boLocationName','boRecipientName','boItemSearch','boWarehouse','boQty','boUnit','boQtyExtra'],
+  bo: ['boLocationName','boAddress','boRecipientName','boItemSearch','boWarehouse','boQty','boUnit','boQtyExtra'],
   tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trQtyExtra','trRecipientName']
 };
 const NOTE_ADD_ROW_FN = { bi: 'addBulkInRow', bo: 'addBulkOutRow', tr: 'addTransferRow' };
@@ -5576,6 +5579,7 @@ function openBulkOut(){
   onBulkOutItemChange();
   document.getElementById('boQty').value=''; document.getElementById('boQtyExtra').value='';
   document.getElementById('boLocationName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.location||'') : '';
+  document.getElementById('boAddress').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.address||'') : '';
   document.getElementById('boRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='out' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
   checkContactHint('bo');
   renderBulkOutTable();
@@ -5668,6 +5672,7 @@ async function commitBulkOut(){
   if(commitBtn) commitBtn.disabled = true;
   try{
   const location = document.getElementById('boLocationName').value.trim();
+  const address = document.getElementById('boAddress').value.trim();
   const recipient = document.getElementById('boRecipientName').value.trim();
   const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
   const continuing = !editingNoteMeta && !!liveNoteSession.bo;
@@ -5683,7 +5688,7 @@ async function commitBulkOut(){
       createdAt,
       updatedAt: new Date().toISOString(),
       user: userName || t('unknownUser'),
-      location, recipient,
+      location, address, recipient,
       rows: bulkOutRows.map(r=>({...r})),
       appliedAllocations: [], txIds: []
     };
@@ -5720,7 +5725,7 @@ async function commitBulkOut(){
     createdAt,
     updatedAt: new Date().toISOString(),
     user: isApproving ? ((editingNoteBackup && editingNoteBackup.user) || t('unknownUser')) : (userName || t('unknownUser')),
-    location, recipient,
+    location, address, recipient,
     rows: bulkOutRows.map(r=>({...r})),
     appliedAllocations, txIds
   };
@@ -5830,7 +5835,8 @@ function renderPendingApprovalsList(){
     const total = n.rows.reduce((s,r)=>s+(r.qty||0),0);
     const partyParts = [];
     if(n.type==='in' && n.supplier) partyParts.push(`${t('supplierName')}: ${n.supplier}`);
-    if(n.type==='out' && n.location) partyParts.push(`${t('locationClient')}: ${n.location}`);
+    if(n.type==='out' && n.location) partyParts.push(`${t('customerLabel')}: ${n.location}`);
+    if(n.type==='out' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.recipient) partyParts.push(`${t('recipientName')}: ${n.recipient}`);
     const partyLine = partyParts.length ? `<div class="item-meta">${partyParts.join(' · ')}</div>` : '';
     return `<div class="wh-row" style="align-items:flex-start;flex-wrap:wrap;gap:10px;">
@@ -5929,7 +5935,8 @@ function buildSavedNotePrintHtml(id){
   const dateStr = new Date(note.createdAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   let extraLine = '';
   if(note.type==='in' && note.supplier) extraLine = `<div>${t('supplierName')}: ${note.supplier}</div>`;
-  if(note.type==='out' && note.location) extraLine = `<div>${t('locationClient')}: ${note.location}</div>`;
+  if(note.type==='out' && note.location) extraLine = `<div>${t('customerLabel')}: ${note.location}</div>`;
+  if(note.type==='out' && note.address) extraLine += `<div>${t('contactAddressLabel')}: ${note.address}</div>`;
   extraLine += `<div>${t('createdByLabel')}: <bdi>${note.user||''}</bdi></div>`;
   if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: <bdi>${note.approvedBy}</bdi></div><div>${t('approvalDateLabel')}: <bdi>${appDate}</bdi></div>`; }
   const recipientLine = buildRecipientLineHtml(note.recipient);
@@ -5960,7 +5967,8 @@ function renderSavedNotesList(){
     const permMod = n.type==='transfer' ? 'transfer' : n.type==='out' ? 'bulkOut' : 'bulkIn';
     const partyParts = [];
     if(n.type==='in' && n.supplier) partyParts.push(`${t('supplierName')}: ${n.supplier}`);
-    if(n.type==='out' && n.location) partyParts.push(`${t('locationClient')}: ${n.location}`);
+    if(n.type==='out' && n.location) partyParts.push(`${t('customerLabel')}: ${n.location}`);
+    if(n.type==='out' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.recipient) partyParts.push(`${t('recipientName')}: ${n.recipient}`);
     const partyLine = partyParts.length ? `<br><span style="font-size:11.5px;color:var(--ink);">${partyParts.join(' · ')}</span>` : '';
     return `<div class="wh-row">
@@ -6005,7 +6013,9 @@ function buildBulkPrintHtml(which){
   else {
     titleBase=t('bulkOutTitle'); tableHtml = buildNoteRowsTableHtml('out', bulkOutRows);
     const location = document.getElementById('boLocationName').value.trim();
-    if(location) extraLine = `<div>${t('locationClient')}: ${location}</div>`;
+    if(location) extraLine = `<div>${t('customerLabel')}: ${location}</div>`;
+    const addr = document.getElementById('boAddress').value.trim();
+    if(addr) extraLine += `<div>${t('contactAddressLabel')}: ${addr}</div>`;
     const recipient = document.getElementById('boRecipientName').value.trim();
     recipientLine = buildRecipientLineHtml(recipient);
   }
@@ -6242,6 +6252,12 @@ function filterContactCombo(prefix){
 function pickContactCombo(prefix, name){
   const input = document.getElementById(CONTACT_COMBO_INPUT_ID[prefix]);
   if(input) input.value = name;
+  if(prefix==='bo'){
+    // fill the address from the saved contact, but never overwrite one that was already typed
+    const addrEl = document.getElementById('boAddress');
+    const c = (STATE.contacts||[]).find(x=>x.type==='customer' && x.name===name);
+    if(addrEl && !addrEl.value.trim() && c && c.address) addrEl.value = c.address;
+  }
   closeAllItemCombos();
   checkContactHint(prefix);
 }
