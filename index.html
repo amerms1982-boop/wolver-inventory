@@ -1479,6 +1479,9 @@ const I18N = {
     pageTitle: `مخزون وولفر`,
     greetingHi: `أهلا`,
     approvedByLabel: `تمت الموافقة بواسطة`,
+    approvedByShort: `اعتمده`,
+    createdByLabel: `أنشأه`,
+    approvalDateLabel: `تاريخ الموافقة`,
     byLabel: `بواسطة`,
     confirmApproveBtn: `تأكيد وموافقة`,
     confirmDeleteWhPrefix: `حذف "`,
@@ -1980,6 +1983,9 @@ const I18N = {
     pageTitle: `WOLVER Inventory`,
     greetingHi: `Hi`,
     approvedByLabel: `Approved by`,
+    approvedByShort: `Approved by`,
+    createdByLabel: `Created by`,
+    approvalDateLabel: `Approval date`,
     byLabel: `By`,
     confirmApproveBtn: `Confirm & Approve`,
     confirmDeleteWhPrefix: `Delete "`,
@@ -4967,6 +4973,14 @@ async function deleteCurrentItem(){
 }
 
 /* ============ TRANSACTIONS LOG ============ */
+// When a pending permit is approved, its log entries stay attributed to whoever CREATED it; the approver is recorded separately.
+function approvalTxExtra(isApproving){
+  if(!isApproving) return {};
+  return { user:(editingNoteBackup && editingNoteBackup.user) || t('unknownUser'), approvedBy:userName || t('unknownUser') };
+}
+function txUserHtml(tx){
+  return tx.user + ((tx.approvedBy && tx.approvedBy!==tx.user) ? ` <span style="font-size:11px;color:var(--ink-soft);">(${t('approvedByShort')}: ${tx.approvedBy})</span>` : '');
+}
 function logTx(tx){
   const full = { id:'tx-'+Date.now()+'-'+Math.random().toString(36).slice(2,7), ts:new Date().toISOString(), user:userName||t('unknownUser'), ...tx };
   STATE.transactions.unshift(full);
@@ -5012,7 +5026,7 @@ function renderItemHistoryModal(){
   const histItem = STATE.items.find(i=>i.id===currentHistoryItemId);
   document.getElementById('itemHistoryBody').innerHTML = rows.map(tx=>`
     <tr><td>${fmtTime(tx.ts)}</td><td><span class="tag ${tx.type}">${t(TX_LABEL[tx.type])||tx.type}</span></td>
-    <td>${fmtQty(histItem, tx.qty)}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
+    <td>${fmtQty(histItem, tx.qty)}</td><td>${localizeLogText(tx.location)||''}</td><td>${txUserHtml(tx)}</td></tr>`).join('')
     || `<tr><td colspan="5" style="text-align:center;color:var(--ink-soft);padding:20px;">${t('noTxInPeriod')}</td></tr>`;
 }
 function buildItemHistoryPrintHtml(){
@@ -5022,7 +5036,7 @@ function buildItemHistoryPrintHtml(){
   const to = document.getElementById('itemHistoryTo').value;
   const period = (from||to) ? `<div>${t('periodLabel')}: ${from||t('periodStart')} — ${to||t('periodNow')}</div>` : '';
   const head = `<tr><th>${t('colTime')}</th><th>${t('colType')}</th><th>${t('colQty')}</th><th>${t('colDetails')}</th><th>${t('colUser')}</th></tr>`;
-  const body = rows.map(tx=>`<tr><td>${fmtTime(tx.ts)}</td><td>${t(TX_LABEL[tx.type])||tx.type}</td><td>${fmtQty(item, tx.qty)}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
+  const body = rows.map(tx=>`<tr><td>${fmtTime(tx.ts)}</td><td>${t(TX_LABEL[tx.type])||tx.type}</td><td>${fmtQty(item, tx.qty)}</td><td>${localizeLogText(tx.location)||''}</td><td>${txUserHtml(tx)}</td></tr>`).join('')
     || `<tr><td colspan="5">${t('noTx')}</td></tr>`;
   return `<h2>${t('itemHistoryBtn')}: ${item?item.name:''}</h2>${period}<br><table class="note-table">${head}${body}</table>`;
 }
@@ -5039,7 +5053,7 @@ function renderLog(){
   rows = rows.slice(0,300);
   document.getElementById('logBody').innerHTML = rows.map(tx=>`
     <tr><td>${fmtTime(tx.ts)}</td><td>${localizeLogText(tx.itemName)||''}</td><td><span class="tag ${tx.type}">${t(TX_LABEL[tx.type])||tx.type}</span></td>
-    <td>${tx.qty}</td><td>${localizeLogText(tx.location)||''}</td><td>${tx.user}</td></tr>`).join('')
+    <td>${tx.qty}</td><td>${localizeLogText(tx.location)||''}</td><td>${txUserHtml(tx)}</td></tr>`).join('')
     || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">${t('noTx')}</td></tr>`;
 }
 
@@ -5445,7 +5459,7 @@ async function commitBulkIn(){
     if(!batch){ const balances={}; warehouseIds().forEach(w=>balances[w]=0); batch = {id:item.id+'-b'+(item.batches.length+1)+'-'+Date.now(), expiry:r.expiry, balances}; item.batches.push(batch); }
     batch.balances[r.wh] = (batch.balances[r.wh]||0) + r.qty;
     appliedAllocations.push({itemId:item.id, batchId:batch.id, wh:r.wh, delta:r.qty});
-    const tx = logTx({itemId:item.id, itemName:item.name, type:'in', qty:r.qty, location:t('bulkInTitle')+' '+t('numberLabel')+' '+serial+(supplier?(' — '+t('supplierName')+': '+supplier):'')+' — '+r.whLabel, warehouseId:r.wh});
+    const tx = logTx({...approvalTxExtra(isApproving), itemId:item.id, itemName:item.name, type:'in', qty:r.qty, location:t('bulkInTitle')+' '+t('numberLabel')+' '+serial+(supplier?(' — '+t('supplierName')+': '+supplier):'')+' — '+r.whLabel, warehouseId:r.wh});
     txIds.push(tx.id);
   });
   const note = {
@@ -5632,7 +5646,7 @@ async function commitBulkOut(){
     alloc.forEach(a=>{ a.batch.balances[r.wh] = Math.round(((a.batch.balances[r.wh]||0)-a.take)*100)/100; appliedAllocations.push({itemId:item.id, batchId:a.batch.id, wh:r.wh, delta:-a.take}); });
     const dispensed = r.qty - shortfall;
     if(shortfall>0) anyShort=true;
-    if(dispensed>0){ const tx = logTx({itemId:item.id, itemName:item.name, type:'out', qty:dispensed, location:t('bulkOutTitle')+' '+t('numberLabel')+' '+serial+(location?(' — '+location):'')+' — '+r.whLabel, warehouseId:r.wh}); txIds.push(tx.id); }
+    if(dispensed>0){ const tx = logTx({...approvalTxExtra(isApproving), itemId:item.id, itemName:item.name, type:'out', qty:dispensed, location:t('bulkOutTitle')+' '+t('numberLabel')+' '+serial+(location?(' — '+location):'')+' — '+r.whLabel, warehouseId:r.wh}); txIds.push(tx.id); }
   });
   const note = {
     id: noteId,
@@ -5850,9 +5864,10 @@ function buildSavedNotePrintHtml(id){
   let extraLine = '';
   if(note.type==='in' && note.supplier) extraLine = `<div>${t('supplierName')}: ${note.supplier}</div>`;
   if(note.type==='out' && note.location) extraLine = `<div>${t('locationClient')}: ${note.location}</div>`;
-  if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: ${note.approvedBy} — ${appDate}</div>`; }
+  extraLine += `<div>${t('createdByLabel')}: <bdi>${note.user||''}</bdi></div>`;
+  if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: <bdi>${note.approvedBy}</bdi></div><div>${t('approvalDateLabel')}: <bdi>${appDate}</bdi></div>`; }
   const recipientLine = buildRecipientLineHtml(note.recipient);
-  return `<h2>${title}</h2><div>${t('dateLabel')}: ${dateStr}</div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows)}${recipientLine}`;
+  return `<h2>${title}</h2><div>${t('dateLabel')}: <bdi>${dateStr}</bdi></div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows)}${recipientLine}`;
 }
 function openNotesHub(){ document.getElementById('notesHubOverlay').classList.add('active'); }
 function closeNotesHub(){ document.getElementById('notesHubOverlay').classList.remove('active'); }
@@ -5933,7 +5948,7 @@ function buildBulkPrintHtml(which){
   const serial = editingNoteMeta ? editingNoteMeta.serial : (liveNoteSession[which] ? liveNoteSession[which].serial : null);
   const title = serial ? `${titleBase} ${t('numberLabel')} ${serial}` : titleBase;
   const dateStr = new Date().toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
-  return `<h2>${title}</h2><div>${t('dateLabel')}: ${dateStr}</div>${extraLine}<br>${tableHtml}${recipientLine}`;
+  return `<h2>${title}</h2><div>${t('dateLabel')}: <bdi>${dateStr}</bdi></div>${extraLine}<br>${tableHtml}${recipientLine}`;
 }
 
 /* ============ WAREHOUSES MANAGEMENT ============ */
@@ -6336,7 +6351,7 @@ function buildTransferPrintHtml(){
   const dateStr = new Date().toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   const recipient = document.getElementById('trRecipientName').value.trim();
   const recipientLine = buildRecipientLineHtml(recipient);
-  return `<h2>${title}</h2><div>${t('dateLabel')}: ${dateStr}</div><br>${buildNoteRowsTableHtml('transfer', transferRows)}${recipientLine}`;
+  return `<h2>${title}</h2><div>${t('dateLabel')}: <bdi>${dateStr}</bdi></div><br>${buildNoteRowsTableHtml('transfer', transferRows)}${recipientLine}`;
 }
 function printTransferAndClear(){
   doPrint(buildTransferPrintHtml());
@@ -6398,7 +6413,7 @@ async function commitTransfer(){
     });
     const moved = r.qty - shortfall;
     if(moved>0){
-      const tx = logTx({ itemId:item.id, itemName:item.name, type:'transfer', qty:moved, location:`${t('fromLabel')} ${r.fromLabel} ${t('toLabel')} ${r.toLabel}`, fromWarehouseId:r.fromWh, toWarehouseId:r.toWh });
+      const tx = logTx({...approvalTxExtra(isApproving),  itemId:item.id, itemName:item.name, type:'transfer', qty:moved, location:`${t('fromLabel')} ${r.fromLabel} ${t('toLabel')} ${r.toLabel}`, fromWarehouseId:r.fromWh, toWarehouseId:r.toWh });
       txIds.push(tx.id);
     }
   });
