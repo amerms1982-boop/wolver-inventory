@@ -729,6 +729,7 @@
     <div id="biEditingBanner"></div>
     <div class="form-grid">
       <div class="full item-combo"><label data-i18n="supplierName">اسم المورد</label><div class="combo-field"><input id="biSupplierName" autocomplete="off" oninput="filterContactCombo('bi')" onkeydown="onContactComboKeydown(event,'bi')" onblur="checkContactHint('bi')" data-i18n-placeholder="supplierName" placeholder="اسم المورد"><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleContactCombo('bi')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><div class="item-combo-list" id="biSupplierList" onmousedown="onContactComboMouseDown(event,'bi')"></div><div id="biSupplierHint"></div></div>
+      <div class="full"><label data-i18n="contactAddressLabel">العنوان</label><input id="biAddress" autocomplete="off" data-i18n-placeholder="contactAddressLabel" placeholder="العنوان" onkeydown="onNoteFieldKeydown(event,'bi','biAddress')"></div>
       <div class="full"><label data-i18n="recipientName">اسم المستلم</label><input id="biRecipientName" data-i18n-placeholder="recipientName" placeholder="اسم المستلم" onkeydown="onNoteFieldKeydown(event,'bi','biRecipientName')"></div>
       <div class="item-combo"><label data-i18n="item">الصنف</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><div class="combo-field"><input id="biItemSearch" autocomplete="off" oninput="filterItemSelect('bi')" onkeydown="onItemComboKeydown(event,'bi')" data-i18n-placeholder="searchItemPlaceholder" placeholder="اكتب لتبحث بالاسم (أو اختر من القائمة تحت)..."><button type="button" class="combo-toggle" tabindex="-1" onmousedown="event.preventDefault()" onclick="toggleItemCombo('bi')" aria-label="▼"><svg viewBox="0 0 10 6" width="11" height="7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg></button></div><select id="biItem" onchange="onBiItemChange()" style="display:none;"></select><div class="item-combo-list" id="biItemList" onmousedown="onItemComboMouseDown(event,'bi')"></div></div>
       <div><label data-i18n="warehouse">المخزن</label><div class="item-meta" style="margin-bottom:4px;min-height:14px;"></div><select id="biWarehouse" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biWarehouse')"></select></div>
@@ -5303,7 +5304,7 @@ document.addEventListener('mousedown', e=>{ if(!e.target.closest('.item-combo'))
 // same as clicking "أضف للجدول", then sends focus back to the item field so the next row can
 // start right away.
 const NOTE_FIELD_ORDER = {
-  bi: ['biSupplierName','biRecipientName','biItemSearch','biWarehouse','biQty','biUnit','biQtyExtra','biExpiry'],
+  bi: ['biSupplierName','biAddress','biRecipientName','biItemSearch','biWarehouse','biQty','biUnit','biQtyExtra','biExpiry'],
   bo: ['boLocationName','boAddress','boRecipientName','boItemSearch','boWarehouse','boQty','boUnit','boQtyExtra'],
   tr: ['trItemSearch','trFrom','trTo','trQty','trUnit','trQtyExtra','trRecipientName']
 };
@@ -5365,6 +5366,7 @@ function openBulkIn(){
   document.getElementById('biWarehouse').innerHTML = whOptionsHtml(warehouseIds()[0]);
   document.getElementById('biQty').value=''; document.getElementById('biExpiry').value=''; document.getElementById('biQtyExtra').value='';
   document.getElementById('biSupplierName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.supplier||'') : '';
+  document.getElementById('biAddress').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.address||'') : '';
   document.getElementById('biRecipientName').value = (editingNoteMeta && editingNoteMeta.type==='in' && editingNoteBackup) ? (editingNoteBackup.recipient||'') : '';
   checkContactHint('bi');
   onBiItemChange();
@@ -5482,6 +5484,7 @@ async function commitBulkIn(){
   if(commitBtn) commitBtn.disabled = true;
   try{
   const supplier = document.getElementById('biSupplierName').value.trim();
+  const address = document.getElementById('biAddress').value.trim();
   const recipient = document.getElementById('biRecipientName').value.trim();
   const isApproving = !!(editingNoteMeta && editingNoteMeta.approving);
   const continuing = !editingNoteMeta && !!liveNoteSession.bi;
@@ -5497,7 +5500,7 @@ async function commitBulkIn(){
       createdAt,
       updatedAt: new Date().toISOString(),
       user: userName || t('unknownUser'),
-      supplier, recipient,
+      supplier, address, recipient,
       rows: bulkInRows.map(r=>({...r})),
       appliedAllocations: [], txIds: []
     };
@@ -5536,7 +5539,7 @@ async function commitBulkIn(){
     createdAt,
     updatedAt: new Date().toISOString(),
     user: isApproving ? ((editingNoteBackup && editingNoteBackup.user) || t('unknownUser')) : (userName || t('unknownUser')),
-    supplier, recipient,
+    supplier, address, recipient,
     rows: bulkInRows.map(r=>({...r})),
     appliedAllocations, txIds
   };
@@ -5835,6 +5838,7 @@ function renderPendingApprovalsList(){
     const total = n.rows.reduce((s,r)=>s+(r.qty||0),0);
     const partyParts = [];
     if(n.type==='in' && n.supplier) partyParts.push(`${t('supplierName')}: ${n.supplier}`);
+    if(n.type==='in' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.type==='out' && n.location) partyParts.push(`${t('customerLabel')}: ${n.location}`);
     if(n.type==='out' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.recipient) partyParts.push(`${t('recipientName')}: ${n.recipient}`);
@@ -5935,6 +5939,7 @@ function buildSavedNotePrintHtml(id){
   const dateStr = new Date(note.createdAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'});
   let extraLine = '';
   if(note.type==='in' && note.supplier) extraLine = `<div>${t('supplierName')}: ${note.supplier}</div>`;
+  if(note.type==='in' && note.address) extraLine += `<div>${t('contactAddressLabel')}: ${note.address}</div>`;
   if(note.type==='out' && note.location) extraLine = `<div>${t('customerLabel')}: ${note.location}</div>`;
   if(note.type==='out' && note.address) extraLine += `<div>${t('contactAddressLabel')}: ${note.address}</div>`;
   extraLine += `<div>${t('createdByLabel')}: <bdi>${note.user||''}</bdi></div>`;
@@ -5967,6 +5972,7 @@ function renderSavedNotesList(){
     const permMod = n.type==='transfer' ? 'transfer' : n.type==='out' ? 'bulkOut' : 'bulkIn';
     const partyParts = [];
     if(n.type==='in' && n.supplier) partyParts.push(`${t('supplierName')}: ${n.supplier}`);
+    if(n.type==='in' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.type==='out' && n.location) partyParts.push(`${t('customerLabel')}: ${n.location}`);
     if(n.type==='out' && n.address) partyParts.push(`${t('contactAddressLabel')}: ${n.address}`);
     if(n.recipient) partyParts.push(`${t('recipientName')}: ${n.recipient}`);
@@ -6007,6 +6013,8 @@ function buildBulkPrintHtml(which){
     titleBase=t('bulkInTitle'); tableHtml = buildNoteRowsTableHtml('in', bulkInRows);
     const supplier = document.getElementById('biSupplierName').value.trim();
     if(supplier) extraLine = `<div>${t('supplierName')}: ${supplier}</div>`;
+    const addrIn = document.getElementById('biAddress').value.trim();
+    if(addrIn) extraLine += `<div>${t('contactAddressLabel')}: ${addrIn}</div>`;
     const recipient = document.getElementById('biRecipientName').value.trim();
     recipientLine = buildRecipientLineHtml(recipient);
   }
@@ -6252,10 +6260,10 @@ function filterContactCombo(prefix){
 function pickContactCombo(prefix, name){
   const input = document.getElementById(CONTACT_COMBO_INPUT_ID[prefix]);
   if(input) input.value = name;
-  if(prefix==='bo'){
-    // fill the address from the saved contact, but never overwrite one that was already typed
-    const addrEl = document.getElementById('boAddress');
-    const c = (STATE.contacts||[]).find(x=>x.type==='customer' && x.name===name);
+  {
+    // fill the address from the saved contact (supplier for Bulk In, customer for Bulk Out), but never overwrite one already typed
+    const addrEl = document.getElementById(prefix+'Address');
+    const c = (STATE.contacts||[]).find(x=>x.type===CONTACT_TYPE_BY_PREFIX[prefix] && x.name===name);
     if(addrEl && !addrEl.value.trim() && c && c.address) addrEl.value = c.address;
   }
   closeAllItemCombos();
