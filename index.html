@@ -443,6 +443,15 @@
   .combo-field input{padding-inline-end:38px !important;}
   .combo-toggle{position:absolute;top:0;bottom:0;inset-inline-end:0;width:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--ink-soft);cursor:pointer;border-radius:8px;}
   .combo-toggle:hover{color:var(--ink);background:rgba(128,128,128,.12);}
+  /* Bulk-in: when the item has no second unit field (single unit), expiry sits beside the quantity, so it gets the same
+     spacer line the quantity field has (its "available" hint line) to keep both inputs level. */
+  .expiry-spacer{display:none;}
+  #biUnitWrap[style*="display:none"] ~ #biExpiryWrap .expiry-spacer,
+  #biUnitWrap[style*="display: none"] ~ #biExpiryWrap .expiry-spacer{display:block;}
+  @media(max-width:560px){ .expiry-spacer{display:none !important;} }
+  /* Hint lines above form fields (e.g. "available qty") and the empty spacers that stand in for them share one fixed
+     height, so fields side by side stay level whether or not a hint is showing. */
+  .form-grid > div > .item-meta{min-height:18px !important;line-height:18px;margin-bottom:4px !important;}
 </style>
 </head>
 <body>
@@ -726,7 +735,7 @@
       <div><label data-i18n="qty">الكمية</label><div class="item-meta" id="biQtyHint" style="margin-bottom:4px;min-height:14px;"></div><input id="biQty" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" onfocus="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biQty')"></div>
       <div id="biUnitWrap" style="display:none;"><label data-i18n="enterByUnitLabel">الوحدة</label><div class="item-meta" style="margin-bottom:4px;min-height:21px;"></div><select id="biUnit" onchange="updateQtyAvailableHint('bi')" onkeydown="onNoteFieldKeydown(event,'bi','biUnit')"></select></div>
       <div id="biQtyExtraWrap" style="display:none;"><label data-i18n="extraPacksLabel">+ وحدات مفردة إضافية (اختياري)</label><input id="biQtyExtra" type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" placeholder="0" onkeydown="onNoteFieldKeydown(event,'bi','biQtyExtra')"></div>
-      <div><label data-i18n="expiryDate">تاريخ الصلاحية</label><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
+      <div id="biExpiryWrap"><label data-i18n="expiryDate">تاريخ الصلاحية</label><div class="item-meta expiry-spacer" style="margin-bottom:4px;min-height:21px;"></div><input id="biExpiry" placeholder="MM/YYYY" onkeydown="onNoteFieldKeydown(event,'bi','biExpiry')"></div>
     </div>
     <div class="form-actions"><button class="btn btn-teal" onclick="addBulkInRow()">+ <span data-i18n="addToTableBtn">أضف للجدول</span></button></div>
     <table class="note-table" id="biTable"></table>
