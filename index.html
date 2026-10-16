@@ -901,12 +901,22 @@
       <button class="btn btn-ghost btn-sm" id="backupReconfirmBtn" onclick="reconfirmBackupAccess()" type="button" data-i18n="backupReconfirmBtn">تأكيد الوصول للمجلد</button>
     </div>
 
+    <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="driveHeading">جوجل درايف</h2></div>
+    <div class="item-meta" data-i18n="driveDesc">اربط حساب جوجل بتاعك مرة على كل جهاز، والنسخ الاحتياطية (التلقائية واليدوية) هتتحفظ في مجلد "WOLVER Backups" على الدرايف بتاعك.</div>
+    <div class="item-meta" id="driveStatus" data-i18n="driveNotLinked">مش مربوط</div>
+    <div class="form-actions">
+      <button class="btn btn-ghost btn-sm" id="driveLinkBtn" onclick="driveLink()" type="button" data-i18n="driveLinkBtn">ربط جوجل درايف</button>
+      <button class="btn btn-ghost btn-sm" id="driveUnlinkBtn" onclick="driveUnlink()" type="button" data-i18n="driveUnlinkBtn" style="display:none;">فصل جوجل درايف</button>
+    </div>
+
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupNowHeading">نسخة احتياطية فورية</h2></div>
     <div class="item-meta"><span data-i18n="backupLastAutoPrefix">آخر نسخة احتياطية: </span><span id="backupLastAutoLabel" data-i18n="backupNeverYet">لسه محصلتش</span></div>
     <div class="form-actions"><button class="btn btn-amber" onclick="backupNow()" type="button" data-i18n="backupNowBtn">احفظ نسخة احتياطية الآن</button></div>
 
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupRecentHeading">آخر النسخ المحفوظة في المجلد</h2></div>
     <div id="backupRecentList"></div>
+    <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="driveRecentHeading">آخر النسخ على جوجل درايف</h2></div>
+    <div id="driveRecentList"></div>
 
     <div class="section-head" style="margin-top:16px;"><h2 style="font-size:14px;" data-i18n="backupRestoreFileHeading">استرجاع من ملف على جهازك</h2></div>
     <div class="item-meta" data-i18n="backupRestoreFileDesc">تقدر ترجع أي نسخة احتياطية (.json) محفوظة في أي مكان على جهازك أو فلاشة، حتى لو مش في المجلد المختار.</div>
@@ -1836,6 +1846,21 @@ const I18N = {
     errBackupFileInvalid: `الملف ده مش نسخة احتياطية صحيحة من وولفر.`,
     errRestoreRetry: `فشل حفظ البيانات المسترجَعة — تحقق من اتصالك بالإنترنت وحاول تاني.`,
     msgBackupSaved: `تم حفظ نسخة احتياطية في المجلد المختار`,
+    driveHeading: `جوجل درايف`,
+    driveDesc: `اربط حساب جوجل بتاعك مرة على كل جهاز، والنسخ الاحتياطية (التلقائية واليدوية) هتتحفظ في مجلد "WOLVER Backups" على الدرايف بتاعك.`,
+    driveNotLinked: `مش مربوط`,
+    driveLinkedPrefix: `مربوط ✔ — `,
+    driveNeedsReconnect: `الربط محتاج تأكيد تاني على الجهاز ده — دوس "ربط جوجل درايف".`,
+    driveLinkBtn: `ربط جوجل درايف`,
+    driveUnlinkBtn: `فصل جوجل درايف`,
+    driveRecentHeading: `آخر النسخ على جوجل درايف`,
+    driveListUnavailable: `اربط جوجل درايف عشان تشوف النسخ هنا.`,
+    driveNoneYet: `مفيش نسخ على الدرايف لسه.`,
+    errDriveFailed: `تعذّر الاتصال بجوجل درايف. حاول تاني.`,
+    errDriveSaveFailed: `تعذّر حفظ النسخة على جوجل درايف.`,
+    msgDriveLinked: `تم ربط جوجل درايف`,
+    msgDriveUnlinked: `تم فصل جوجل درايف`,
+    msgBackupDriveSaved: `تم حفظ نسخة احتياطية على جوجل درايف`,
     msgBackupDownloaded: `تم تحميل نسخة احتياطية كملف`,
     msgBackupFolderSet: `تم اختيار المجلد بنجاح، وهيتحفظ فيه النسخ الاحتياطية تلقائيًا`,
     msgBackupAccessRestored: `تم تأكيد الوصول للمجلد`,
@@ -2344,6 +2369,21 @@ This will replace all current data with this older backup, and this restore itse
     errBackupFileInvalid: `This file isn't a valid WOLVER backup.`,
     errRestoreRetry: `Failed to save the restored data — check your internet connection and try again.`,
     msgBackupSaved: `A backup was saved to the chosen folder`,
+    driveHeading: `Google Drive`,
+    driveDesc: `Link your Google account once on each device, and backups (automatic and manual) will be saved to a "WOLVER Backups" folder in your own Drive.`,
+    driveNotLinked: `Not linked`,
+    driveLinkedPrefix: `Linked ✔ — `,
+    driveNeedsReconnect: `The link needs to be confirmed again on this device — tap "Link Google Drive".`,
+    driveLinkBtn: `Link Google Drive`,
+    driveUnlinkBtn: `Unlink Google Drive`,
+    driveRecentHeading: `Recent backups on Google Drive`,
+    driveListUnavailable: `Link Google Drive to see the backups here.`,
+    driveNoneYet: `No backups on Drive yet.`,
+    errDriveFailed: `Couldn't connect to Google Drive. Try again.`,
+    errDriveSaveFailed: `Couldn't save the backup to Google Drive.`,
+    msgDriveLinked: `Google Drive linked`,
+    msgDriveUnlinked: `Google Drive unlinked`,
+    msgBackupDriveSaved: `A backup was saved to Google Drive`,
     msgBackupDownloaded: `A backup file was downloaded`,
     msgBackupFolderSet: `Folder chosen successfully — backups will be saved there automatically`,
     msgBackupAccessRestored: `Folder access confirmed`,
@@ -4161,6 +4201,139 @@ function downloadBackupBlob(payload, filename){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
+// ---- Google Drive backup (browser -> Drive REST API, scope drive.file: the app only ever sees
+// the files and folder it created itself). Linking is per device; the access token lives only in memory.
+const DRIVE_CLIENT_ID = '145319430853-eus5ggmf95qumnhelf05uv1v9js5ff31.apps.googleusercontent.com';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const DRIVE_LINKED_KEY = 'wolverDriveLinked';
+const DRIVE_FOLDER_KEY = 'wolverDriveFolderId';
+const DRIVE_FOLDER_NAME = 'WOLVER Backups';
+let driveToken = null, driveTokenExp = 0, driveClient = null, driveGisPromise = null;
+function driveIsLinked(){ try{ return localStorage.getItem(DRIVE_LINKED_KEY)==='1'; }catch(e){ return false; } }
+function driveLoadGis(){
+  if(window.google && google.accounts && google.accounts.oauth2) return Promise.resolve();
+  if(driveGisPromise) return driveGisPromise;
+  driveGisPromise = new Promise((resolve, reject)=>{
+    const sc = document.createElement('script');
+    sc.src = 'https://accounts.google.com/gsi/client';
+    sc.async = true;
+    sc.onload = ()=>resolve();
+    sc.onerror = ()=>{ driveGisPromise = null; reject(new Error('gis load failed')); };
+    document.head.appendChild(sc);
+  });
+  return driveGisPromise;
+}
+// interactive=true must come from a click (opens Google's popup). interactive=false tries silently
+// and rejects if Google needs the user — callers then just skip.
+async function driveGetToken(interactive){
+  if(driveToken && Date.now() < driveTokenExp - 60000) return driveToken;
+  await driveLoadGis();
+  return new Promise((resolve, reject)=>{
+    let done = false;
+    const finish = (fn, v)=>{ if(done) return; done = true; clearTimeout(timer); fn(v); };
+    const timer = setTimeout(()=>finish(reject, new Error('token timeout')), interactive ? 120000 : 12000);
+    try{
+      driveClient = google.accounts.oauth2.initTokenClient({
+        client_id: DRIVE_CLIENT_ID,
+        scope: DRIVE_SCOPE,
+        callback: (resp)=>{
+          if(resp && resp.access_token){
+            driveToken = resp.access_token;
+            driveTokenExp = Date.now() + (Number(resp.expires_in)||3600)*1000;
+            finish(resolve, driveToken);
+          } else finish(reject, new Error((resp && resp.error) || 'no token'));
+        },
+        error_callback: (err)=>finish(reject, new Error((err && err.type) || 'token error'))
+      });
+      driveClient.requestAccessToken({prompt: interactive ? (driveIsLinked() ? '' : 'consent') : 'none'});
+    }catch(e){ finish(reject, e); }
+  });
+}
+async function driveApi(url, token, opts){
+  const r = await fetch(url, Object.assign({}, opts||{}, {headers: Object.assign({Authorization:'Bearer '+token}, (opts&&opts.headers)||{})}));
+  if(r.status===401){ driveToken = null; driveTokenExp = 0; }
+  if(!r.ok) throw new Error('drive '+r.status);
+  return r;
+}
+async function driveEnsureFolder(token){
+  const cached = localStorage.getItem(DRIVE_FOLDER_KEY);
+  if(cached){
+    try{
+      const r = await driveApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(cached)+'?fields=id,trashed', token);
+      const j = await r.json();
+      if(j && j.id && !j.trashed) return j.id;
+    }catch(e){ /* folder gone or not visible to this app — look it up / recreate */ }
+  }
+  const q = encodeURIComponent("name='"+DRIVE_FOLDER_NAME+"' and mimeType='application/vnd.google-apps.folder' and trashed=false");
+  const found = await (await driveApi('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id)&pageSize=1', token)).json();
+  let id = found.files && found.files[0] && found.files[0].id;
+  if(!id){
+    const made = await (await driveApi('https://www.googleapis.com/drive/v3/files?fields=id', token, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name:DRIVE_FOLDER_NAME, mimeType:'application/vnd.google-apps.folder'})
+    })).json();
+    id = made.id;
+  }
+  localStorage.setItem(DRIVE_FOLDER_KEY, id);
+  return id;
+}
+async function driveListBackups(token, folderId, limit){
+  const q = encodeURIComponent("'"+folderId+"' in parents and trashed=false and name contains 'wolver-backup-'");
+  const j = await (await driveApi('https://www.googleapis.com/drive/v3/files?q='+q+'&orderBy=createdTime desc&fields=files(id,name)&pageSize='+(limit||50), token)).json();
+  return (j.files||[]).filter(f=>BACKUP_FILE_RE.test(f.name));
+}
+async function driveUploadBackup(token, payload){
+  const folderId = await driveEnsureFolder(token);
+  const name = backupFileNameNow();
+  const boundary = 'wolverbnd'+Date.now();
+  const body = '--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'
+    + JSON.stringify({name, parents:[folderId], mimeType:'application/json'})
+    + '\r\n--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'
+    + JSON.stringify(payload, null, 2) + '\r\n--'+boundary+'--';
+  await driveApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', token, {
+    method:'POST', headers:{'Content-Type':'multipart/related; boundary='+boundary}, body
+  });
+  // keep only the newest BACKUP_RETENTION_COUNT backups (same rule as the local folder)
+  try{
+    const all = await driveListBackups(token, folderId, 200);
+    for(const f of all.slice(BACKUP_RETENTION_COUNT)){
+      try{ await driveApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(f.id), token, {method:'DELETE'}); }catch(e){}
+    }
+  }catch(e){ console.error('drive prune failed', e); }
+  return name;
+}
+async function driveLink(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  try{
+    const token = await driveGetToken(true);
+    await driveEnsureFolder(token);
+    localStorage.setItem(DRIVE_LINKED_KEY, '1');
+    showToast(t('msgDriveLinked'));
+  }catch(e){
+    console.error('drive link failed', e);
+    showToast(t('errDriveFailed'));
+  }
+  await refreshBackupModalUI();
+}
+async function driveUnlink(){
+  if(!currentUser || currentUser.role!=='admin') return;
+  try{
+    if(driveToken && window.google && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(driveToken, ()=>{});
+  }catch(e){}
+  driveToken = null; driveTokenExp = 0;
+  try{ localStorage.removeItem(DRIVE_LINKED_KEY); localStorage.removeItem(DRIVE_FOLDER_KEY); }catch(e){}
+  showToast(t('msgDriveUnlinked'));
+  await refreshBackupModalUI();
+}
+async function requestRestoreFromDrive(fileId, name){
+  if(!currentUser || currentUser.role!=='admin') return;
+  try{
+    const token = await driveGetToken(true);
+    const payload = await (await driveApi('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(fileId)+'?alt=media', token)).json();
+    await requestRestore(payload, name);
+  }catch(e){ console.error(e); showToast(t('errBackupReadFailed')); }
+}
+
 async function initBackupFeature(){
   if(BACKUP_FS_SUPPORTED){
     try{
@@ -4170,15 +4343,34 @@ async function initBackupFeature(){
   }
   await autoDailyBackupCheck();
 }
+let _autoBackupBusy = false;
 async function autoDailyBackupCheck(){
-  if(!BACKUP_FS_SUPPORTED || !backupDirHandle) return;
+  if(_autoBackupBusy) return;
+  if(!currentUser || currentUser.role!=='admin') return;
+  const useDrive = driveIsLinked();
+  const useFolder = BACKUP_FS_SUPPORTED && !!backupDirHandle;
+  if(!useDrive && !useFolder) return;
   if(localStorage.getItem(BACKUP_LAST_KEY)===todayStr()) return;
-  const ok = await ensureBackupPermission(backupDirHandle, false); // no user gesture here — never prompt
-  if(!ok) return; // quietly skip; admin can re-confirm access from the backup screen
+  _autoBackupBusy = true;
   try{
-    await writeBackupToFolder(backupDirHandle, buildBackupPayload());
-    localStorage.setItem(BACKUP_LAST_KEY, todayStr());
-  }catch(e){ console.error('auto backup failed', e); }
+    const payload = buildBackupPayload();
+    let saved = false;
+    if(useFolder){
+      const ok = await ensureBackupPermission(backupDirHandle, false); // no user gesture here — never prompt
+      if(ok){
+        try{ await writeBackupToFolder(backupDirHandle, payload); saved = true; }
+        catch(e){ console.error('auto backup failed', e); }
+      } // otherwise skip quietly; admin can re-confirm access from the backup screen
+    }
+    if(useDrive){
+      try{
+        const token = await driveGetToken(false);
+        await driveUploadBackup(token, payload);
+        saved = true;
+      }catch(e){ console.error('auto drive backup skipped', e); } // needs a click to reconnect — shown in the backup screen
+    }
+    if(saved) localStorage.setItem(BACKUP_LAST_KEY, todayStr());
+  } finally { _autoBackupBusy = false; }
 }
 async function pickBackupFolder(){
   if(!currentUser || currentUser.role!=='admin') return;
@@ -4207,18 +4399,30 @@ async function reconfirmBackupAccess(){
 async function backupNow(){
   if(!currentUser || currentUser.role!=='admin') return;
   const payload = buildBackupPayload();
+  let driveOk = false, folderName = null, driveFailed = false;
+  if(driveIsLinked()){
+    try{
+      const token = await driveGetToken(true); // this is a click — Google's popup is allowed
+      await driveUploadBackup(token, payload);
+      driveOk = true;
+    }catch(e){ console.error(e); driveFailed = true; }
+  }
   if(BACKUP_FS_SUPPORTED && backupDirHandle){
-    const ok = await ensureBackupPermission(backupDirHandle, true); // this is a click — a gesture is available
+    const ok = await ensureBackupPermission(backupDirHandle, true);
     if(ok){
-      try{
-        const name = await writeBackupToFolder(backupDirHandle, payload);
-        localStorage.setItem(BACKUP_LAST_KEY, todayStr());
-        showToast(t('msgBackupSaved')+' ('+name+')');
-        await refreshBackupModalUI();
-        return;
-      }catch(e){ console.error(e); }
+      try{ folderName = await writeBackupToFolder(backupDirHandle, payload); }
+      catch(e){ console.error(e); }
     }
   }
+  if(driveOk || folderName){
+    localStorage.setItem(BACKUP_LAST_KEY, todayStr());
+    if(driveOk) showToast(t('msgBackupDriveSaved')+(folderName ? ' + '+t('msgBackupSaved') : ''));
+    else showToast(t('msgBackupSaved')+' ('+folderName+')');
+    if(driveFailed) showToast(t('errDriveSaveFailed'));
+    await refreshBackupModalUI();
+    return;
+  }
+  if(driveFailed) showToast(t('errDriveSaveFailed'));
   downloadBackupBlob(payload, backupFileNameNow());
   localStorage.setItem(BACKUP_LAST_KEY, todayStr());
   showToast(t('msgBackupDownloaded'));
@@ -4245,6 +4449,30 @@ async function refreshBackupModalUI(){
   if(warnEl) warnEl.style.display = (backupDirHandle && !permOk) ? 'block' : 'none';
   const reconfirmBtn = document.getElementById('backupReconfirmBtn');
   if(reconfirmBtn) reconfirmBtn.style.display = (backupDirHandle && !permOk) ? 'inline-block' : 'none';
+  const dLinked = driveIsLinked();
+  const dStatus = document.getElementById('driveStatus');
+  if(dStatus){
+    dStatus.textContent = dLinked ? t('driveLinkedPrefix')+DRIVE_FOLDER_NAME : t('driveNotLinked');
+  }
+  const dLinkBtn = document.getElementById('driveLinkBtn');
+  if(dLinkBtn) dLinkBtn.style.display = (dLinked && driveToken && Date.now() < driveTokenExp - 60000) ? 'none' : 'inline-block';
+  const dUnlinkBtn = document.getElementById('driveUnlinkBtn');
+  if(dUnlinkBtn) dUnlinkBtn.style.display = dLinked ? 'inline-block' : 'none';
+  const dList = document.getElementById('driveRecentList');
+  if(dList){
+    if(!dLinked) dList.innerHTML = `<div class="item-meta">${t('driveListUnavailable')}</div>`;
+    else if(driveToken && Date.now() < driveTokenExp - 60000){
+      try{
+        const files = await driveListBackups(driveToken, await driveEnsureFolder(driveToken), BACKUP_RETENTION_COUNT);
+        dList.innerHTML = files.length ? files.map(f=>{ const nm = String(f.name).replace(/[^\w.\-]/g,''), fid = String(f.id).replace(/[^\w\-]/g,'');
+          return `
+          <div class="wh-row">
+            <span class="wname">${nm}</span>
+            <div class="wactions"><button class="btn btn-ghost btn-sm" onclick="requestRestoreFromDrive('${fid}','${nm}')">${t('restoreBtn')}</button></div>
+          </div>`; }).join('') : `<div class="item-meta">${t('driveNoneYet')}</div>`;
+      }catch(e){ dList.innerHTML = `<div class="item-meta">${t('backupListFailed')}</div>`; }
+    } else dList.innerHTML = `<div class="item-meta">${t('driveNeedsReconnect')}</div>`;
+  }
   const lastEl = document.getElementById('backupLastAutoLabel');
   if(lastEl){
     const last = localStorage.getItem(BACKUP_LAST_KEY);
