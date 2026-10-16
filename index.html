@@ -1923,6 +1923,7 @@ const I18N = {
     errWipeRetry: `تعذر تنفيذ الحذف، حاول مرة أخرى`,
     errSaveOrderRetry: `تعذر حفظ الترتيب، حاول مرة أخرى`,
     errOpenNoteRetry: `تعذر فتح الإذن للمراجعة، حاول مرة أخرى`,
+    errFinishEditFirst: `في إذن مفتوح للتعديل، أكّد حفظه أو ألغِ التعديل الأول`,
     errReadImage: `تعذر قراءة الصورة`,
     msgItemAdded: `تم إضافة الصنف`,
     msgUserAdded: `تم إضافة المستخدم`,
@@ -2430,6 +2431,7 @@ This will replace all current data with this older backup, and this restore itse
     errWipeRetry: `Deletion failed, try again`,
     errSaveOrderRetry: `Failed to save order, try again`,
     errOpenNoteRetry: `Failed to open the voucher for review, try again`,
+    errFinishEditFirst: `A voucher is open for editing - confirm it or cancel the edit first`,
     errReadImage: `Failed to read the image`,
     msgItemAdded: `Item added`,
     msgUserAdded: `User added`,
@@ -3231,6 +3233,7 @@ async function loadState(){
         branding: meta.branding || null,
         items, notes, transactions, contacts
       };
+      editingNoteMeta = null; editingNoteBackup = null; // freshly loaded data already contains every note
       ensureDefaults();
       applyBranding();
       const itemsClone = {}; items.forEach(it=>{ itemsClone[it.id] = JSON.parse(JSON.stringify(it)); });
@@ -3336,6 +3339,7 @@ async function commitOpsInChunks(db, ops){
   return true;
 }
 async function persist(){
+  if(editingNoteMeta || editingNoteBackup){ showToast(t('errFinishEditFirst')); return false; }
   const db = await getDb();
   if(!db){
     showToast(t('errFirebaseNotSetup'));
@@ -3695,6 +3699,7 @@ function enterApp(skipRecoveryCheck){
 }
 function logout(){
   currentUser = null; userName='';
+  editingNoteMeta = null; editingNoteBackup = null; bulkInRows = []; bulkOutRows = []; transferRows = [];
   try{ sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_LAST_ACTIVITY_KEY); }catch(e){}
   authSignOut();
   document.getElementById('mainApp').style.display='none';
@@ -5845,7 +5850,8 @@ async function editSavedNote(id){
   STATE.notes = STATE.notes.filter(n=>n.id!==id);
   editingNoteBackup = note;
   editingNoteMeta = {id:note.id, serial:note.serial, createdAt:note.createdAt, type:note.type};
-  await persist();
+  // Nothing is written here on purpose: while the note is being edited the saved copy stays on the server untouched.
+  // It is only replaced when the edit is confirmed (commit), so closing the tab mid-edit can never lose the note.
   closeSavedNotes();
   if(note.type==='in'){ bulkInRows = note.rows.map(r=>({...r})); openBulkIn(); }
   else if(note.type==='out'){ bulkOutRows = note.rows.map(r=>({...r})); openBulkOut(); }
@@ -5909,13 +5915,7 @@ async function openApprovalNote(id){
   STATE.notes = STATE.notes.filter(n=>n.id!==id);
   editingNoteBackup = note;
   editingNoteMeta = {id:note.id, serial:note.serial, createdAt:note.createdAt, type:note.type, approving:true};
-  const ok = await persist();
-  if(!ok){
-    STATE.notes.unshift(note);
-    editingNoteBackup = null; editingNoteMeta = null;
-    showToast(t('errOpenNoteRetry'));
-    return;
-  }
+  // No write here either: the pending note stays on the server until the approval is confirmed or rejected.
   closePendingApprovals();
   if(note.type==='in'){ bulkInRows = note.rows.map(r=>({...r})); openBulkIn(); }
   else if(note.type==='out'){ bulkOutRows = note.rows.map(r=>({...r})); openBulkOut(); }
