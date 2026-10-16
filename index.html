@@ -452,6 +452,8 @@
   /* Hint lines above form fields (e.g. "available qty") and the empty spacers that stand in for them share one fixed
      height, so fields side by side stay level whether or not a hint is showing. */
   .form-grid > div > .item-meta{min-height:18px !important;line-height:18px;margin-bottom:4px !important;}
+  .note-total td{font-weight:800;}
+  #printArea .note-total td, #previewBody .note-total td{background:#f3f3f3 !important;}
 </style>
 </head>
 <body>
@@ -1614,6 +1616,7 @@ const I18N = {
     lowStockReportPrintTitle: `تقرير أصناف تحت حد الطلب`,
     batchUnit: `باتش`,
     totalLabel: `الإجمالي`,
+    totalQtyLabel: `إجمالي الكمية`,
     outOfStockLabel: `نفد المخزون`,
     noneLabel: `لا يوجد`,
     noResults: `لا توجد نتائج`,
@@ -2119,6 +2122,7 @@ const I18N = {
     lowStockReportPrintTitle: `Low Stock Report`,
     batchUnit: `batch(es)`,
     totalLabel: `Total`,
+    totalQtyLabel: `Total quantity`,
     outOfStockLabel: `Out of stock`,
     noneLabel: `None`,
     noResults: `No results`,
@@ -5438,7 +5442,7 @@ function renderBulkInTable(){
     <td><input value="${(r.expiry||'').replace(/"/g,'&quot;')}" placeholder="MM/YYYY" onchange="updateBulkInRow(${i},'expiry',this.value)" style="width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;"></td>
     <td><select onchange="updateBulkInRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkInRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
-  document.getElementById('biTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
+  document.getElementById('biTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`) + noteTotalRowHtml(bulkInRows,2,4);
 }
 // Recomputes a row's base-unit qty from its entered amount, unit choice and any extra loose packs.
 function rowBaseQty(item, row){
@@ -5638,7 +5642,7 @@ function renderBulkOutTable(){
     <td style="white-space:nowrap;"><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${r.enteredQty}" onchange="updateBulkOutRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateBulkOutRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td><select onchange="updateBulkOutRow(${i},'wh',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 4px;font-family:inherit;font-size:12.5px;">${whOptionsHtml(r.wh)}</select></td><td class="rm" onclick="removeBulkOutRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
-  document.getElementById('boTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
+  document.getElementById('boTable').innerHTML = head + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`) + noteTotalRowHtml(bulkOutRows,2,4);
 }
 function updateBulkOutRow(i, field, value){
   const row = bulkOutRows[i];
@@ -5895,6 +5899,26 @@ async function rejectPendingNote(id){
     showToast(t('errRejectRetry'));
   }
 }
+// Sum of the quantities of a note's rows, kept per unit so different units are never mixed
+// (e.g. "12 كرتونة + 5 علبة"); rows without a known unit label add up as plain numbers.
+function noteQtyTotalText(rows){
+  const totals = new Map();
+  const add = (label, q)=>{ q = Number(q); if(!(q>0)) return; totals.set(label, Math.round(((totals.get(label)||0)+q)*100)/100); };
+  (rows||[]).forEach(r=>{
+    if(r.unitChoice && r.enteredQty!=null){
+      const item = STATE.items.find(x=>x.id===r.itemId);
+      add(item ? (qtyUnitLabel(item, r.unitChoice)||'') : '', r.enteredQty);
+      if(r.extraQty>0 && item) add(item.unit2Name||'', r.extraQty);
+    } else add('', r.qty);
+  });
+  return [...totals].map(([label,q])=> label ? `${plainQty(q)} ${label}` : plainQty(q)).join(' + ');
+}
+// Last row of a note table: "إجمالي الكمية" label spanning the first `labelCols` columns, then the total spanning
+// the remaining `valueCols` (so it starts right under the quantity column). Empty tables get no total row.
+function noteTotalRowHtml(rows, labelCols, valueCols){
+  if(!rows || !rows.length) return '';
+  return `<tr class="note-total"><td colspan="${labelCols}" style="text-align:start;">${t('totalQtyLabel')}</td><td colspan="${valueCols}" style="text-align:start;">${noteQtyTotalText(rows)}</td></tr>`;
+}
 // For a saved row snapshot, shows the quantity as originally entered + its unit label when known, else the raw base quantity.
 function rowQtyDisplay(r){
   if(r.unitChoice && r.enteredQty!=null){
@@ -5910,7 +5934,7 @@ function buildNoteRowsTableHtml(type, rows){
   if(type==='in'){
     const head = `<tr><th>${t('colNo')}</th><th>${t('colItemName')}</th><th>${t('colQty')}</th><th>${t('expiryDate')}</th><th>${t('warehouse')}</th></tr>`;
     const body = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||t('statusUnspecified')}</td><td>${r.whLabel}</td></tr>`).join('');
-    return `<table class="note-table">${head}${body}</table>`;
+    return `<table class="note-table">${head}${body}${noteTotalRowHtml(rows,2,3)}</table>`;
   }
   if(type==='opening'){
     const whCols = warehouseIds();
@@ -5921,11 +5945,11 @@ function buildNoteRowsTableHtml(type, rows){
   if(type==='transfer'){
     const head = `<tr><th>${t('colNo')}</th><th>${t('colItemName')}</th><th>${t('fromWarehouse')}</th><th>${t('toWarehouse')}</th><th>${t('colQty')}</th><th>${t('expiryDate')}</th></tr>`;
     const body = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${r.fromLabel}</td><td>${r.toLabel}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||''}</td></tr>`).join('');
-    return `<table class="note-table">${head}${body}</table>`;
+    return `<table class="note-table">${head}${body}${noteTotalRowHtml(rows,4,2)}</table>`;
   }
   const head = `<tr><th>${t('colNo')}</th><th>${t('colItemName')}</th><th>${t('colQty')}</th><th>${t('expiryDate')}</th><th>${t('warehouse')}</th></tr>`;
   const body = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||''}</td><td>${r.whLabel}</td></tr>`).join('');
-  return `<table class="note-table">${head}${body}</table>`;
+  return `<table class="note-table">${head}${body}${noteTotalRowHtml(rows,2,3)}</table>`;
 }
 function buildRecipientLineHtml(recipient){
   const val = (recipient||'').trim();
@@ -6434,7 +6458,7 @@ function renderTransferTable(){
     <td style="white-space:nowrap;"><input type="text" inputmode="decimal" lang="en" oninput="this.value=toLatinDigits(this.value)" step="0.01" value="${r.enteredQty}" onchange="updateTransferRow(${i},'qty',this.value)" style="width:64px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-family:inherit;font-size:12.5px;">${unitCell}${extraQtyCellHtml('updateTransferRow',i,item,r)}</td>
     <td>${r.expiry||''}</td><td class="rm" onclick="removeTransferRow(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td></tr>`;
   }).join('');
-  document.getElementById('trTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`);
+  document.getElementById('trTable').innerHTML = head + (rows || `<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">${t('noRows')}</td></tr>`) + noteTotalRowHtml(transferRows,4,3);
 }
 function clearTransferRows(){ transferRows=[]; renderTransferTable(); }
 function newTransferTable(){
