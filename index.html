@@ -1861,6 +1861,7 @@ const I18N = {
     errSaveFailed: `تعذر الحفظ، تأكد من الاتصال وحاول مرة أخرى`,
     loginTitle: `تسجيل الدخول`,
     loginBtn: `دخول`,
+    loggingInBtn: `جاري الدخول...`,
     resetAdminBtn: `إعادة ضبط حساب المدير`,
     msgVerifying: `جاري التحقق...`,
     errConnectRetry: `تعذر الاتصال بالخادم — حاول مرة أخرى`,
@@ -2367,6 +2368,7 @@ This will replace all current data with this older backup, and this restore itse
     errSaveFailed: `Save failed, check your connection and try again`,
     loginTitle: `Log In`,
     loginBtn: `Log In`,
+    loggingInBtn: `Logging in...`,
     resetAdminBtn: `Reset Admin Account`,
     msgVerifying: `Verifying...`,
     errConnectRetry: `Could not connect to the server — try again`,
@@ -3175,15 +3177,15 @@ async function loadState(){
     return false;
   }
   try{
-    const metaSnap = await db.collection('meta').doc('main').get();
+    const [metaSnap, itemsSnap, notesSnap, txSnap, contactsSnap] = await Promise.all([
+      db.collection('meta').doc('main').get(),
+      db.collection('items').get(),
+      db.collection('notes').get(),
+      db.collection('txlog').get(),
+      db.collection('contacts').get()
+    ]);
     if(metaSnap.exists){
       const meta = metaSnap.data();
-      const [itemsSnap, notesSnap, txSnap, contactsSnap] = await Promise.all([
-        db.collection('items').get(),
-        db.collection('notes').get(),
-        db.collection('txlog').get(),
-        db.collection('contacts').get()
-      ]);
       const itemsById = {};
       itemsSnap.forEach(d=>{ itemsById[d.id] = d.data(); });
       const order = (meta.itemOrder||[]).filter(id=>itemsById[id]);
@@ -3545,7 +3547,7 @@ function renderLoginForm(){
       <div class="full"><label>${t('password')}</label><div class="pw-wrap"><input id="loginPass" type="password"><button type="button" class="pw-toggle" onclick="togglePw('loginPass', this)"></button></div></div>
     </div>
     <div id="loginError" class="warn-box" style="display:none;"></div>
-    <div class="form-actions"><button class="btn btn-amber" onclick="submitLogin()" style="width:100%;">${t('loginBtn')}</button></div>
+    <div class="form-actions"><button class="btn btn-amber" id="loginSubmitBtn" onclick="submitLogin()" style="width:100%;">${t('loginBtn')}</button></div>
     <div style="text-align:center;margin-top:14px;"><button type="button" onclick="forgotPassword()" style="background:none;border:none;padding:0;font-size:12.5px;color:var(--ink-soft);text-decoration:underline;cursor:pointer;font-family:inherit;">${t('resetAdminBtn')}</button></div>
   `;
   initPwToggles();
@@ -3593,7 +3595,23 @@ async function forgotPassword(){
     showToast(t('errUnexpected'));
   }
 }
+let _loginBusy = false;
 async function submitLogin(){
+  if(_loginBusy) return;
+  _loginBusy = true;
+  const btn = document.getElementById('loginSubmitBtn');
+  if(btn){ btn.disabled = true; btn.textContent = t('loggingInBtn'); }
+  const errEl = document.getElementById('loginError'); if(errEl) errEl.style.display='none';
+  // let the browser paint the "logging in" state before the heavy work starts
+  await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
+  try{ await _submitLoginInner(); }
+  finally{
+    _loginBusy = false;
+    const b2 = document.getElementById('loginSubmitBtn');
+    if(b2){ b2.disabled = false; b2.textContent = t('loginBtn'); }
+  }
+}
+async function _submitLoginInner(){
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value.trim();
   const err = document.getElementById('loginError');
