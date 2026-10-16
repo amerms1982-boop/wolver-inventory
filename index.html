@@ -1235,15 +1235,31 @@ async function detectAuthMode(){
     return (d && d.users && d.users.length) ? 'legacy' : 'fresh';
   }catch(e){ return (e && e.code==='permission-denied') ? 'fresh' : 'offline'; }
 }
+// The username -> account lookup is a network round-trip. Start it as soon as the username is typed
+// (before the password is finished), so pressing "login" doesn't have to wait for it.
+let _loginDocPrefetch = null; // {user, promise}
+function prefetchLoginDoc(username){
+  const u = normUser(username);
+  if(!u || !AUTH_BACKEND || AUTH_MODE!=='secure' || !fsDb) return;
+  if(_loginDocPrefetch && _loginDocPrefetch.user===u) return;
+  const promise = (async()=>{ const s = await fsDb.collection('logins').doc(await loginKey(u)).get(); return s.exists ? s.data().email : null; })();
+  promise.catch(()=>{ if(_loginDocPrefetch && _loginDocPrefetch.promise===promise) _loginDocPrefetch = null; });
+  _loginDocPrefetch = {user:u, promise};
+}
 async function secureSignIn(username, password){
-  let snap;
-  try{ snap = await fsDb.collection('logins').doc(await loginKey(username)).get(); }
-  catch(e){ return {err:'net'}; }
-  if(!snap.exists) return {err:'bad'};
+  let email;
   try{
-    await firebase.auth().signInWithEmailAndPassword(snap.data().email, await authPass(username, password));
+    prefetchLoginDoc(username);
+    const pf = _loginDocPrefetch;
+    email = (pf && pf.user===normUser(username)) ? await pf.promise : null;
+    if(email===null){ _loginDocPrefetch = null; return {err:'bad'}; }
+  }
+  catch(e){ _loginDocPrefetch = null; return {err:'net'}; }
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email, await authPass(username, password));
     return {ok:true};
   }catch(e){
+    _loginDocPrefetch = null; // next attempt re-reads the account link
     const c = (e && e.code) || '';
     if(c.indexOf('too-many-requests')>=0) return {err:'rate'};
     if(c.indexOf('network')>=0) return {err:'net'};
@@ -3552,7 +3568,10 @@ function renderLoginForm(){
   `;
   initPwToggles();
   setTimeout(()=>{
+    const uEl = document.getElementById('loginUser');
+    if(uEl){ const pre = ()=>prefetchLoginDoc(uEl.value); uEl.addEventListener('blur', pre); uEl.addEventListener('change', pre); }
     const p = document.getElementById('loginPass');
+    if(p) p.addEventListener('focus', ()=>{ if(uEl) prefetchLoginDoc(uEl.value); });
     if(p) p.addEventListener('keydown', e=>{ if(e.key==='Enter') submitLogin(); });
   }, 50);
 }
@@ -3665,8 +3684,8 @@ function enterApp(skipRecoveryCheck){
   syncItemSortMenu();
   syncItemViewMenu();
   refreshContactDatalists();
-  renderDashboard(); renderItems(); renderLog();
-  initBackupFeature();
+  renderDashboard(); renderItems();
+  setTimeout(()=>{ renderLog(); initBackupFeature(); }, 0);
   if(!skipRecoveryCheck && currentUser.role==='admin' && !hasRecoveryCode()){
     setTimeout(async ()=>{
       const yes = await customConfirm(t('askCreateRecoveryCode'));
