@@ -4341,6 +4341,7 @@ async function initBackupFeature(){
       if(handle){ backupDirHandle = handle; backupFolderName = handle.name; }
     }catch(e){ console.error(e); }
   }
+  if(driveIsLinked()) driveLoadGis().catch(()=>{});
   await autoDailyBackupCheck();
 }
 let _autoBackupBusy = false;
@@ -4431,6 +4432,7 @@ async function backupNow(){
 async function openBackupModal(){
   if(!currentUser || currentUser.role!=='admin') return;
   document.getElementById('backupOverlay').classList.add('active');
+  driveLoadGis().catch(()=>{}); // preload so the later click can open Google's popup without an async gap
   await refreshBackupModalUI();
 }
 function closeBackupModal(){ document.getElementById('backupOverlay').classList.remove('active'); }
