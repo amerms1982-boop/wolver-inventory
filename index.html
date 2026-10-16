@@ -5647,6 +5647,7 @@ function renderBulkOutTable(){
 function updateBulkOutRow(i, field, value){
   const row = bulkOutRows[i];
   if(!row) return;
+  delete row.split;
   const item = STATE.items.find(x=>x.id===row.itemId);
   if(field==='qty'){ row.enteredQty = parseFloat(value)||0; row.qty = rowBaseQty(item, row); }
   else if(field==='unit'){ row.unitChoice = value; if(value!=='u1') row.extraQty = 0; row.qty = rowBaseQty(item, row); }
@@ -5722,6 +5723,8 @@ async function commitBulkOut(){
     if(!item) return;
     const {alloc, shortfall} = computeFefoAllocation(item, r.wh, r.qty, true);
     alloc.forEach(a=>{ a.batch.balances[r.wh] = Math.round(((a.batch.balances[r.wh]||0)-a.take)*100)/100; appliedAllocations.push({itemId:item.id, batchId:a.batch.id, wh:r.wh, delta:-a.take}); });
+    // remember how this row was actually split across expiry dates (printed as one line per date)
+    r.split = alloc.map(a=>({expiry:a.batch.expiry||null, qty:a.take}));
     const dispensed = r.qty - shortfall;
     if(shortfall>0) anyShort=true;
     if(dispensed>0){ const tx = logTx({...approvalTxExtra(isApproving), itemId:item.id, itemName:item.name, type:'out', qty:dispensed, location:t('bulkOutTitle')+' '+t('numberLabel')+' '+serial+(location?(' — '+location):'')+' — '+r.whLabel, warehouseId:r.wh}); txIds.push(tx.id); }
@@ -5930,7 +5933,70 @@ function rowQtyDisplay(r){
   }
   return plainQty(r.qty);
 }
-function buildNoteRowsTableHtml(type, rows){
+// ---- Bulk-out rows split by expiry date -------------------------------------------------------------------------
+// One entered line can be served from several expiry dates (FEFO). Printed/saved tables show one line per date with its own
+// quantity. Source of the split, in order: the split stored on the row at save time; for older saved notes, rebuilt from the
+// note's applied allocations; for a table not yet saved (or pending approval), a live FEFO simulation.
+function fefoSimulateParts(rows){
+  const used = {};
+  return rows.map(r=>{
+    const item = STATE.items.find(i=>i.id===r.itemId);
+    if(!item) return null;
+    const left = b=> (b.balances[r.wh]||0) - (used[b.id+'|'+r.wh]||0);
+    const cands = sortBatchesFEFO(item.batches.filter(b=>left(b)>0 && !isBatchExpired(b)));
+    let need = r.qty; const parts = [];
+    for(const b of cands){
+      if(need<=0) break;
+      const take = Math.min(left(b), need);
+      if(take>0){ parts.push({expiry:b.expiry||null, qty:take}); used[b.id+'|'+r.wh] = (used[b.id+'|'+r.wh]||0)+take; need -= take; }
+    }
+    return parts.length ? parts : null;
+  });
+}
+function rebuildPartsFromAllocations(rows, note){
+  const queues = {};
+  (note.appliedAllocations||[]).forEach(a=>{ const k=a.itemId+'|'+a.wh; (queues[k]=queues[k]||[]).push({batchId:a.batchId, left:-a.delta}); });
+  return rows.map(r=>{
+    const q = queues[r.itemId+'|'+r.wh] || [];
+    const item = STATE.items.find(i=>i.id===r.itemId);
+    let need = r.qty; const parts = [];
+    while(need>0.0001 && q.length){
+      const e = q[0]; const take = Math.min(e.left, need);
+      const b = item && item.batches.find(x=>x.id===e.batchId);
+      if(take>0) parts.push({expiry: b ? (b.expiry||null) : null, qty:take});
+      e.left = Math.round((e.left-take)*100)/100; need = Math.round((need-take)*100)/100;
+      if(e.left<=0.0001) q.shift();
+    }
+    return parts.length ? parts : null;
+  });
+}
+function outRowsParts(rows, note){
+  const stored = rows.map(r=> (r.split && r.split.length) ? r.split : null);
+  const isPending = !note || note.status==='pending';
+  const rebuilt = (!isPending && stored.some(x=>!x) && (note.appliedAllocations||[]).length) ? rebuildPartsFromAllocations(rows, note) : null;
+  const sim = (isPending && stored.some(x=>!x)) ? fefoSimulateParts(rows) : null;
+  return rows.map((r,i)=> stored[i] || (rebuilt && rebuilt[i]) || (sim && sim[i]) || null);
+}
+// Quantity of one expiry-date part, shown in the same unit the row was entered in.
+function partQtyDisplay(row, qtyBase){
+  const item = STATE.items.find(x=>x.id===row.itemId);
+  if(!item) return plainQty(qtyBase);
+  if(itemHasUnits(item) && row.unitChoice==='u1') return fmtQty(item, qtyBase);
+  const label = qtyUnitLabel(item, row.unitChoice||'u2');
+  return label ? `${plainQty(qtyBase)} ${label}` : plainQty(qtyBase);
+}
+function buildOutRowsHtml(rows, note){
+  const P = outRowsParts(rows, note);
+  return rows.map((r,i)=>{
+    const parts = P[i];
+    if(!parts || parts.length<2) return `<tr><td>${i+1}</td><td>${r.itemName}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||''}</td><td>${r.whLabel}</td></tr>`;
+    const n = parts.length;
+    const exp = x=> x.expiry || t('statusUnspecified');
+    return `<tr><td rowspan="${n}">${i+1}</td><td rowspan="${n}">${r.itemName}</td><td>${partQtyDisplay(r, parts[0].qty)}</td><td>${exp(parts[0])}</td><td rowspan="${n}">${r.whLabel}</td></tr>`
+      + parts.slice(1).map(x=>`<tr><td>${partQtyDisplay(r, x.qty)}</td><td>${exp(x)}</td></tr>`).join('');
+  }).join('');
+}
+function buildNoteRowsTableHtml(type, rows, note){
   if(type==='in'){
     const head = `<tr><th>${t('colNo')}</th><th>${t('colItemName')}</th><th>${t('colQty')}</th><th>${t('expiryDate')}</th><th>${t('warehouse')}</th></tr>`;
     const body = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||t('statusUnspecified')}</td><td>${r.whLabel}</td></tr>`).join('');
@@ -5948,7 +6014,7 @@ function buildNoteRowsTableHtml(type, rows){
     return `<table class="note-table">${head}${body}${noteTotalRowHtml(rows,4,2)}</table>`;
   }
   const head = `<tr><th>${t('colNo')}</th><th>${t('colItemName')}</th><th>${t('colQty')}</th><th>${t('expiryDate')}</th><th>${t('warehouse')}</th></tr>`;
-  const body = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.itemName}</td><td>${rowQtyDisplay(r)}</td><td>${r.expiry||''}</td><td>${r.whLabel}</td></tr>`).join('');
+  const body = buildOutRowsHtml(rows, note);
   return `<table class="note-table">${head}${body}${noteTotalRowHtml(rows,2,3)}</table>`;
 }
 function buildRecipientLineHtml(recipient){
@@ -5969,7 +6035,7 @@ function buildSavedNotePrintHtml(id){
   extraLine += `<div>${t('createdByLabel')}: <bdi>${note.user||''}</bdi></div>`;
   if(note.approvedBy){ const appDate = new Date(note.approvedAt).toLocaleString(appLocale(),{dateStyle:'medium',timeStyle:'short'}); extraLine += `<div>${t('approvedByLabel')}: <bdi>${note.approvedBy}</bdi></div><div>${t('approvalDateLabel')}: <bdi>${appDate}</bdi></div>`; }
   const recipientLine = buildRecipientLineHtml(note.recipient);
-  return `<h2>${title}</h2><div>${t('dateLabel')}: <bdi>${dateStr}</bdi></div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows)}${recipientLine}`;
+  return `<h2>${title}</h2><div>${t('dateLabel')}: <bdi>${dateStr}</bdi></div>${extraLine}<br>${buildNoteRowsTableHtml(note.type, note.rows, note)}${recipientLine}`;
 }
 function openNotesHub(){ document.getElementById('notesHubOverlay').classList.add('active'); }
 function closeNotesHub(){ document.getElementById('notesHubOverlay').classList.remove('active'); }
